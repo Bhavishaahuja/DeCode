@@ -1,0 +1,174 @@
+[
+  {
+    "name": "search_evidence",
+    "description": "Search the evidence index for passages about an ancient site. Returns cited passages with a relevance score.",
+    "input_schema": {
+      "properties": {
+        "query": {
+          "description": "What to look for, in plain English, e.g. 'ramp sledge wet sand'",
+          "minLength": 1,
+          "type": "string"
+        },
+        "site": {
+          "default": null,
+          "description": "Site id: giza, uruk, mohenjo or qin. Leave null to search all sites.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "system": {
+          "default": null,
+          "description": "One of the 9 system ids, e.g. transport_lifting. Leave null for all.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "k": {
+          "default": 8,
+          "description": "How many passages to return",
+          "maximum": 25,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_claims",
+    "description": "Get verified, graded claims (ancient practice, modern equivalent, lesson, evidence grade) for a site and system.",
+    "input_schema": {
+      "properties": {
+        "site": {
+          "default": null,
+          "description": "Site id: giza, uruk, mohenjo or qin. Null returns every site.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "system": {
+          "default": null,
+          "description": "One of the 9 system ids. Null returns every system.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "type": "object"
+    }
+  },
+  {
+    "name": "estimate",
+    "description": "Estimate duration and labour for a build: years, people and person-days from quantity, crews and rates.",
+    "input_schema": {
+      "properties": {
+        "quantity": {
+          "description": "How much gets built, e.g. 2300000 blocks",
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "unit": {
+          "default": "units",
+          "description": "What quantity counts, e.g. 'stone blocks'",
+          "type": "string"
+        },
+        "crews": {
+          "description": "Number of crews working in parallel",
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "crew_size": {
+          "description": "People per crew",
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "rate_per_crew_day": {
+          "description": "Units one crew completes per working day",
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "days_per_year": {
+          "description": "Working days per year",
+          "exclusiveMinimum": 0,
+          "maximum": 366,
+          "type": "number"
+        }
+      },
+      "required": [
+        "quantity",
+        "crews",
+        "crew_size",
+        "rate_per_crew_day",
+        "days_per_year"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "haul_force",
+    "description": "Force needed to drag a load on a sledge up a slope, and how many people that takes.",
+    "input_schema": {
+      "properties": {
+        "mass_kg": {
+          "description": "Mass of the load in kg",
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "slope_deg": {
+          "default": 0,
+          "description": "Slope of the ramp in degrees, 0 for flat ground",
+          "exclusiveMaximum": 90,
+          "minimum": 0,
+          "type": "number"
+        },
+        "friction_coeff": {
+          "description": "Sliding friction coefficient (assumed), e.g. 0.3 for a sledge on wetted sand",
+          "maximum": 2,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pull_per_person_n": {
+          "description": "Sustained pull one person manages, in newtons (assumed), e.g. 400",
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "mass_kg",
+        "friction_coeff",
+        "pull_per_person_n"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "carbon",
+    "description": "Embodied carbon (cradle to gate) for a volume of material, using ICE Database factors. Known materials: clay_brick, granite, limestone, marble, rammed_earth.",
+    "input_schema": {
+      "properties": {
+        "material": {
+          "description": "Material name, e.g. limestone, granite, clay_brick, rammed_earth",
+          "minLength": 1,
+          "type": "string"
+        },
+        "volume_m3": {
+          "description": "Volume in cubic metres",
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "material",
+        "volume_m3"
+      ],
+      "type": "object"
+    }
+  }
+]
