@@ -48,7 +48,7 @@ def build(batch: int = 64) -> None:
     for i in range(0, len(passages), 1000):
         chunk = passages[i:i + 1000]
         col.add(
-            ids=[p["id"] for p in chunk],
+            ids=[p["passage_id"] for p in chunk],
             embeddings=vecs[i:i + 1000].tolist(),  # texts live in passages.jsonl; not duplicated here to keep the index small
             metadatas=[{"site": p["site"], "period": p["period"], "source_id": p["source_id"],
                         "source_type": p["source_type"], "license": p["license"], **system_meta(p["system_tags"])}
