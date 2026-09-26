@@ -1,0 +1,379 @@
+# Canonical system_tags for Stratum: the 9 engineering systems.
+# Dev 1 tags passages with these ids. Dev 2's claims/taxonomy.yaml should reuse the same ids
+# (it adds plain-language definitions and CSI MasterFormat / Uniclass headings on top).
+#
+# Tagging rule (data/tagging.py): a passage gets a tag when it matches
+#   >= 1 "strong" pattern, OR >= 2 distinct "weak" patterns.
+# Patterns are case-insensitive Python regexes, matched on word boundaries.
+# "aliases" are accepted by search_evidence(system=...) and mapped to the canonical id.
+# Dev 2's five must-have demo systems: transport_lifting, materials, workforce,
+# water_sanitation, quality_control.
+
+systems:
+  transport_lifting:
+    label: Transport & lifting
+    description: 'Moving and raising heavy loads: sledges, rollers, ramps, levers, boats and canals used for haulage, harbours.'
+    aliases:
+    - transport
+    - lifting
+    - haulage
+    strong:
+    - sledges?
+    - ramps?
+    - rollers?
+    - levers?
+    - haul(ed|ing|age)?
+    - dragg(ed|ing)
+    - hoist(ed|ing)?
+    - wet sand
+    - towing
+    - barges?
+    - quays?
+    - harbou?rs?
+    - (transport(ed)?|mov(e|ed|ing)|rais(e|ed|ing)|lift(ed|ing)?) (the |these |heavy |large )?(blocks?|stones?|monoliths?|casing|statues?)
+    weak:
+    - boats?
+    - ships?
+    - canals?
+    - transport(ed|ation)?
+    - lift(ed|ing)?
+    - pull(ed|ing)?
+    - ropes?
+    - friction
+    - tracks?
+    - causeways?
+    - carts?
+    - wagons?
+    - porters?
+    - oxen
+    - draught
+  materials:
+    label: Materials
+    description: 'What was built with and how it was made: stone, sun-dried and fired brick, mortar, gypsum, bitumen, timber, metals, pigments, lacquer.'
+    aliases:
+    - construction_materials
+    - material
+    strong:
+    - limestone
+    - granite
+    - basalt
+    - (baked|burnt|burned|fired|mud|sun-dried|kiln-fired) bricks?
+    - mud-?bricks?
+    - bitumen
+    - gypsum
+    - mortar
+    - lime plaster
+    - quarr(y|ies|ied|ying)
+    - kilns?
+    - bronze
+    - copper tools?
+    - chromium
+    - rammed earth
+    - terracotta
+    - clay
+    weak:
+    - bricks?
+    - stones?
+    - timber
+    - wood(en)?
+    - plaster
+    - alabaster
+    - reed matting
+    - alloys?
+    - tin
+    - pigments?
+    - lacquer
+    - sandstone
+    - ceramics?
+    - pottery
+    - fired
+    - casting
+  workforce:
+    label: Workforce & labour
+    description: 'Who did the work and how labour was organised: gangs, crews, conscripts, convicts, rations, housing, health and pay.'
+    aliases:
+    - labor
+    - labour
+    - labor_organization
+    - workers
+    strong:
+    - workers?
+    - workmen
+    - labou?r(ers?)?
+    - gangs?
+    - crews?
+    - phyles?
+    - conscripts?
+    - corv[ée]e
+    - convicts?
+    - artisans?
+    - craftsmen
+    - overseers?
+    - rations?
+    - work ?force
+    weak:
+    - slaves?
+    - builders?
+    - masons?
+    - teams?
+    - recruited
+    - levy
+    - wages?
+    - paid
+    - skeletons?
+    - injur(y|ies)
+    - medical
+    - housing
+    - barracks
+  water_sanitation:
+    label: Water & sanitation
+    description: Water supply, drainage, wells, baths, wastewater, flood control, irrigation and river/canal hydraulics.
+    aliases:
+    - water
+    - sanitation
+    - drainage
+    - hydraulics
+    - water_management
+    strong:
+    - drains?
+    - drainage
+    - sewers?
+    - sewage
+    - wells
+    - (brick[- ]lined|circular|public|private|domestic|stepped) wells?
+    - great bath
+    - cesspits?
+    - soak ?pits?
+    - latrines?
+    - toilets?
+    - bathing
+    - irrigation
+    - flood(s|ing|plain)?
+    - dams?
+    - reservoirs?
+    - cisterns?
+    - water supply
+    - waterproof(ed|ing)?
+    - aquifers?
+    - groundwater
+    - (nile|indus|euphrates|river) (branch|channel|flood|course)
+    weak:
+    - water
+    - baths?
+    - channels?
+    - runoff
+    - wastewater
+    - basins?
+    - canals?
+    - rivers?
+    - rainfall
+    - moat
+    - pipes?
+    - sump
+  quality_control:
+    label: Quality control & QA
+    description: 'How precision and consistency were achieved and checked: tolerances, standard units and weights, inspection, maker''s marks, accountability.'
+    aliases:
+    - qa
+    - quality
+    - quality_assurance
+    - qc
+    - precision
+    - standards
+    strong:
+    - precision
+    - precise(ly)?
+    - accuracy
+    - tolerances?
+    - errors? of
+    - standardi[sz](ed|ation)
+    - standard (weights?|units?|sizes?|bricks?|measures?)
+    - cubits?
+    - weights and measures
+    - inspect(ion|ed|ors?)
+    - maker'?s marks?
+    - inscribed (with )?(the )?names?
+    - wu ?le gong ?ming
+    - accountab(le|ility)
+    - levell?ing
+    - plumb
+    - squareness
+    - mean (error|variation|deviation)
+    weak:
+    - measured
+    - measurements?
+    - uniform(ity)?
+    - consistent
+    - ratio
+    - '4:2:1'
+    - deviations?
+    - checked
+    - calibrat(ed|ion)
+    - exact(ly)?
+    - flatness
+    - accurate(ly)?
+  structural_design:
+    label: Structural design
+    description: 'How the structure stands up: foundations, load paths, slopes, corbelling, vaults, relieving chambers, platforms, retaining walls.'
+    aliases:
+    - structure
+    - structural
+    - structural_engineering
+    strong:
+    - foundations?
+    - corbel(led|ling)?
+    - relieving chambers?
+    - vaults?
+    - vaulted
+    - arch(es|ed)?
+    - buttress(es)?
+    - retaining walls?
+    - load[- ]bearing
+    - angle of (slope|inclination)
+    - platforms?
+    - terraces?
+    - core masonry
+    - casing stones?
+    - backing stones?
+    - grand gallery
+    - beams?
+    - rafters?
+    - pillars?
+    weak:
+    - walls?
+    - slopes?
+    - stepped
+    - mounds?
+    - loads?
+    - stable
+    - stability
+    - settlement
+    - cracks?
+    - collapse
+    - courses?
+    - roof(s|ing)?
+    - thickness
+  surveying_layout:
+    label: Surveying, layout & orientation
+    description: 'Setting out the site: orientation to the cardinal points, grids, street plans, levels, astronomical alignment, site planning.'
+    aliases:
+    - surveying
+    - layout
+    - orientation
+    - urban_planning
+    - site_planning
+    - planning
+    strong:
+    - orient(ed|ation)
+    - cardinal (points|directions)
+    - true north
+    - alignment
+    - aligned
+    - grid( plan| pattern| layout)?
+    - street plan
+    - town[- ]plann?(ing|ed)?
+    - surveyed
+    - surveying
+    - setting[- ]out
+    - citadel
+    - lower town
+    - blocks of houses
+    - survey (points|marks|stations)
+    weak:
+    - north
+    - south
+    - east
+    - west
+    - streets?
+    - lanes?
+    - layout
+    - planned
+    - sectors?
+    - astronomical
+    - stars?
+    - sunrise
+    - sunset
+    - diagonals?
+    - axis
+    - rectangular
+  logistics_supply:
+    label: Logistics & supply
+    description: 'Getting materials, food and tools to the site: supply chains, provisioning, storage, granaries, ports, trade, distance to sources.'
+    aliases:
+    - logistics
+    - supply
+    - supply_chain
+    - provisioning
+    - storage
+    strong:
+    - granar(y|ies)
+    - storehouses?
+    - warehouses?
+    - provision(s|ing|ed)?
+    - supply (chains?|lines?|routes?)
+    - supplies
+    - trade routes?
+    - imported
+    - shipped (from|to)
+    - ports?
+    - storage (jars|rooms?|facilities)
+    - bakery
+    - bakeries
+    - breweries
+    - cattle
+    - grain
+    - deliver(y|ies|ed)
+    weak:
+    - bread
+    - beer
+    - fish
+    - meat
+    - food
+    - stores?
+    - trade
+    - imports?
+    - exports?
+    - merchants?
+    - distances?
+    - transported from
+  administration_records:
+    label: Administration & records
+    description: 'Planning, management and record-keeping: officials, scribes, accounts, papyri, tablets, seals, inscriptions, the chronology of the project.'
+    aliases:
+    - administration
+    - records
+    - management
+    - project_management
+    - bureaucracy
+    strong:
+    - papyr(us|i)
+    - diary of merer
+    - scribes?
+    - tablets?
+    - cuneiform
+    - ledgers?
+    - administrative (texts?|records?|documents?|centre|center)
+    - officials?
+    - overseer of
+    - vizier
+    - inscriptions?
+    - seals?
+    - sealings
+    - census
+    - annals
+    - chancellor
+    - bureaucra(cy|tic)
+    weak:
+    - accounts?
+    - administration
+    - managed
+    - management
+    - organi[sz]ed
+    - archives?
+    - texts?
+    - documents?
+    - written
+    - registers?
+    - reign
+    - decree
+    - records?

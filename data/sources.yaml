@@ -1,0 +1,1230 @@
+# Stratum evidence sources.
+#
+# Every entry has: id, site, type, title, url, license (+ optional period, keep_regex, enabled, note).
+# `fetch` says how ingest.py gets the text:
+#   wikipedia        plain-text extract via the MediaWiki API (follows redirects, falls back to search)
+#   archive_search   Internet Archive advanced search -> first hit with an OCR text file (<id>_djvu.txt); `prefer` pins identifiers
+#   gutenberg_search Gutendex search -> plain-text ebook
+#   url              direct download of an html or pdf
+#   wikidata_place   Wikidata entity (CC0) + its Pleiades place record (P1584, CC BY)
+# `keep_regex` keeps only paragraphs (and their neighbours) that mention the site. Use it for general or multi-site works.
+# `enabled: false` means listed but NOT ingested (license forbids reuse, or it's unusable for English retrieval). The note says why.
+#
+# Search-based entries resolve to concrete URLs at ingest time. `python -m data.ingest` writes every
+# source actually used (with its real url and license) to sources.resolved.yaml.
+#
+# The `discovery` block adds open-access journal articles from OpenAlex, per site, until each site has
+# 30-60 sources. Their per-work license comes from OpenAlex (best_oa_location.license).
+
+sources:
+- id: wp_great_pyramid_of_giza
+  site: giza
+  type: encyclopedia
+  title: Great Pyramid of Giza (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Great Pyramid of Giza
+- id: wp_giza_pyramid_complex
+  site: giza
+  type: encyclopedia
+  title: Giza pyramid complex (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Giza_pyramid_complex
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Giza pyramid complex
+- id: wp_egyptian_pyramid_construction_techniques
+  site: giza
+  type: encyclopedia
+  title: Egyptian pyramid construction techniques (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Egyptian_pyramid_construction_techniques
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Egyptian pyramid construction techniques
+- id: wp_egyptian_pyramids
+  site: giza
+  type: encyclopedia
+  title: Egyptian pyramids (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Egyptian_pyramids
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Egyptian pyramids
+  keep_regex: giza|khufu|cheops|khafre|menkaure|pyramid|sphinx
+- id: wp_pyramid_of_khafre
+  site: giza
+  type: encyclopedia
+  title: Pyramid of Khafre (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Pyramid_of_Khafre
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Pyramid of Khafre
+- id: wp_pyramid_of_menkaure
+  site: giza
+  type: encyclopedia
+  title: Pyramid of Menkaure (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Pyramid_of_Menkaure
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Pyramid of Menkaure
+- id: wp_great_sphinx_of_giza
+  site: giza
+  type: encyclopedia
+  title: Great Sphinx of Giza (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Great_Sphinx_of_Giza
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Great Sphinx of Giza
+- id: wp_khufu
+  site: giza
+  type: encyclopedia
+  title: Khufu (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Khufu
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Khufu
+- id: wp_khufu_ship
+  site: giza
+  type: encyclopedia
+  title: Khufu ship (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Khufu_ship
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Khufu ship
+- id: wp_wadi_al_jarf
+  site: giza
+  type: encyclopedia
+  title: Wadi al-Jarf (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Wadi_al-Jarf
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Wadi al-Jarf
+- id: wp_diary_of_merer
+  site: giza
+  type: encyclopedia
+  title: Diary of Merer (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Diary_of_Merer
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Diary of Merer
+- id: wp_heit_el_ghurab
+  site: giza
+  type: encyclopedia
+  title: Heit el-Ghurab (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Heit_el-Ghurab
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Heit el-Ghurab
+- id: wp_tura_egypt
+  site: giza
+  type: encyclopedia
+  title: Tura (Egypt) (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Tura_(Egypt)
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Tura (Egypt)
+- id: wp_ancient_egyptian_units_of_measurement
+  site: giza
+  type: encyclopedia
+  title: Ancient Egyptian units of measurement (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ancient_Egyptian_units_of_measurement
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ancient Egyptian units of measurement
+- id: wp_ancient_egyptian_architecture
+  site: giza
+  type: encyclopedia
+  title: Ancient Egyptian architecture (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ancient_Egyptian_architecture
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ancient Egyptian architecture
+  keep_regex: giza|khufu|cheops|khafre|menkaure|pyramid|sphinx
+- id: wp_ancient_egyptian_technology
+  site: giza
+  type: encyclopedia
+  title: Ancient Egyptian technology (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ancient_Egyptian_technology
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ancient Egyptian technology
+  keep_regex: giza|khufu|cheops|khafre|menkaure|pyramid|sphinx
+- id: wp_valley_temple_of_khafre
+  site: giza
+  type: encyclopedia
+  title: Valley Temple of Khafre (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Valley_Temple_of_Khafre
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Valley Temple of Khafre
+- id: wp_hemiunu
+  site: giza
+  type: encyclopedia
+  title: Hemiunu (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Hemiunu
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Hemiunu
+- id: wp_ahramat_branch
+  site: giza
+  type: encyclopedia
+  title: Ahramat Branch (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ahramat_Branch
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ahramat Branch
+- id: wp_scanpyramids
+  site: giza
+  type: encyclopedia
+  title: ScanPyramids (Wikipedia)
+  url: https://en.wikipedia.org/wiki/ScanPyramids
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: ScanPyramids
+- id: wp_fourth_dynasty_of_egypt
+  site: giza
+  type: encyclopedia
+  title: Fourth Dynasty of Egypt (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Fourth_Dynasty_of_Egypt
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Fourth Dynasty of Egypt
+  keep_regex: giza|khufu|cheops|khafre|menkaure|pyramid|sphinx
+- id: wp_mastaba
+  site: giza
+  type: encyclopedia
+  title: Mastaba (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Mastaba
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Mastaba
+  keep_regex: giza|khufu|cheops|khafre|menkaure|pyramid|sphinx
+- id: wp_queens_pyramids
+  site: giza
+  type: encyclopedia
+  title: Queens' Pyramids (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Queens'_Pyramids
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Queens' Pyramids
+- id: wp_khentkaus_i
+  site: giza
+  type: encyclopedia
+  title: Khentkaus I (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Khentkaus_I
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Khentkaus I
+- id: wp_mohenjo_daro
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Mohenjo-daro (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Mohenjo-daro
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Mohenjo-daro
+- id: wp_great_bath_mohenjo_daro
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Great Bath, Mohenjo-daro (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Great_Bath,_Mohenjo-daro
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Great Bath, Mohenjo-daro
+- id: wp_indus_valley_civilisation
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Indus Valley Civilisation (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Indus_Valley_Civilisation
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Indus Valley Civilisation
+- id: wp_sanitation_of_the_indus_valley_civilisat
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Sanitation of the Indus Valley Civilisation (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Sanitation_of_the_Indus_Valley_Civilisation
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Sanitation of the Indus Valley Civilisation
+- id: wp_harappan_architecture
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Harappan architecture (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Harappan_architecture
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Harappan architecture
+- id: wp_indus_script
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Indus script (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Indus_script
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Indus script
+- id: wp_priest_king_sculpture
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Priest-King (sculpture) (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Priest-King_(sculpture)
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Priest-King (sculpture)
+- id: wp_dancing_girl_sculpture
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Dancing Girl (sculpture) (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Dancing_Girl_(sculpture)
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Dancing Girl (sculpture)
+- id: wp_pashupati_seal
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Pashupati seal (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Pashupati_seal
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Pashupati seal
+- id: wp_indus_mesopotamia_relations
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Indus–Mesopotamia relations (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Indus–Mesopotamia_relations
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Indus–Mesopotamia relations
+  keep_regex: mohenjo|moenjo|harappa|indus
+- id: wp_meluhha
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Meluhha (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Meluhha
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Meluhha
+  keep_regex: mohenjo|moenjo|harappa|indus
+- id: wp_john_marshall_archaeologist
+  site: mohenjo_daro
+  type: encyclopedia
+  title: John Marshall (archaeologist) (Wikipedia)
+  url: https://en.wikipedia.org/wiki/John_Marshall_(archaeologist)
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: John Marshall (archaeologist)
+- id: wp_r_d_banerji
+  site: mohenjo_daro
+  type: encyclopedia
+  title: R. D. Banerji (Wikipedia)
+  url: https://en.wikipedia.org/wiki/R._D._Banerji
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: R. D. Banerji
+- id: wp_ernest_mackay_archaeologist
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Ernest Mackay (archaeologist) (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ernest_Mackay_(archaeologist)
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ernest Mackay (archaeologist)
+- id: wp_mortimer_wheeler
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Mortimer Wheeler (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Mortimer_Wheeler
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Mortimer Wheeler
+  keep_regex: mohenjo|moenjo|harappa|indus
+- id: wp_indus_valley_civilisation_weights_and_me
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Indus Valley Civilisation weights and measures (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Indus_Valley_Civilisation_weights_and_measures
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Indus Valley Civilisation weights and measures
+- id: wp_seals_of_the_indus_valley_civilisation
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Seals of the Indus Valley Civilisation (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Seals_of_the_Indus_Valley_Civilisation
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Seals of the Indus Valley Civilisation
+- id: wp_bead_making_in_the_indus_valley_civilisa
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Bead-making in the Indus Valley Civilisation (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Bead-making_in_the_Indus_Valley_Civilisation
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Bead-making in the Indus Valley Civilisation
+- id: wp_indus_river
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Indus River (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Indus_River
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Indus River
+  keep_regex: mohenjo|moenjo|harappa|indus
+- id: wp_harappan_pottery
+  site: mohenjo_daro
+  type: encyclopedia
+  title: Harappan pottery (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Harappan_pottery
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Harappan pottery
+- id: wp_ur
+  site: ur
+  type: encyclopedia
+  title: Ur (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ur
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ur
+- id: wp_ziggurat_of_ur
+  site: ur
+  type: encyclopedia
+  title: Ziggurat of Ur (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ziggurat_of_Ur
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ziggurat of Ur
+- id: wp_royal_cemetery_at_ur
+  site: ur
+  type: encyclopedia
+  title: Royal Cemetery at Ur (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Royal_Cemetery_at_Ur
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Royal Cemetery at Ur
+- id: wp_third_dynasty_of_ur
+  site: ur
+  type: encyclopedia
+  title: Third Dynasty of Ur (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Third_Dynasty_of_Ur
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Third Dynasty of Ur
+- id: wp_ur_nammu
+  site: ur
+  type: encyclopedia
+  title: Ur-Nammu (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ur-Nammu
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ur-Nammu
+- id: wp_shulgi
+  site: ur
+  type: encyclopedia
+  title: Shulgi (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Shulgi
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Shulgi
+- id: wp_standard_of_ur
+  site: ur
+  type: encyclopedia
+  title: Standard of Ur (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Standard_of_Ur
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Standard of Ur
+- id: wp_puabi
+  site: ur
+  type: encyclopedia
+  title: Puabi (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Puabi
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Puabi
+- id: wp_leonard_woolley
+  site: ur
+  type: encyclopedia
+  title: Leonard Woolley (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Leonard_Woolley
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Leonard Woolley
+  keep_regex: \bur\b|urim|ziggurat|ur-nammu|ur-namma|woolley|sumer
+- id: wp_ram_in_a_thicket
+  site: ur
+  type: encyclopedia
+  title: Ram in a Thicket (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ram_in_a_Thicket
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ram in a Thicket
+- id: wp_lament_for_ur
+  site: ur
+  type: encyclopedia
+  title: Lament for Ur (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Lament_for_Ur
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Lament for Ur
+- id: wp_code_of_ur_nammu
+  site: ur
+  type: encyclopedia
+  title: Code of Ur-Nammu (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Code_of_Ur-Nammu
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Code of Ur-Nammu
+- id: wp_stele_of_ur_nammu
+  site: ur
+  type: encyclopedia
+  title: Stele of Ur-Nammu (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Stele_of_Ur-Nammu
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Stele of Ur-Nammu
+- id: wp_ziggurat
+  site: ur
+  type: encyclopedia
+  title: Ziggurat (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ziggurat
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ziggurat
+  keep_regex: \bur\b|urim|ziggurat|ur-nammu|ur-namma|woolley|sumer
+- id: wp_nabonidus
+  site: ur
+  type: encyclopedia
+  title: Nabonidus (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Nabonidus
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Nabonidus
+  keep_regex: \bur\b|urim|ziggurat|ur-nammu|ur-namma|woolley|sumer
+- id: wp_giparu
+  site: ur
+  type: encyclopedia
+  title: Giparu (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Giparu
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Giparu
+- id: wp_queen_s_lyre
+  site: ur
+  type: encyclopedia
+  title: Queen's Lyre (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Queen's_Lyre
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Queen's Lyre
+- id: wp_meskalamdug
+  site: ur
+  type: encyclopedia
+  title: Meskalamdug (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Meskalamdug
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Meskalamdug
+- id: wp_tell_al_ubaid
+  site: ur
+  type: encyclopedia
+  title: Tell al-'Ubaid (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Tell_al-'Ubaid
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Tell al-'Ubaid
+- id: wp_mesopotamian_architecture
+  site: ur
+  type: encyclopedia
+  title: Mesopotamian architecture (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Mesopotamian_architecture
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Mesopotamian architecture
+  keep_regex: \bur\b|urim|ziggurat|ur-nammu|ur-namma|woolley|sumer
+- id: wp_mudbrick
+  site: ur
+  type: encyclopedia
+  title: Mudbrick (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Mudbrick
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Mudbrick
+  keep_regex: \bur\b|urim|ziggurat|ur-nammu|ur-namma|woolley|sumer
+- id: wp_bitumen
+  site: ur
+  type: encyclopedia
+  title: Bitumen (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Bitumen
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Bitumen
+  keep_regex: \bur\b|urim|ziggurat|ur-nammu|ur-namma|woolley|sumer
+- id: wp_mausoleum_of_qin_shi_huang
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Mausoleum of Qin Shi Huang (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Mausoleum_of_Qin_Shi_Huang
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Mausoleum of Qin Shi Huang
+- id: wp_terracotta_army
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Terracotta Army (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Terracotta_Army
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Terracotta Army
+- id: wp_qin_shi_huang
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Qin Shi Huang (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Qin_Shi_Huang
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Qin Shi Huang
+- id: wp_qin_dynasty
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Qin dynasty (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Qin_dynasty
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Qin dynasty
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_mount_li
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Mount Li (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Mount_Li
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Mount Li
+- id: wp_li_si
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Li Si (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Li_Si
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Li Si
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_zhang_han
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Zhang Han (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Zhang_Han
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Zhang Han
+- id: wp_epang_palace
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Epang Palace (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Epang_Palace
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Epang Palace
+- id: wp_emperor_qinshihuang_s_mausoleum_site_mus
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Emperor Qinshihuang's Mausoleum Site Museum (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Emperor_Qinshihuang's_Mausoleum_Site_Museum
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Emperor Qinshihuang's Mausoleum Site Museum
+- id: wp_bronze_chariots_of_the_mausoleum_of_qin_
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Bronze chariots of the Mausoleum of Qin Shi Huang (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Bronze_chariots_of_the_Mausoleum_of_Qin_Shi_Huang
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Bronze chariots of the Mausoleum of Qin Shi Huang
+- id: wp_records_of_the_grand_historian
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Records of the Grand Historian (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Records_of_the_Grand_Historian
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Records of the Grand Historian
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_sima_qian
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Sima Qian (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Sima_Qian
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Sima Qian
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_qin_state
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Qin (state) (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Qin_(state)
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Qin (state)
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_chinese_units_of_measurement
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Chinese units of measurement (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Chinese_units_of_measurement
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Chinese units of measurement
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_ancient_chinese_coinage
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Ancient Chinese coinage (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Ancient_Chinese_coinage
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Ancient Chinese coinage
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_chinese_bronzes
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Chinese bronzes (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Chinese_bronzes
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Chinese bronzes
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_standardization_in_the_qin_dynasty
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Standardization in the Qin dynasty (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Standardization_in_the_Qin_dynasty
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Standardization in the Qin dynasty
+- id: wp_great_wall_of_china
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Great Wall of China (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Great_Wall_of_China
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Great Wall of China
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: wp_mercury_element
+  site: qin_mausoleum
+  type: encyclopedia
+  title: Mercury (element) (Wikipedia)
+  url: https://en.wikipedia.org/wiki/Mercury_(element)
+  license: CC BY-SA 4.0 (Wikipedia)
+  fetch:
+    kind: wikipedia
+    page: Mercury (element)
+  keep_regex: \bqin\b|terracotta|lishan|mount li|first emperor|shi ?huang
+- id: petrie1883
+  site: giza
+  type: excavation_report
+  title: The Pyramids and Temples of Gizeh (Petrie, 1883)
+  url: https://archive.org/search?query=title:(pyramids+temples+gizeh)+AND+creator:(petrie)
+  license: Public domain (published 1883; author died 1942)
+  fetch:
+    kind: archive_search
+    query: title:(pyramids temples gizeh) AND creator:(petrie)
+    prefer:
+    - cu31924012038927
+    - pyramidsandtemp00petrgoog
+    - thepyramidsandtemplesofgizeh
+  year: 1883
+- id: vyse1840_v1
+  site: giza
+  type: excavation_report
+  title: Operations Carried on at the Pyramids of Gizeh in 1837, Vol. I (Vyse, 1840)
+  url: https://archive.org/search?query=title:(operations+pyramids+gizeh)+AND+creator:(vyse)
+  license: Public domain (published 1840; author died 1853)
+  fetch:
+    kind: archive_search
+    query: title:(operations pyramids gizeh) AND creator:(vyse)
+    title_regex: vol(ume)?\.? ?(i|1)(?![i\d])|_v1|v\.? ?1\b
+  year: 1840
+- id: vyse1840_v2
+  site: giza
+  type: excavation_report
+  title: Operations Carried on at the Pyramids of Gizeh in 1837, Vol. II (Vyse, 1840)
+  url: https://archive.org/search?query=title:(operations+pyramids+gizeh)+AND+creator:(vyse)
+  license: Public domain (published 1840; author died 1853)
+  fetch:
+    kind: archive_search
+    query: title:(operations pyramids gizeh) AND creator:(vyse)
+    title_regex: vol(ume)?\.? ?(ii|2)(?![i\d])|_v2|v\.? ?2\b
+  year: 1840
+- id: clarke_engelbach1930
+  site: giza
+  type: book
+  title: 'Ancient Egyptian Masonry: The Building Craft (Clarke & Engelbach, 1930)'
+  url: https://archive.org/search?query=title:(ancient+egyptian+masonry)+AND+creator:(clarke+OR+engelbach)
+  license: Public domain in the US (published 1930; US term expired 2026-01-01); authors died 1936 and 1946
+  fetch:
+    kind: archive_search
+    query: title:(ancient egyptian masonry) AND creator:(clarke OR engelbach)
+  year: 1930
+- id: lucas1926
+  site: giza
+  type: book
+  title: Ancient Egyptian Materials (Lucas, 1st ed. 1926)
+  url: https://archive.org/search?query=title:(ancient+egyptian+materials)+AND+creator:(lucas)+AND+year:[1900+TO+1930]
+  license: Public domain (published 1926; author died 1945)
+  fetch:
+    kind: archive_search
+    query: title:(ancient egyptian materials) AND creator:(lucas) AND year:[1900 TO 1930]
+  year: 1926
+  note: Only the 1926 first edition is public domain; later editions (1934, 1948, 1962 with Harris) are in copyright.
+- id: herodotus_macaulay_v1
+  site: giza
+  type: primary_text
+  title: The History of Herodotus, Vol. 1 (tr. G. C. Macaulay, 1890), Book II
+  url: https://www.gutenberg.org/ebooks/search/?query=herodotus+macaulay
+  license: Public domain (Project Gutenberg)
+  period: Late Period account (c. 440 BCE) of Dynasty 4
+  fetch:
+    kind: gutenberg_search
+    query: herodotus macaulay
+    title_regex: volume 1|vol\. ?1|volume i\b
+  keep_regex: pyramid|cheops|chephren|mykerinos|memphis|stones?|machines?
+- id: digital_giza
+  site: giza
+  type: dataset
+  title: Digital Giza (Harvard University) - Giza Archives
+  url: https://giza.fas.harvard.edu/
+  license: 'Digital Giza terms of use: non-commercial research/education; per-item rights vary'
+  enabled: false
+  note: Per-item rights vary and bulk download isn't licensed. Enable individual public-domain PDFs (e.g. Reisner 1931 after 2027-01-01) by adding them as kind:url with their own license.
+- id: asi_ar_1922_23
+  site: mohenjo_daro
+  type: excavation_report
+  title: Annual Report of the Archaeological Survey of India 1922-23 (Mohenjo-daro sections)
+  url: https://archive.org/search?query=title:(annual+report+archaeological+survey+india)
+  license: Public domain (Government of India publication, 1924; US pre-1931)
+  fetch:
+    kind: archive_search
+    query: title:(annual report archaeological survey india)
+    title_regex: 1922.?(19)?23
+  year: 1924
+  keep_regex: mohenjo|moenjo|mohen-jo|larkana|sind
+- id: asi_ar_1923_24
+  site: mohenjo_daro
+  type: excavation_report
+  title: Annual Report of the Archaeological Survey of India 1923-24 (Mohenjo-daro sections)
+  url: https://archive.org/search?query=title:(annual+report+archaeological+survey+india)
+  license: Public domain (Government of India publication, 1926; US pre-1931)
+  fetch:
+    kind: archive_search
+    query: title:(annual report archaeological survey india)
+    title_regex: 1923.?(19)?24
+  year: 1926
+  keep_regex: mohenjo|moenjo|mohen-jo|larkana|sind
+- id: asi_ar_1924_25
+  site: mohenjo_daro
+  type: excavation_report
+  title: Annual Report of the Archaeological Survey of India 1924-25 (Mohenjo-daro sections)
+  url: https://archive.org/search?query=title:(annual+report+archaeological+survey+india)
+  license: Public domain (Government of India publication, 1927; US pre-1931)
+  fetch:
+    kind: archive_search
+    query: title:(annual report archaeological survey india)
+    title_regex: 1924.?(19)?25
+  year: 1927
+  keep_regex: mohenjo|moenjo|mohen-jo|larkana|sind
+- id: asi_ar_1925_26
+  site: mohenjo_daro
+  type: excavation_report
+  title: Annual Report of the Archaeological Survey of India 1925-26 (Mohenjo-daro sections)
+  url: https://archive.org/search?query=title:(annual+report+archaeological+survey+india)
+  license: Public domain (Government of India publication, 1928; US pre-1931)
+  fetch:
+    kind: archive_search
+    query: title:(annual report archaeological survey india)
+    title_regex: 1925.?(19)?26
+  year: 1928
+  keep_regex: mohenjo|moenjo|mohen-jo|larkana|sind
+- id: asi_ar_1926_27
+  site: mohenjo_daro
+  type: excavation_report
+  title: Annual Report of the Archaeological Survey of India 1926-27 (Mohenjo-daro sections)
+  url: https://archive.org/search?query=title:(annual+report+archaeological+survey+india)
+  license: Public domain (Government of India publication, 1930; US pre-1931)
+  fetch:
+    kind: archive_search
+    query: title:(annual report archaeological survey india)
+    title_regex: 1926.?(19)?27
+  year: 1930
+  keep_regex: mohenjo|moenjo|mohen-jo|larkana|sind
+- id: marshall1931_v1
+  site: mohenjo_daro
+  type: excavation_report
+  title: Mohenjo-daro and the Indus Civilization, Vol. I (Marshall ed., 1931)
+  url: https://archive.org/search?query=title:(mohenjo-daro+indus+civilization)+AND+creator:(marshall)
+  license: 'In copyright: US public domain only from 2027-01-01 (published 1931); UK/India copyright until 2029 (Marshall died 1958)'
+  fetch:
+    kind: archive_search
+    query: title:(mohenjo-daro indus civilization) AND creator:(marshall)
+    prefer:
+    - mohenjodaroandtheinduscivilizationvol1jmarshalled1931_84_N
+  year: 1931
+  enabled: false
+  note: Named in the brief as public domain, but it isn't yet. Enable after 2027-01-01 for US use, or if your team accepts research fair-use quoting.
+- id: mackay1938_v1
+  site: mohenjo_daro
+  type: excavation_report
+  title: Further Excavations at Mohenjo-daro 1927-31 (Mackay, 1938)
+  url: https://archive.org/search?query=title:(further+excavations+mohenjo-daro)+AND+creator:(mackay)
+  license: In copyright in the US until 2034 (published 1938, URAA-restored); UK public domain (Mackay died 1943)
+  fetch:
+    kind: archive_search
+    query: title:(further excavations mohenjo-daro) AND creator:(mackay)
+    prefer:
+    - furtherexcavationsatmohenjodaro192731vol2ejhmackay_191_N
+  year: 1938
+  enabled: false
+  note: Public domain in the UK/India but not in the US. Enable only if your deployment is outside the US.
+- id: woolley1929
+  site: ur
+  type: book
+  title: 'Ur of the Chaldees: A Record of Seven Years of Excavation (Woolley, 1929)'
+  url: https://archive.org/search?query=title:(ur+of+the+chaldees)+AND+creator:(woolley)+AND+year:[1929+TO+1930]
+  license: Public domain in the US (published 1929); UK copyright until 2030 (Woolley died 1960)
+  fetch:
+    kind: archive_search
+    query: title:(ur of the chaldees) AND creator:(woolley) AND year:[1929 TO 1930]
+  year: 1929
+- id: woolley1928
+  site: ur
+  type: book
+  title: The Sumerians (Woolley, 1928)
+  url: https://archive.org/search?query=title:(sumerians)+AND+creator:(woolley)+AND+year:[1928+TO+1930]
+  license: Public domain in the US (published 1928); UK copyright until 2030 (Woolley died 1960)
+  fetch:
+    kind: archive_search
+    query: title:(sumerians) AND creator:(woolley) AND year:[1928 TO 1930]
+  year: 1928
+  keep_regex: \bur\b|ziggurat|ur-nammu|ur-engur|royal (tombs|cemetery)|brick|build|temple
+- id: woolley1930_digging
+  site: ur
+  type: book
+  title: Digging Up the Past (Woolley, 1930)
+  url: https://archive.org/search?query=title:(digging+up+the+past)+AND+creator:(woolley)+AND+year:[1930+TO+1931]
+  license: Public domain in the US (published 1930; US term expired 2026-01-01); UK copyright until 2030
+  fetch:
+    kind: archive_search
+    query: title:(digging up the past) AND creator:(woolley) AND year:[1930 TO 1931]
+  year: 1930
+  keep_regex: \bur\b|ziggurat|royal (tombs|cemetery)|sumer|mesopotamia|brick
+- id: hall_woolley1927_ubaid
+  site: ur
+  type: excavation_report
+  title: 'Ur Excavations Vol. I: Al-''Ubaid (Hall & Woolley, 1927)'
+  url: https://archive.org/search?query=title:(al-'ubaid+OR+al-ubaid)+AND+creator:(hall+OR+woolley)
+  license: 'Public domain in the US (published 1927); UK: Hall died 1930 (PD), Woolley died 1960'
+  fetch:
+    kind: archive_search
+    query: title:(al-'ubaid OR al-ubaid) AND creator:(hall OR woolley)
+  year: 1927
+- id: taylor1855
+  site: ur
+  type: excavation_report
+  title: Notes on the Ruins of Muqeyer (Taylor, JRAS 1855)
+  url: https://archive.org/search?query=title:(journal+royal+asiatic+society)+AND+year:[1854+TO+1856]
+  license: Public domain (published 1855; author died 1876)
+  fetch:
+    kind: archive_search
+    query: title:(journal royal asiatic society) AND year:[1854 TO 1856]
+    title_regex: \bxv\b|vol(ume)?\.? ?15\b|1855
+  year: 1855
+  keep_regex: muqeyer|mugheir|mugeyer|\bur\b|ziggurat|bitumen|kiln
+- id: etcsl_lament_urim
+  site: ur
+  type: primary_text
+  title: The Lament for Urim (ETCSL c.2.2.2, translation)
+  url: https://etcsl.orinst.ox.ac.uk/section2/tr222.htm
+  license: 'ETCSL (Univ. of Oxford): free for non-commercial use with attribution'
+  period: Isin-Larsa / Old Babylonian (c. 2000-1600 BCE)
+  fetch:
+    kind: url
+    url: https://etcsl.orinst.ox.ac.uk/section2/tr222.htm
+    format: html
+- id: etcsl_urnamma_a
+  site: ur
+  type: primary_text
+  title: The Death of Ur-Namma (Ur-Namma A; ETCSL c.2.4.1.1, translation)
+  url: https://etcsl.orinst.ox.ac.uk/section2/tr2411.htm
+  license: 'ETCSL (Univ. of Oxford): free for non-commercial use with attribution'
+  period: Ur III (c. 2112-2004 BCE)
+  fetch:
+    kind: url
+    url: https://etcsl.orinst.ox.ac.uk/section2/tr2411.htm
+    format: html
+- id: etcsl_urnamma_b
+  site: ur
+  type: primary_text
+  title: A tigi to Enlil for Ur-Namma (Ur-Namma B; ETCSL c.2.4.1.2, translation)
+  url: https://etcsl.orinst.ox.ac.uk/section2/tr2412.htm
+  license: 'ETCSL (Univ. of Oxford): free for non-commercial use with attribution'
+  period: Ur III (c. 2112-2004 BCE)
+  fetch:
+    kind: url
+    url: https://etcsl.orinst.ox.ac.uk/section2/tr2412.htm
+    format: html
+- id: cdli_ur
+  site: ur
+  type: dataset
+  title: 'CDLI catalogue: tablets excavated at Ur (Ur III administrative texts)'
+  url: https://cdli.mpiwg-berlin.mpg.de/search?provenience=Urim
+  license: CC0 1.0 (CDLI data)
+  enabled: false
+  note: Mostly transliterations without English translations, so they barely help English retrieval. Enable once a translation-bearing export is picked.
+- id: oracc_ur
+  site: ur
+  type: primary_text
+  title: ORACC royal inscriptions of the Ur III dynasty
+  url: https://oracc.museum.upenn.edu/
+  license: CC BY-SA 3.0 (ORACC)
+  enabled: false
+  note: Add specific ORACC project/text URLs as kind:url entries once confirmed; the corpus-level JSON is large (check size before download).
+- id: shiji_ch6_zh
+  site: qin_mausoleum
+  type: primary_text
+  title: Shiji ch. 6, Basic Annals of Qin Shi Huang (Chinese text, Chinese Text Project)
+  url: https://ctext.org/shiji/qin-shi-huang-ben-ji
+  license: Public domain text (Han dynasty); ctext.org terms forbid bulk scraping, use their API
+  period: Western Han (206 BCE-9 CE) account
+  enabled: false
+  note: Chinese only, so bge-small-en can't retrieve it well. Enable with a multilingual embedder (e.g. BAAI/bge-m3) via the ctext API.
+- id: chavannes1897_t2
+  site: qin_mausoleum
+  type: primary_text
+  title: Les Mémoires historiques de Se-ma Ts'ien, tome II (tr. Chavannes, 1897), ch. 6
+  url: https://archive.org/search?query=title:(memoires+historiques)+AND+creator:(chavannes)+AND+year:[1895+TO+1899]
+  license: Public domain (published 1897; author died 1918)
+  fetch:
+    kind: archive_search
+    query: title:(memoires historiques) AND creator:(chavannes) AND year:[1895 TO 1899]
+  year: 1897
+  period: Western Han (206 BCE-9 CE) account
+  keep_regex: ts'in che houang|li-chan|mont li|sépulture|tombeau
+  enabled: false
+  note: French translation, public domain. Disabled because the English embedder won't handle French; enable if you switch to bge-m3.
+- id: open_context
+  site: giza
+  type: dataset
+  title: Open Context (search for all four sites)
+  url: https://opencontext.org/
+  license: CC BY 4.0 / CC0 per project
+  enabled: false
+  note: No published Open Context projects for these four sites found by the time of writing. Add project URLs here if one appears.
+- id: tdar
+  site: mohenjo_daro
+  type: dataset
+  title: tDAR (the Digital Archaeological Record)
+  url: https://core.tdar.org/
+  license: tDAR user agreement (login required; per-resource access)
+  enabled: false
+  note: Downloads need an account and acceptance of the user agreement. Not automated.
+- id: ads
+  site: ur
+  type: dataset
+  title: Archaeology Data Service (ADS)
+  url: https://archaeologydataservice.ac.uk/
+  license: ADS terms of use / CC BY 4.0 per collection
+  enabled: false
+  note: ADS holds almost nothing on these four sites. Kept for completeness.
+- id: place_giza
+  site: giza
+  type: place_record
+  title: 'Giza pyramid complex: Wikidata + Pleiades place record'
+  url: https://www.wikidata.org/w/index.php?search=Giza+pyramid+complex
+  license: Wikidata CC0 1.0; Pleiades CC BY 3.0
+  fetch:
+    kind: wikidata_place
+    label: Giza pyramid complex
+- id: place_mohenjo_daro
+  site: mohenjo_daro
+  type: place_record
+  title: 'Mohenjo-daro: Wikidata + Pleiades place record'
+  url: https://www.wikidata.org/w/index.php?search=Mohenjo-daro
+  license: Wikidata CC0 1.0; Pleiades CC BY 3.0
+  fetch:
+    kind: wikidata_place
+    label: Mohenjo-daro
+- id: place_ur
+  site: ur
+  type: place_record
+  title: 'Ur: Wikidata + Pleiades place record'
+  url: https://www.wikidata.org/w/index.php?search=Ur
+  license: Wikidata CC0 1.0; Pleiades CC BY 3.0
+  fetch:
+    kind: wikidata_place
+    label: Ur
+- id: place_qin_mausoleum
+  site: qin_mausoleum
+  type: place_record
+  title: 'Mausoleum of Qin Shi Huang: Wikidata + Pleiades place record'
+  url: https://www.wikidata.org/w/index.php?search=Mausoleum+of+Qin+Shi+Huang
+  license: Wikidata CC0 1.0; Pleiades CC BY 3.0
+  fetch:
+    kind: wikidata_place
+    label: Mausoleum of Qin Shi Huang
+discovery:
+  openalex:
+    licenses_allowed:
+    - cc-by
+    - cc-by-sa
+    - cc0
+    - public-domain
+    - cc-by-nc
+    - cc-by-nc-sa
+    - cc-by-nd
+    - cc-by-nc-nd
+    note: Only works whose best open-access location has one of these licenses are ingested. The license is recorded per work. NC/ND works are fine for this non-commercial project; drop
+      them from the list for commercial use.
+    queries:
+      giza:
+        max_sources: 22
+        must_match: giza|khufu|cheops|khafre|menkaure|great pyramid|old kingdom|pyramid
+        queries:
+        - Giza pyramids construction
+        - Great Pyramid Khufu
+        - Giza plateau archaeology
+        - Wadi al-Jarf papyri harbour
+        - Egyptian pyramid ramp transport blocks
+        - Nile branch pyramids Ahramat
+        - Old Kingdom quarry limestone Tura
+        - Heit el-Ghurab pyramid workers
+        - sledge wet sand friction ancient Egypt
+        - Great Pyramid orientation cardinal
+      mohenjo_daro:
+        max_sources: 30
+        must_match: mohenjo|moenjo|harappa|indus
+        queries:
+        - Mohenjo-daro
+        - Indus civilization water management drainage
+        - Harappan urban planning
+        - Indus Valley baked brick
+        - Harappan wells hydraulic
+        - Indus civilization weights standardization
+        - Indus seals trade Mesopotamia
+        - Harappan craft production beads
+        - Indus civilization climate decline monsoon
+        - Mohenjo-daro conservation salt
+      ur:
+        max_sources: 25
+        must_match: \bur\b|urim|ur iii|ur-nammu|ur-namma|ziggurat|royal cemetery|sumer|mesopotamia
+        queries:
+        - Royal Cemetery of Ur
+        - Ziggurat of Ur
+        - Ur III administration labor
+        - Ur III state economy workers rations
+        - Mesopotamian baked brick bitumen
+        - Sumerian construction mudbrick
+        - Tell el-Muqayyar
+        - Ur excavations Woolley
+        - Neo-Sumerian Ur III texts
+        - Mesopotamia irrigation canals third millennium
+      qin_mausoleum:
+        max_sources: 30
+        must_match: \bqin\b|terracotta|lishan|shihuang|shi huang|first emperor
+        queries:
+        - Terracotta Army
+        - Qin Shihuang mausoleum
+        - terracotta warriors pigment lacquer
+        - Qin bronze weapons chromium
+        - Qin dynasty standardization
+        - terracotta warriors kiln firing clay
+        - Qin mausoleum mercury
+        - terracotta warriors computer vision ears
+        - Qin mausoleum drainage dam
+        - Qin dynasty labor convicts
