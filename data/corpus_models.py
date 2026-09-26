@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -77,7 +77,9 @@ class SiteRecord:
 class SiteCorpusLink:
     site_id: str
     corpus_id: str
-    linked_at: datetime = field(default_factory=datetime.utcnow)
+    linked_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     metadata: dict[str, str] = field(default_factory=dict)
 
 
