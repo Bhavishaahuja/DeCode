@@ -337,3 +337,227 @@ def test_import_rejects_wrong_site(
         raise AssertionError(
             "expected site mismatch failure"
         )
+
+
+def test_import_returns_consumed_source_and_passages(
+    tmp_path,
+):
+    selection = CorpusSelection(
+        site_id="ur",
+        source=selected_source(),
+    )
+
+    resolved, passages = consumed()
+
+    result = import_selected_corpus(
+        selection,
+        lambda site_id, source: (
+            resolved,
+            passages,
+        ),
+        passages_path=tmp_path / "passages.jsonl",
+        resolved_path=tmp_path / "sources.resolved.yaml",
+    )
+
+    assert result.resolved_source is resolved
+    assert result.passages is passages
+
+
+def test_import_rejects_passage_from_wrong_source(
+    tmp_path,
+):
+    selection = CorpusSelection(
+        site_id="ur",
+        source=selected_source(),
+    )
+
+    resolved, passages = consumed()
+    passages[0]["source_id"] = "other"
+
+    try:
+        import_selected_corpus(
+            selection,
+            lambda site_id, source: (
+                resolved,
+                passages,
+            ),
+            passages_path=tmp_path / "passages.jsonl",
+            resolved_path=tmp_path / "sources.resolved.yaml",
+        )
+    except ValueError as exc:
+        assert str(exc) == (
+            "passage source does not match "
+            "selected source"
+        )
+    else:
+        raise AssertionError(
+            "expected passage source mismatch failure"
+        )
+
+
+def test_import_rejects_passage_from_wrong_site(
+    tmp_path,
+):
+    selection = CorpusSelection(
+        site_id="ur",
+        source=selected_source(),
+    )
+
+    resolved, passages = consumed()
+    passages[0]["site"] = "giza"
+
+    try:
+        import_selected_corpus(
+            selection,
+            lambda site_id, source: (
+                resolved,
+                passages,
+            ),
+            passages_path=tmp_path / "passages.jsonl",
+            resolved_path=tmp_path / "sources.resolved.yaml",
+        )
+    except ValueError as exc:
+        assert str(exc) == (
+            "passage site does not match "
+            "selected site"
+        )
+    else:
+        raise AssertionError(
+            "expected passage site mismatch failure"
+        )
+
+
+def test_import_preserves_other_source_passages(
+    tmp_path,
+):
+    selection = CorpusSelection(
+        site_id="ur",
+        source=selected_source(),
+    )
+
+    passages_path = (
+        tmp_path / "passages.jsonl"
+    )
+
+    passages_path.write_text(
+        '{"passage_id":"giza-other-0000",'
+        '"source_id":"other",'
+        '"site":"giza"}\n',
+        encoding="utf-8",
+    )
+
+    import_selected_corpus(
+        selection,
+        lambda site_id, source: consumed(),
+        passages_path=passages_path,
+        resolved_path=tmp_path / "sources.resolved.yaml",
+    )
+
+    text = passages_path.read_text(
+        encoding="utf-8"
+    )
+
+    assert "giza-other-0000" in text
+    assert "ur-oracc_ur-0000" in text
+
+
+def test_import_preserves_other_resolved_sources(
+    tmp_path,
+):
+    selection = CorpusSelection(
+        site_id="ur",
+        source=selected_source(),
+    )
+
+    resolved_path = (
+        tmp_path / "sources.resolved.yaml"
+    )
+
+    resolved_path.write_text(
+        yaml.safe_dump(
+            {
+                "generated": None,
+                "sources": [
+                    {
+                        "id": "other",
+                        "site": "giza",
+                    }
+                ],
+                "listed_but_not_ingested": [],
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+
+    import_selected_corpus(
+        selection,
+        lambda site_id, source: consumed(),
+        passages_path=tmp_path / "passages.jsonl",
+        resolved_path=resolved_path,
+    )
+
+    payload = yaml.safe_load(
+        resolved_path.read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert [
+        source["id"]
+        for source in payload["sources"]
+    ] == [
+        "other",
+        "oracc_ur",
+    ]
+
+
+def test_import_preserves_listed_not_ingested(
+    tmp_path,
+):
+    selection = CorpusSelection(
+        site_id="ur",
+        source=selected_source(),
+    )
+
+    resolved_path = (
+        tmp_path / "sources.resolved.yaml"
+    )
+
+    skipped = {
+        "id": "blocked",
+        "site": "ur",
+        "reason": "not consumable",
+    }
+
+    resolved_path.write_text(
+        yaml.safe_dump(
+            {
+                "generated": None,
+                "sources": [],
+                "listed_but_not_ingested": [
+                    skipped
+                ],
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+
+    import_selected_corpus(
+        selection,
+        lambda site_id, source: consumed(),
+        passages_path=tmp_path / "passages.jsonl",
+        resolved_path=resolved_path,
+    )
+
+    payload = yaml.safe_load(
+        resolved_path.read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert (
+        payload["listed_but_not_ingested"]
+        == [skipped]
+    )
