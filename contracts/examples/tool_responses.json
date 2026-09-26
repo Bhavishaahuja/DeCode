@@ -1,0 +1,130 @@
+{
+  "search_evidence": {
+    "endpoint": "POST /tools/search_evidence",
+    "in": {
+      "query": "ramp sledge wet sand",
+      "site": "giza",
+      "system": null,
+      "k": 8
+    },
+    "out": {
+      "results": [
+        {
+          "passage_id": "giza-petrie1883-0042",
+          "source_id": "giza-petrie1883",
+          "site": "giza",
+          "title": "The Pyramids and Temples of Gizeh",
+          "author": "W. M. Flinders Petrie",
+          "year": 1883,
+          "url": "https://archive.org/details/...",
+          "license": "Public domain",
+          "source_type": "excavation_report",
+          "period": "Old Kingdom, 4th Dynasty",
+          "locator": "p. 42",
+          "text": "300 to 500 tokens of cleaned passage text...",
+          "system_tags": [
+            "transport_lifting",
+            "quality_control"
+          ],
+          "tagged_by": "rules",
+          "score": 0.83
+        }
+      ]
+    }
+  },
+  "get_claims": {
+    "endpoint": "POST /tools/claims",
+    "in": {
+      "site": "giza",
+      "system": "transport_lifting"
+    },
+    "out": {
+      "claims": [
+        {
+          "claim_id": "giza-transport_lifting-003",
+          "site": "giza",
+          "system": "transport_lifting",
+          "statement": "Blocks were moved on wooden sledges over sand that was wetted to cut friction.",
+          "quote": "exact supporting words from the passage, 40 words max",
+          "grade": "attested",
+          "sources": [
+            {
+              "source_id": "giza-xxxx",
+              "passage_id": "giza-xxxx-0007",
+              "title": "...",
+              "url": "...",
+              "locator": "p. 12"
+            }
+          ],
+          "modern_equivalent": "Engineered haul roads and low-friction skid systems for heavy loads.",
+          "lesson": "Cheap friction fixes can beat expensive horsepower.",
+          "status": "verified",
+          "reviewed_by": "dev2"
+        }
+      ]
+    }
+  },
+  "estimate": {
+    "endpoint": "POST /tools/estimate",
+    "in": {
+      "quantity": 2300000,
+      "unit": "stone blocks",
+      "crews": 190,
+      "crew_size": 20,
+      "rate_per_crew_day": 2,
+      "days_per_year": 300
+    },
+    "out": {
+      "years": 20.18,
+      "people": 3800,
+      "person_days": 23000000,
+      "assumptions": [
+        "Rate of 2 blocks per crew-day is assumed",
+        "300 working days per year is assumed"
+      ]
+    }
+  },
+  "haul_force": {
+    "endpoint": "POST /tools/haul_force",
+    "in": {
+      "mass_kg": 2500,
+      "slope_deg": 0,
+      "friction_coeff": 0.3,
+      "pull_per_person_n": 400
+    },
+    "out": {
+      "force_n": 7357.5,
+      "force_kn": 7.36,
+      "people_needed": 19,
+      "assumptions": [
+        "Friction coefficient of 0.3 is assumed (wetted sand under a sledge)",
+        "Sustained pull of 400 N per person is assumed"
+      ]
+    }
+  },
+  "carbon": {
+    "endpoint": "POST /tools/carbon",
+    "in": {
+      "material": "limestone",
+      "volume_m3": 1000
+    },
+    "out": {
+      "material": "limestone",
+      "volume_m3": 1000,
+      "kgco2e": 0,
+      "factor_kgco2e_per_m3": 0,
+      "source": "ICE Database v3 (factor per kg x density)",
+      "assumptions": [
+        "Placeholder zeros. Dev 3 fills real factors in tools/data/carbon_factors.csv"
+      ]
+    },
+    "error_404": {
+      "detail": "unknown material",
+      "known_materials": [
+        "limestone",
+        "granite",
+        "..."
+      ]
+    }
+  }
+}

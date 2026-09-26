@@ -1,0 +1,21 @@
+{
+  "claim_id": "giza-transport_lifting-003",
+  "site": "giza",
+  "system": "transport_lifting",
+  "statement": "Blocks were moved on wooden sledges over sand that was wetted to cut friction.",
+  "quote": "exact supporting words from the passage, 40 words max",
+  "grade": "attested",
+  "sources": [
+    {
+      "source_id": "giza-xxxx",
+      "passage_id": "giza-xxxx-0007",
+      "title": "...",
+      "url": "...",
+      "locator": "p. 12"
+    }
+  ],
+  "modern_equivalent": "Engineered haul roads and low-friction skid systems for heavy loads.",
+  "lesson": "Cheap friction fixes can beat expensive horsepower.",
+  "status": "verified",
+  "reviewed_by": "dev2"
+}

@@ -1,0 +1,108 @@
+{
+  "answer_md": "Short markdown answer with footnotes like this[^1].",
+  "intent": "estimate",
+  "sites": [
+    "giza"
+  ],
+  "systems": [
+    "transport_lifting",
+    "workforce"
+  ],
+  "clarifying_question": null,
+  "citations": [
+    {
+      "n": 1,
+      "claim_id": "giza-transport_lifting-003",
+      "source_id": "...",
+      "title": "...",
+      "url": "...",
+      "locator": "p. 12",
+      "grade": "attested"
+    }
+  ],
+  "cards": [
+    {
+      "type": "teardown",
+      "site": "giza",
+      "rows": [
+        {
+          "system": "transport_lifting",
+          "grade": "debated",
+          "ancient": "...",
+          "evidence": "...",
+          "modern": "...",
+          "lesson": "...",
+          "claim_ids": [
+            "..."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "estimator",
+      "site": "giza",
+      "preset": {
+        "unit": "stone blocks",
+        "quantity": 2300000,
+        "quantity_tag": "attested",
+        "ancient": {
+          "crews": 190,
+          "crew_size": 20,
+          "rate_per_crew_day": 2,
+          "days_per_year": 300,
+          "crew_label": "Hauling crews",
+          "rate_label": "Blocks placed per crew-day",
+          "tag": "assumed"
+        },
+        "modern": {
+          "crews": 20,
+          "crew_size": 6,
+          "rate_per_crew_day": 80,
+          "days_per_year": 300,
+          "crew_label": "Crane crews",
+          "rate_label": "Blocks placed per crane-day",
+          "tag": "assumed"
+        }
+      },
+      "result": {
+        "ancient": {
+          "years": 20.18,
+          "people": 3800,
+          "person_days": 23000000
+        },
+        "modern": {
+          "years": 4.79,
+          "people": 120,
+          "person_days": 172500
+        }
+      }
+    },
+    {
+      "type": "sequence",
+      "site": "giza",
+      "span": 20,
+      "unit": "years",
+      "rows": [
+        {
+          "task": "Survey, level and align base",
+          "note": "Setting-out",
+          "start": 0,
+          "duration": 2,
+          "critical": false
+        }
+      ]
+    }
+  ],
+  "critic": {
+    "passed": true,
+    "flags": [],
+    "retries": 0
+  },
+  "trace": [
+    {
+      "layer": "router",
+      "ms": 820,
+      "summary": "intent=estimate, site=giza"
+    }
+  ]
+}
