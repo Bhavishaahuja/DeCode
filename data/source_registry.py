@@ -64,6 +64,13 @@ class SourceRegistry:
             for source_id in sorted(source_ids)
         ]
 
+    def search_valid_sources(
+        self,
+        sources: list[SourceRecord],
+    ) -> list[SourceRecord]:
+        # TODO: validate sources and return only consumable sources.
+        return list(sources)
+
     def get_by_id(
         self,
         source_id: str,
