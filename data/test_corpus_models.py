@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from data.corpus_models import (
     AccessType,
@@ -180,14 +180,14 @@ def test_site_record_mutable_defaults_are_not_shared():
 
 
 def test_site_corpus_link_defaults():
-    before = datetime.utcnow()
+    before = datetime.now(timezone.utc)
 
     link = SiteCorpusLink(
         site_id="ajanta",
         corpus_id="ajanta-9-images",
     )
 
-    after = datetime.utcnow()
+    after = datetime.now(timezone.utc)
 
     assert link.site_id == "ajanta"
     assert link.corpus_id == "ajanta-9-images"
