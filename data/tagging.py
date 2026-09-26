@@ -61,7 +61,7 @@ Allowed system ids (use only these):
 For each passage, return the ids that the passage gives real evidence about (0-3 ids). If it gives evidence
 about none of them (e.g. a biography, a museum history, or a list of references), return [].
 
-Reply with a single JSON object only, mapping passage id -> list of ids. No prose.
+Reply with a single JSON object only, mapping passage id -> list of ids. No prose, and no em dashes anywhere.
 
 Passages:
 {passages}"""
@@ -79,9 +79,10 @@ def llm_tag(passages: list[dict], max_passages: int = 400, batch_size: int = 20,
     cache = _load_cache()
     todo = [p for p in passages if not p["system_tags"]]
     for p in todo:
-        if p["id"] in cache:
-            p["system_tags"] = cache[p["id"]]
-    todo = [p for p in todo if p["id"] not in cache][:max_passages]
+        if p["passage_id"] in cache:
+            p["system_tags"] = cache[p["passage_id"]]
+            p["tagged_by"] = "llm" if p["system_tags"] else "none"
+    todo = [p for p in todo if p["passage_id"] not in cache][:max_passages]
     if not todo:
         return 0
     if not os.environ.get("ANTHROPIC_API_KEY"):
@@ -100,7 +101,7 @@ def llm_tag(passages: list[dict], max_passages: int = 400, batch_size: int = 20,
     n_tagged, in_tok, out_tok = 0, 0, 0
     for b in range(0, len(todo), batch_size):
         batch = todo[b:b + batch_size]
-        body = "\n\n".join(f"[{p['id']}] (site: {p['site']})\n{p['text'][:chars]}" for p in batch)
+        body = "\n\n".join(f"[{p['passage_id']}] (site: {p['site']})\n{p['text'][:chars]}" for p in batch)
         try:
             msg = client.messages.create(model=model, max_tokens=1500,
                                          messages=[{"role": "user", "content": _PROMPT.format(systems=sys_desc, passages=body)}])
@@ -116,9 +117,10 @@ def llm_tag(passages: list[dict], max_passages: int = 400, batch_size: int = 20,
         except json.JSONDecodeError:
             result = {}
         for p in batch:
-            tags = [t for t in result.get(p["id"], []) if t in valid][:3]
-            cache[p["id"]] = tags
+            tags = [t for t in result.get(p["passage_id"], []) if t in valid][:3]
+            cache[p["passage_id"]] = tags
             p["system_tags"] = tags
+            p["tagged_by"] = "llm" if tags else "none"
             n_tagged += bool(tags)
         LLM_CACHE.write_text(json.dumps(cache, indent=0))
     print(f"[tagging] LLM pass: {len(todo)} passages, {n_tagged} tagged, {in_tok} in / {out_tok} out tokens", file=sys.stderr)
@@ -133,6 +135,7 @@ def main(argv=None):
     passages = [json.loads(l) for l in config.PASSAGES_JSONL.read_text(encoding="utf-8").splitlines() if l.strip()]
     for p in passages:  # re-run the rules so edits to systems.yaml take effect
         p["system_tags"] = keyword_tags(p["text"])
+        p["tagged_by"] = "rules" if p["system_tags"] else "none"
     if args.llm:
         llm_tag(passages, max_passages=args.max)
     with config.PASSAGES_JSONL.open("w", encoding="utf-8") as f:

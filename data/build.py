@@ -1,10 +1,11 @@
 """One-command rebuild:  python -m data.build   (or `make data`)
 
-    python -m data.build                  ingest -> keyword tags -> embed -> tests
+    python -m data.build                  registry check -> ingest -> keyword tags -> embed -> tests
     python -m data.build --llm            + claude-sonnet-5 tags for untagged passages (needs ANTHROPIC_API_KEY)
     python -m data.build --offline        rebuild from the data/raw cache only
     python -m data.build --small          curated sources only (no OpenAlex discovery): fast, for an early hand-off
     python -m data.build --skip-ingest    re-tag + re-embed the existing passages.jsonl
+    python -m data.build --sites qin      rebuild one site (contract ids: giza, uruk, mohenjo, qin)
 """
 from __future__ import annotations
 

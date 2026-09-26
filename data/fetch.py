@@ -13,7 +13,8 @@ import re
 import sys
 import time
 from dataclasses import dataclass, field
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
+from urllib.robotparser import RobotFileParser
 
 import requests
 
@@ -91,6 +92,41 @@ def get_bytes(url: str, ext: str = ".bin", allow_large: bool = False, offline: b
                 raise FetchError(f"{type(e).__name__} for {full}") from e
             time.sleep(2 ** attempt * 2)
     raise FetchError(f"gave up on {full}")
+
+
+# ---------------------------------------------------------------------------------------------
+# robots.txt: checked before we download any page that isn't behind an official API.
+
+_robots_cache: dict[str, RobotFileParser | None] = {}
+
+
+def robots_allowed(url: str) -> bool | None:
+    """True if robots.txt lets our bot fetch url, False if it says no, None if we couldn't tell (network down)."""
+    parts = urlparse(url)
+    root = f"{parts.scheme}://{parts.netloc}"
+    if root not in _robots_cache:
+        parser = RobotFileParser()
+        try:
+            r = session().get(root + "/robots.txt", timeout=20)
+            if r.status_code in (401, 403):
+                parser.disallow_all = True       # same call the stdlib parser makes
+            elif r.status_code >= 400:
+                parser.allow_all = True          # no robots.txt means no rules
+            else:
+                parser.parse(r.text.splitlines())
+            _robots_cache[root] = parser
+        except (requests.ConnectionError, requests.Timeout):
+            _robots_cache[root] = None
+    parser = _robots_cache[root]
+    if parser is None:
+        return None
+    return parser.can_fetch(UA, url)
+
+
+def _require_robots(url: str) -> None:
+    allowed = robots_allowed(url)
+    if allowed is False:
+        raise FetchError(f"robots.txt disallows {url}")
 
 
 def get_json(url: str, params=None, **kw):
@@ -249,6 +285,8 @@ def fetch_gutenberg_search(spec: dict, **kw) -> FetchResult:
 def fetch_url(spec: dict, **kw) -> FetchResult:
     url = spec["url"]
     fmt = spec.get("format") or ("pdf" if url.lower().endswith(".pdf") else "html")
+    if not kw.get("offline"):
+        _require_robots(url)
     data = get_bytes(url, "." + fmt, **kw)
     if fmt == "pdf" or data[:5] == b"%PDF-":
         text, starts = join_pages(pdf_to_pages(data))
@@ -330,7 +368,7 @@ def _abstract(inv: dict | None) -> str:
 
 def openalex_candidates(query: str, per_page: int = 25, **kw) -> list[dict]:
     params = {"search": query, "filter": "is_oa:true", "per-page": per_page,
-              "select": "id,doi,title,publication_year,best_oa_location,primary_location,ids,abstract_inverted_index,type,open_access"}
+              "select": "id,doi,title,publication_year,authorships,best_oa_location,primary_location,ids,abstract_inverted_index,type,open_access"}
     if CONTACT:
         params["mailto"] = CONTACT
     return get_json("https://api.openalex.org/works", params=params, **kw).get("results", [])
@@ -360,6 +398,8 @@ def fetch_openalex_work(work: dict, **kw) -> FetchResult:
             errors.append(str(e))
     for url in filter(None, [loc.get("pdf_url"), (work.get("primary_location") or {}).get("pdf_url")]):
         try:
+            if not kw.get("offline"):
+                _require_robots(url)
             data = get_bytes(url, ".pdf", **kw)
             if data[:5] == b"%PDF-":
                 text, starts = join_pages(pdf_to_pages(data))
@@ -374,6 +414,8 @@ def fetch_openalex_work(work: dict, **kw) -> FetchResult:
     landing = loc.get("landing_page_url")
     if landing:
         try:
+            if not kw.get("offline"):
+                _require_robots(landing)
             text = html_to_text(get_bytes(landing, ".html", **kw))
             if len(text) > 5000:
                 return FetchResult(text=text, url=landing)

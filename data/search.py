@@ -4,8 +4,10 @@
     hits = search_evidence("Giza ramp sledge wet sand", site="giza", system="transport_lifting", k=8)
     # -> list of PASSAGE dicts (see data/config.py::Passage) + "score" (0..1, higher is better), best first.
 
-site   accepts slugs or aliases: "giza", "Mohenjo-daro", "ur", "qin_mausoleum", "Terracotta Army", ...
-system accepts ids or aliases:  "transport_lifting", "water", "QA", "workforce", "materials", ...
+site   accepts contract ids or aliases: "giza", "uruk", "Warka", "Mohenjo-daro", "qin", "Great Wall", ...
+system accepts ids or aliases:  "transport_lifting", "water", "QA", "workforce", "materials", "finishes", ...
+
+Results always carry the contract ids (giza, uruk, mohenjo, qin and the 9 systems).
 
 Scoring = 0.65 * cosine similarity (bge-small-en-v1.5, Chroma) + 0.35 * BM25 (normalised to the best hit),
 computed over the union of the top vector and BM25 candidates after filtering. If chromadb /
@@ -80,7 +82,7 @@ class _Store:
         if not config.PASSAGES_JSONL.exists():
             raise FileNotFoundError(f"{config.PASSAGES_JSONL} not found. Run `python -m data.build` first.")
         self.passages = [json.loads(l) for l in config.PASSAGES_JSONL.read_text(encoding="utf-8").splitlines() if l.strip()]
-        self.by_id = {p["id"]: i for i, p in enumerate(self.passages)}
+        self.by_id = {p["passage_id"]: i for i, p in enumerate(self.passages)}
         self.by_site = defaultdict(set)
         self.by_system = defaultdict(set)
         for i, p in enumerate(self.passages):
@@ -174,7 +176,7 @@ def search_evidence(query: str, site: str | None = None, system: str | None = No
         # Exact cosine for BM25-only candidates so every candidate gets both signals.
         missing = [i for i in bm_top if i not in vec]
         if missing:
-            got = st.col.get(ids=[st.passages[i]["id"] for i in missing], include=["embeddings"])
+            got = st.col.get(ids=[st.passages[i]["passage_id"] for i in missing], include=["embeddings"])
             for pid, emb in zip(got["ids"], got["embeddings"]):
                 vec[st.by_id[pid]] = float(sum(a * b for a, b in zip(qv, emb)))
 
@@ -218,4 +220,4 @@ if __name__ == "__main__":
     ap.add_argument("-k", type=int, default=5)
     a = ap.parse_args()
     for h in search_evidence(a.query, a.site, a.system, a.k):
-        print(f"{h['score']:.3f}  {h['id']}  [{', '.join(h['system_tags'])}]  {h['title']}\n       {h['text'][:220]}...\n")
+        print(f"{h['score']:.3f}  {h['passage_id']}  [{', '.join(h['system_tags'])}]  {h['title']}\n       {h['text'][:220]}...\n")

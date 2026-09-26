@@ -16,6 +16,9 @@ SOURCES_YAML = DATA_DIR / "sources.yaml"   # hand-curated source list
 RESOLVED_YAML = DATA_DIR / "sources.resolved.yaml"  # every concrete source actually ingested (title/url/license)
 PASSAGES_JSONL = DATA_DIR / "passages.jsonl"
 SYSTEMS_YAML = DATA_DIR / "systems.yaml"
+HANDSPLIT_DIR = DATA_DIR.parent / "claims" / "handsplit"   # Dev 2's hand-split sources, merged in by ingest
+HANDSPLIT_PASSAGES = HANDSPLIT_DIR / "passages.jsonl"
+HANDSPLIT_SOURCES = HANDSPLIT_DIR / "sources.yaml"
 
 COLLECTION = "stratum_passages"
 EMBED_MODEL = "BAAI/bge-small-en-v1.5"
@@ -33,26 +36,28 @@ MAX_DOWNLOAD_BYTES = 500 * 1024 * 1024     # ask a human before anything bigger 
 MIN_PASSAGES_PER_SITE = 300
 
 # ---------------------------------------------------------------------------------------------
-# Sites. Slugs are what goes in PASSAGE["site"]; aliases are accepted by search_evidence(site=...).
+# Sites. Contract ids (CLAUDE.md): giza, uruk, mohenjo, qin. Stored data only ever uses these.
+# Aliases are accepted as search input by search_evidence(site=...), never stored.
 SITES: dict[str, dict] = {
     "giza": {
         "name": "Giza pyramid complex",
         "aliases": ["giza", "gizeh", "great pyramid", "pyramids of giza", "khufu"],
         "default_period": "Old Kingdom, Dynasty 4 (c. 2600-2500 BCE)",
     },
-    "mohenjo_daro": {
+    "uruk": {
+        "name": "Uruk (Warka)",
+        "aliases": ["uruk", "warka", "erech", "unug", "eanna", "white temple", "anu ziggurat"],
+        "default_period": "Uruk period (c. 4000-3100 BCE)",
+    },
+    "mohenjo": {
         "name": "Mohenjo-daro",
-        "aliases": ["mohenjo-daro", "mohenjo daro", "mohenjodaro", "moenjodaro", "indus", "harappan"],
+        "aliases": ["mohenjo-daro", "mohenjo daro", "mohenjo_daro", "mohenjodaro", "moenjodaro", "indus", "harappan"],
         "default_period": "Mature Harappan (c. 2600-1900 BCE)",
     },
-    "ur": {
-        "name": "Ur (Tell el-Muqayyar)",
-        "aliases": ["ur", "ur of the chaldees", "tell el-muqayyar", "ziggurat of ur"],
-        "default_period": "Early Dynastic III to Ur III (c. 2600-2000 BCE)",
-    },
-    "qin_mausoleum": {
-        "name": "Mausoleum of Qin Shi Huang (Lishan, Xi'an)",
-        "aliases": ["qin", "qin mausoleum", "qin shi huang", "terracotta army", "lishan", "xi'an", "xian"],
+    "qin": {
+        "name": "Qin walls and roads",
+        "aliases": ["qin", "qin walls", "qin roads", "qin great wall", "great wall", "straight road", "zhidao",
+                    "qin dynasty", "qin shi huang", "meng tian"],
         "default_period": "Qin dynasty (221-206 BCE)",
     },
 }
@@ -67,43 +72,83 @@ PERIOD_RULES: dict[str, list[tuple[str, str]]] = {
         (r"\b(saite|26th dynasty|late period)\b", "Late Period (c. 664-332 BCE)"),
         (r"\b(ptolemaic|roman period|greco-roman)\b", "Graeco-Roman (332 BCE-395 CE)"),
     ],
-    "mohenjo_daro": [
+    "uruk": [
+        (r"\b(ubaid)\b", "Ubaid period (c. 5500-4000 BCE)"),
+        (r"\b(jemdet nasr)\b", "Jemdet Nasr period (c. 3100-2900 BCE)"),
+        (r"\b(early dynastic|gilgamesh|enmerkar|lugalbanda)\b", "Early Dynastic (c. 2900-2350 BCE)"),
+        (r"\b(ur iii|third dynasty of ur|ur-nammu|ur-namma|shulgi)\b", "Ur III (c. 2112-2004 BCE)"),
+        (r"\b(neo-babylonian|nebuchadnezzar|achaemenid)\b", "Neo-Babylonian / Achaemenid (c. 626-330 BCE)"),
+        (r"\b(seleucid|parthian|bit resh)\b", "Seleucid / Parthian (c. 312 BCE-224 CE)"),
+        (r"\b(uruk period|late uruk|middle uruk|early uruk|eanna|anu ziggurat|white temple|proto-cuneiform|beveled[- ]rim|bevelled[- ]rim)\b",
+         "Uruk period (c. 4000-3100 BCE)"),
+    ],
+    "mohenjo": [
         (r"\b(early harappan|kot diji|pre-harappan)\b", "Early Harappan (c. 3200-2600 BCE)"),
         (r"\b(late harappan|post-urban|decline|cemetery h)\b", "Late Harappan (c. 1900-1300 BCE)"),
         (r"\b(mature harappan|urban phase|harappan civili[sz]ation|indus civili[sz]ation)\b", "Mature Harappan (c. 2600-1900 BCE)"),
     ],
-    "ur": [
-        (r"\b(ubaid)\b", "Ubaid period (c. 5500-4000 BCE)"),
-        (r"\b(royal cemetery|royal tombs?|puabi|meskalamdug|early dynastic)\b", "Early Dynastic III (c. 2600-2350 BCE)"),
-        (r"\b(akkadian|sargon)\b", "Akkadian (c. 2350-2150 BCE)"),
-        (r"\b(ur iii|third dynasty of ur|ur-nammu|ur-namma|shulgi|šulgi|amar-sin|ibbi-sin)\b", "Ur III (c. 2112-2004 BCE)"),
-        (r"\b(isin-larsa|old babylonian|larsa)\b", "Isin-Larsa / Old Babylonian (c. 2000-1600 BCE)"),
-        (r"\b(nabonidus|nebuchadnezzar|neo-babylonian)\b", "Neo-Babylonian (c. 626-539 BCE)"),
-    ],
-    "qin_mausoleum": [
-        (r"\b(warring states|qin state|duke xiao|shang yang)\b", "Warring States Qin (475-221 BCE)"),
-        (r"\b(qin shi ?huang|first emperor|qin dynasty|terracotta|lishan|ying zheng)\b", "Qin dynasty (221-206 BCE)"),
+    "qin": [
+        (r"\b(warring states|qin state|state of qin|duke xiao|shang yang|zhao wall|yan wall|dujiangyan|zhengguo)\b",
+         "Warring States (475-221 BCE)"),
+        (r"\b(qin shi ?huang|first emperor|qin dynasty|meng tian|straight road|zhidao|lingqu|ying zheng)\b",
+         "Qin dynasty (221-206 BCE)"),
         (r"\b(han dynasty|western han|sima qian|shiji)\b", "Western Han (206 BCE-9 CE) account"),
+        (r"\b(ming dynasty|ming wall)\b", "Ming dynasty (1368-1644 CE), later rebuild"),
     ],
 }
 
+# Source types from Contract 1. Anything older in sources.yaml gets mapped through SOURCE_TYPE_MAP.
+SOURCE_TYPES = ["excavation_report", "primary_text", "scholarship", "reference", "dataset"]
+SOURCE_TYPE_MAP = {
+    "excavation_report": "excavation_report",
+    "primary_text": "primary_text",
+    "scholarship": "scholarship",
+    "reference": "reference",
+    "dataset": "dataset",
+    # older labels, just in case one sneaks back in
+    "book": "scholarship",
+    "journal_article": "scholarship",
+    "thesis": "scholarship",
+    "encyclopedia": "reference",
+    "place_record": "reference",
+}
+
+TAGGED_BY = ["rules", "llm", "none"]
+
+
+def contract_source_type(raw_type: str) -> str:
+    """Map whatever sources.yaml says to one of the 5 contract source types."""
+    mapped = SOURCE_TYPE_MAP.get((raw_type or "").strip().lower())
+    if mapped is None:
+        raise ValueError(f"Unknown source type {raw_type!r}. Use one of {SOURCE_TYPES}")
+    return mapped
+
+
 # ---------------------------------------------------------------------------------------------
 class Passage(TypedDict):
-    """One retrievable chunk of evidence. search_evidence() returns these plus "score": float."""
-    id: str              # "<site>-<source_id>-<0000>", stable across rebuilds of the same source
-    text: str            # 300-500 tokens of cleaned text
-    site: str            # one of SITES
-    period: str          # human-readable period label
-    system_tags: list[str]  # subset of SYSTEMS (may be empty)
-    source_id: str       # key into sources.resolved.yaml
+    """Contract 1 (CLAUDE.md). One line per passage in passages.jsonl.
+
+    search_evidence() returns these plus "score": float. score never goes in the jsonl file.
+    Every field is required; author, year and locator may be None.
+    """
+    passage_id: str      # "<site>-<source_id>-<0000>", stable across rebuilds of the same source
+    source_id: str       # key into the source registry and sources.resolved.yaml
+    site: str            # one of SITES (giza, uruk, mohenjo, qin)
     title: str           # source title
+    author: str | None   # source author, "Wikipedia contributors" for Wikipedia
+    year: int | None     # publication year (retrieval year for living web pages)
     url: str             # canonical source URL (for citation)
     license: str         # license string exactly as recorded for the source
-    source_type: str     # excavation_report | journal_article | encyclopedia | primary_text | book | dataset | place_record
-    page: int | None     # 1-based PDF page where the passage starts, if known
-    char_start: int      # offset into the extracted text of the source
-    char_end: int
+    source_type: str     # excavation_report | primary_text | scholarship | reference | dataset
+    period: str          # human-readable period label
+    locator: str | None  # "p. 42" or "section: Construction", else None
+    text: str            # 300-500 tokens of cleaned text
+    system_tags: list[str]  # subset of the 9 systems (may be empty)
+    tagged_by: str       # rules | llm | none
 
+
+# Extra fields we keep on top of the contract (allowed, they never replace a required one).
+PASSAGE_EXTRA_KEYS = ["page", "char_start", "char_end"]
 
 PASSAGE_KEYS = list(Passage.__annotations__)
 
@@ -122,7 +167,7 @@ def _norm(s: str) -> str:
 
 
 def resolve_site(site: str | None) -> str | None:
-    """Map 'Mohenjo-daro', 'mohenjo_daro', 'Terracotta Army' ... to a site slug. None passes through."""
+    """Map 'Mohenjo-daro', 'Warka', 'Great Wall' ... to a contract site id. None passes through."""
     if site is None:
         return None
     key = _norm(site)
