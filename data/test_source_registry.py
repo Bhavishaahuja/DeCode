@@ -588,7 +588,30 @@ def test_default_registry_reads_existing_catalog(
     )
 
 
-def test_search_valid_sources_returns_sources_unchanged(
+def test_search_valid_sources_accepts_injected_iterable(
+    tmp_path,
+):
+    registry = make_registry(
+        tmp_path,
+        catalog=[catalog_source()],
+    )
+
+    source_iter = (
+        source
+        for source in registry.all()
+    )
+
+    result = registry.search_valid_sources(
+        source_iter
+    )
+
+    assert [
+        source.source_id
+        for source in result
+    ] == ["source"]
+
+
+def test_selectable_sources_returns_injected_sources_unchanged(
     tmp_path,
 ):
     registry = make_registry(
@@ -598,7 +621,9 @@ def test_search_valid_sources_returns_sources_unchanged(
 
     sources = registry.all()
 
-    assert (
-        registry.search_valid_sources(sources)
-        == sources
+    result = registry.selectable_sources(
+        source
+        for source in sources
     )
+
+    assert result == sources
