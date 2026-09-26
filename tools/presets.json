@@ -1,0 +1,103 @@
+{
+  "_note": "One estimator preset per site. Every input here is either attested (from a source) or assumed, and the tag says which. Giza is the reference preset from CLAUDE.md. Uruk, Mohenjo-daro and Qin are drafts: their quantities and rates are round-number assumptions for the demo, flagged with draft: true, until a verified claim backs them up.",
+  "giza": {
+    "draft": false,
+    "unit": "stone blocks",
+    "quantity": 2300000,
+    "quantity_tag": "attested",
+    "quantity_note": "Commonly cited estimate of about 2.3 million blocks in the Great Pyramid",
+    "ancient": {
+      "crews": 190,
+      "crew_size": 20,
+      "rate_per_crew_day": 2,
+      "days_per_year": 300,
+      "crew_label": "Hauling crews",
+      "rate_label": "Blocks placed per crew-day",
+      "tag": "assumed"
+    },
+    "modern": {
+      "crews": 20,
+      "crew_size": 6,
+      "rate_per_crew_day": 80,
+      "days_per_year": 300,
+      "crew_label": "Crane crews",
+      "rate_label": "Blocks placed per crane-day",
+      "tag": "assumed"
+    }
+  },
+  "uruk": {
+    "draft": true,
+    "unit": "metres of city wall",
+    "quantity": 9000,
+    "quantity_tag": "assumed",
+    "quantity_note": "The Uruk city wall is usually given as roughly 9 km long; treated as assumed until a verified claim cites it",
+    "ancient": {
+      "crews": 60,
+      "crew_size": 25,
+      "rate_per_crew_day": 0.5,
+      "days_per_year": 250,
+      "crew_label": "Mudbrick gangs",
+      "rate_label": "Metres of wall per gang-day",
+      "tag": "assumed"
+    },
+    "modern": {
+      "crews": 8,
+      "crew_size": 8,
+      "rate_per_crew_day": 6,
+      "days_per_year": 250,
+      "crew_label": "Masonry crews",
+      "rate_label": "Metres of wall per crew-day",
+      "tag": "assumed"
+    }
+  },
+  "mohenjo": {
+    "draft": true,
+    "unit": "fired bricks",
+    "quantity": 10000000,
+    "quantity_tag": "assumed",
+    "quantity_note": "Round-number assumption for the citadel and main lower-town blocks, not a published count",
+    "ancient": {
+      "crews": 150,
+      "crew_size": 8,
+      "rate_per_crew_day": 300,
+      "days_per_year": 250,
+      "crew_label": "Brick-laying gangs",
+      "rate_label": "Bricks laid per gang-day",
+      "tag": "assumed"
+    },
+    "modern": {
+      "crews": 40,
+      "crew_size": 4,
+      "rate_per_crew_day": 2000,
+      "days_per_year": 250,
+      "crew_label": "Bricklaying crews",
+      "rate_label": "Bricks laid per crew-day",
+      "tag": "assumed"
+    }
+  },
+  "qin": {
+    "draft": true,
+    "unit": "km of Straight Road",
+    "quantity": 700,
+    "quantity_tag": "assumed",
+    "quantity_note": "The Qin Straight Road is usually given as roughly 700 km long; treated as assumed until a verified claim cites it",
+    "ancient": {
+      "crews": 500,
+      "crew_size": 50,
+      "rate_per_crew_day": 0.002,
+      "days_per_year": 250,
+      "crew_label": "Labour gangs",
+      "rate_label": "Km of road built per gang-day",
+      "tag": "assumed"
+    },
+    "modern": {
+      "crews": 10,
+      "crew_size": 12,
+      "rate_per_crew_day": 0.15,
+      "days_per_year": 250,
+      "crew_label": "Road crews with plant",
+      "rate_label": "Km of road built per crew-day",
+      "tag": "assumed"
+    }
+  }
+}

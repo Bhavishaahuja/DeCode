@@ -1,0 +1,6 @@
+material,kgco2e_per_kg,density_kg_per_m3,kgco2e_per_m3,source
+limestone,0.09,2180,196.2,"ICE Database v3 (Circular Ecology 2019), stone: limestone, cradle to gate. Density 2180 kg/m3 from ICE v2 (limestone block)"
+granite,0.70,2650,1855.0,"ICE Database v3 (Circular Ecology 2019), stone: granite, cradle to gate. Density 2650 kg/m3 is a typical value for granite (assumed)"
+marble,0.13,2500,325.0,"ICE Database v3 (Circular Ecology 2019), stone: marble, cradle to gate. Density 2500 kg/m3 from ICE v2"
+clay_brick,0.213,1700,362.1,"ICE Database v3 (Circular Ecology 2019), clay bricks: general, cradle to gate. Density 1700 kg/m3 from ICE v2 (common brick)"
+rammed_earth,0.017,2000,34.0,"Arenas and Shafique, via Sustainability 17(15) 6886 (2025): rammed earth 34 kgCO2e/m3. Not in ICE v3. Per-kg value back-calculated with an assumed 2000 kg/m3"
