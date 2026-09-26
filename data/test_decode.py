@@ -333,3 +333,231 @@ def test_duplicate_evidence_link_is_not_added_twice():
     graph.add_link(link)
 
     assert graph.links_for("t1") == [link]
+
+
+def test_full_corpus_root_extraction_builds_multiple_roots():
+    received = []
+
+    def evaluator(passages):
+        received.extend(passages)
+
+        return [
+            TransformExtract(
+                transform_id="t1",
+                text="move material",
+                evidence=(
+                    TransformLink(
+                        transform_id="ignored",
+                        source_id="source_a",
+                        site_id="giza",
+                        passage_id="p1",
+                    ),
+                ),
+            ),
+            TransformExtract(
+                transform_id="t2",
+                text="organize labor",
+                evidence=(
+                    TransformLink(
+                        transform_id="ignored",
+                        source_id="source_b",
+                        site_id="uruk",
+                        passage_id="p2",
+                    ),
+                ),
+            ),
+        ]
+
+    graph = extract_core_transforms(
+        CORPUS,
+        evaluator,
+    )
+
+    assert received == CORPUS
+
+    assert set(graph.transforms) == {
+        "t1",
+        "t2",
+    }
+
+    assert graph.transforms[
+        "t1"
+    ].parent_transform_id is None
+
+    assert graph.transforms[
+        "t2"
+    ].parent_transform_id is None
+
+    assert (
+        graph.transforms["t1"].root_transform_id
+        == "t1"
+    )
+
+    assert (
+        graph.transforms["t2"].root_transform_id
+        == "t2"
+    )
+
+
+def test_each_child_pass_sees_only_its_parent_links():
+    graph = TransformGraph()
+
+    graph.add_core_transform(
+        "t1",
+        "move material",
+    )
+
+    graph.add_core_transform(
+        "t2",
+        "organize labor",
+    )
+
+    graph.add_link(
+        TransformLink(
+            transform_id="t1",
+            source_id="source_a",
+            site_id="giza",
+            passage_id="p1",
+        )
+    )
+
+    graph.add_link(
+        TransformLink(
+            transform_id="t2",
+            source_id="source_b",
+            site_id="uruk",
+            passage_id="p2",
+        )
+    )
+
+    received = {}
+
+    def evaluator(parent, passages):
+        received[parent.transform_id] = list(
+            passages
+        )
+        return []
+
+    extract_child_transforms(
+        "t1",
+        CORPUS,
+        evaluator,
+        graph,
+    )
+
+    extract_child_transforms(
+        "t2",
+        CORPUS,
+        evaluator,
+        graph,
+    )
+
+    assert received["t1"] == [
+        CORPUS[0]
+    ]
+
+    assert received["t2"] == [
+        CORPUS[1]
+    ]
+
+
+def test_recursive_children_preserve_ancestry_depth_and_links():
+    graph = TransformGraph()
+
+    graph.add_core_transform(
+        "t1",
+        "move material",
+    )
+
+    graph.add_link(
+        TransformLink(
+            transform_id="t1",
+            source_id="source_a",
+            site_id="giza",
+            passage_id="p1",
+        )
+    )
+
+    def evaluator(parent, passages):
+        if parent.transform_id == "t1":
+            return [
+                TransformExtract(
+                    transform_id="t1_1",
+                    text="move stone",
+                    evidence=(
+                        TransformLink(
+                            transform_id="ignored",
+                            source_id="source_b",
+                            site_id="uruk",
+                            passage_id="p2",
+                        ),
+                    ),
+                )
+            ]
+
+        if parent.transform_id == "t1_1":
+            return [
+                TransformExtract(
+                    transform_id="t1_1_1",
+                    text="move stone by water",
+                    evidence=(
+                        TransformLink(
+                            transform_id="ignored",
+                            source_id="source_c",
+                            site_id="qin",
+                            passage_id="p3",
+                        ),
+                    ),
+                )
+            ]
+
+        return []
+
+    recursively_extract_children(
+        "t1",
+        CORPUS,
+        evaluator,
+        graph,
+    )
+
+    child = graph.transforms["t1_1"]
+
+    assert child.parent_transform_id == "t1"
+    assert child.root_transform_id == "t1"
+    assert child.depth == 1
+
+    grandchild = graph.transforms[
+        "t1_1_1"
+    ]
+
+    assert (
+        grandchild.parent_transform_id
+        == "t1_1"
+    )
+
+    assert (
+        grandchild.root_transform_id
+        == "t1"
+    )
+
+    assert grandchild.depth == 2
+
+    assert graph.links_for("t1_1") == [
+        TransformLink(
+            transform_id="t1_1",
+            source_id="source_b",
+            site_id="uruk",
+            passage_id="p2",
+        )
+    ]
+
+    assert graph.links_for(
+        "t1_1_1"
+    ) == [
+        TransformLink(
+            transform_id="t1_1_1",
+            source_id="source_c",
+            site_id="qin",
+            passage_id="p3",
+        )
+    ]
