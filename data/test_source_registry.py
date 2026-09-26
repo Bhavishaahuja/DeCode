@@ -586,3 +586,19 @@ def test_default_registry_reads_existing_catalog(
         record.metadata["source_type"]
         == "encyclopedia"
     )
+
+
+def test_search_valid_sources_returns_sources_unchanged(
+    tmp_path,
+):
+    registry = make_registry(
+        tmp_path,
+        catalog=[catalog_source()],
+    )
+
+    sources = registry.all()
+
+    assert (
+        registry.search_valid_sources(sources)
+        == sources
+    )
