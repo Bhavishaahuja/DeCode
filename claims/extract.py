@@ -12,6 +12,7 @@ Usage:
 """
 
 import argparse
+import json
 import hashlib
 import os
 import sys
@@ -109,7 +110,18 @@ def call_model(client, system_prompt, tool, passage):
     )
     for block in response.content:
         if block.type == "tool_use" and block.name == "record_claims":
-            return block.input.get("claims") or []
+            claims = block.input.get("claims") or []
+            # every so often the model sends the list as a JSON string instead of a real list
+            if isinstance(claims, str):
+                try:
+                    claims = json.loads(claims)
+                except json.JSONDecodeError:
+                    return []
+            if isinstance(claims, dict):
+                claims = [claims]
+            if not isinstance(claims, list):
+                return []
+            return claims
     return []
 
 
@@ -118,6 +130,8 @@ def to_draft_claims(raw_claims, passage, passages, systems):
     good = []
     rejected = []
     for raw in raw_claims[:3]:
+        if not isinstance(raw, dict):
+            continue  # skip anything that isn't a proper claim object
         statement = (raw.get("statement") or "").strip()
         system = raw.get("system")
         claim = {
