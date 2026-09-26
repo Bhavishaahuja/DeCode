@@ -9,8 +9,7 @@ venv/
 .pytest_cache/
 
 # build output
-data/index/*
-!data/index/.gitkeep
+# (data/index/ is NOT ignored: the prebuilt index gets committed for the hour 8 hand-off)
 agents/logs/*
 !agents/logs/.gitkeep
 
