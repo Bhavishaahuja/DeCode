@@ -1,0 +1,27 @@
+# Hand-picked sources for claims/split.py (used until Dev 1's index lands).
+# Put the PDF or .txt file in claims/handsplit/files/ and add an entry below.
+#
+# reuse_allowed must be true or split.py skips the source. Only set it after you
+# have read the license on the source page yourself.
+# page_offset: PDF page number minus printed page number (front matter), so
+#   locators match the printed book. 0 if they already line up.
+# has_pages: false for sources with no real pages (web texts), locator becomes null.
+# source_type: excavation_report | primary_text | scholarship | reference | dataset
+#
+# Tell Dev 1 which source_ids live here so they can append
+# claims/handsplit/passages.jsonl to data/passages.jsonl as-is (keeps passage_ids stable).
+
+sources:
+  # - source_id: giza-petrie1883
+  #   site: giza
+  #   file: petrie1883.pdf
+  #   title: The Pyramids and Temples of Gizeh
+  #   author: W. M. Flinders Petrie
+  #   year: 1883
+  #   url: https://archive.org/details/...
+  #   license: Public domain
+  #   reuse_allowed: true
+  #   source_type: excavation_report
+  #   period: Old Kingdom, 4th Dynasty
+  #   page_offset: 0
+  #   has_pages: true

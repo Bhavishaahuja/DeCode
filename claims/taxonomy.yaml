@@ -1,0 +1,170 @@
+# Stratum taxonomy: the 9 shared systems.
+# Every passage tag, claim, and teardown row uses exactly these ids (see CLAUDE.md).
+#
+# keywords: lowercase, matched as whole words or phrases against passage text.
+#   ancient = words the old sources use, modern = words a site team would use today.
+#   split.py uses both lists to rule-tag passages, so keep them specific.
+# masterformat: CSI MasterFormat 2020 divisions and sections (numbers checked).
+# uniclass: Uniclass 2015 table plus the heading we map to. Table names are firm,
+#   the exact codes still need a check against the NBS Uniclass toolkit before the demo,
+#   so they're marked uniclass_codes_checked: false.
+
+uniclass_codes_checked: false
+
+systems:
+  site_setout:
+    name: Site and setting-out
+    definition: >
+      Getting the ground ready and fixing where everything goes. Surveying, choosing
+      and preparing the site, orienting and aligning the layout, leveling the base,
+      and building the foundations or platforms everything sits on.
+    keywords:
+      ancient: [survey, surveyed, alignment, aligned, orientation, oriented, cardinal, level, leveled, levelled, leveling, levelling, foundation, foundations, bedrock, platform, mound, grid, layout, laid out, base, sockets, trench, orient, north, astronomical, cord, stretching the cord]
+      modern: [setting out, setting-out, site survey, benchmark, datum, grading, earthworks, footing, footings, excavation, site preparation]
+    masterformat:
+      - "01 71 23 Field Engineering (survey and layout)"
+      - "02 21 00 Surveys"
+      - "31 10 00 Site Clearing"
+      - "31 20 00 Earth Moving"
+      - "31 60 00 Special Foundations and Load-Bearing Elements"
+    uniclass:
+      - "Ac (Activities): surveying and setting out"
+      - "EF (Elements/functions): substructure and foundations"
+
+  materials_supply:
+    name: Materials and supply
+    definition: >
+      Where the stuff came from and how it reached site. Quarrying stone, making and
+      firing bricks, cutting timber, sourcing bitumen, gypsum or lime, and the logistics
+      of moving bulk material from source to site (boats, canals, roads, stockpiles).
+    keywords:
+      ancient: [quarry, quarries, quarried, quarrying, brick, bricks, mud brick, mudbrick, baked brick, burnt brick, kiln, kilns, clay, straw, limestone, granite, sandstone, basalt, gypsum, bitumen, lime, timber, cedar, wood, copper, chisel, boat, boats, barge, harbour, harbor, tura, aswan, supply, stores, storehouse]
+      modern: [procurement, aggregate, material supply, delivery, logistics, supply chain, batching, precast, stockpile, lead time]
+    masterformat:
+      - "01 60 00 Product Requirements"
+      - "01 66 00 Product Storage and Handling Requirements"
+      - "04 05 00 Common Work Results for Masonry"
+      - "04 20 00 Unit Masonry"
+      - "04 40 00 Stone Assemblies"
+    uniclass:
+      - "Pr (Products): bricks, blocks and stone"
+      - "PM (Project management): procurement"
+
+  transport_lifting:
+    name: Transport and lifting
+    definition: >
+      Moving heavy things across site and raising them into place. Sledges, rollers,
+      wet or prepared tracks, ramps, levers, haul roads, and the crews pulling them.
+      Also the road network itself when the road is how material and people moved.
+    keywords:
+      ancient: [sledge, sledges, sled, roller, rollers, ramp, ramps, lever, levers, haul, hauled, hauling, drag, dragged, pull, pulled, rope, ropes, causeway, road, roads, track, trackway, straight road, wagon, cart, carts, axle, oxen]
+      modern: [crane, cranes, hoist, lifting, rigging, haul road, skid, skidding, jacking, heavy lift, conveyor, telehandler]
+    masterformat:
+      - "01 54 00 Construction Aids (temporary hoists and cranes)"
+      - "41 22 00 Cranes and Hoists"
+      - "32 10 00 Bases, Ballasts, and Paving (haul and access roads)"
+    uniclass:
+      - "Ac (Activities): transport and lifting"
+      - "EF (Elements/functions): transport functions"
+
+  water_sanitation:
+    name: Water and sanitation
+    definition: >
+      Controlling water on and around the build. Canals and harbours for supply,
+      irrigation, drains and sewers, wells, baths and cisterns, waterproofing,
+      and flood protection.
+    keywords:
+      ancient: [canal, canals, drain, drains, drainage, sewer, sewers, well, wells, bath, great bath, cistern, water, flood, floods, inundation, nile, euphrates, river, irrigation, bitumen, waterproof, waterproofing, soak pit, soakage, latrine, harbour, harbor, basin]
+      modern: [storm drainage, sanitary sewer, dewatering, water supply, flood defence, flood defense, waterproofing membrane]
+    masterformat:
+      - "33 10 00 Water Utilities"
+      - "33 30 00 Sanitary Sewerage Utilities"
+      - "33 40 00 Stormwater Utilities"
+      - "35 00 00 Waterway and Marine Construction"
+      - "07 10 00 Dampproofing and Waterproofing"
+    uniclass:
+      - "EF (Elements/functions): waste disposal and piped supply functions"
+      - "Ss (Systems): drainage and water supply systems"
+
+  structure_form:
+    name: Structure and form
+    definition: >
+      What holds the thing up and what shape it takes. Walls, platforms, cores, fills,
+      rammed earth, load paths, slopes and batter, geometry, and how the parts
+      were bonded together.
+    keywords:
+      ancient: [wall, walls, rampart, ramparts, core, fill, masonry, course, courses, bond, bonded, rammed earth, rammed-earth, hangtu, stamped earth, pounded earth, ziggurat, terrace, buttress, buttresses, niche, niches, slope, batter, angle, chamber, corbel, corbelled, gallery, gate, tower, towers, height, thickness]
+      modern: [structure, structural, load path, retaining wall, bearing, geometry, formwork, compaction, stability]
+    masterformat:
+      - "04 20 00 Unit Masonry"
+      - "04 40 00 Stone Assemblies"
+      - "31 20 00 Earth Moving (engineered and compacted fills, closest home for rammed earth)"
+    uniclass:
+      - "EF (Elements/functions): structural elements, walls and barriers"
+      - "Ss (Systems): wall and barrier systems"
+
+  finishes:
+    name: Finishes
+    definition: >
+      The outer skin and surface work. Casing stones, plaster and whitewash,
+      facing bricks, cone mosaics, paint, carving, and decoration.
+    keywords:
+      ancient: [casing, cased, facing, plaster, plastered, whitewash, whitewashed, gypsum plaster, mosaic, mosaics, cone mosaic, clay cones, paint, painted, decoration, decorated, relief, reliefs, inscription, polished, dressed, smoothed, glaze, glazed]
+      modern: [cladding, render, rendering, finish, finishes, facade, façade, coating, surface treatment]
+    masterformat:
+      - "09 20 00 Plaster and Gypsum Board"
+      - "09 90 00 Painting and Coating"
+      - "04 43 00 Stone Masonry (dressed facing stone)"
+    uniclass:
+      - "Ss (Systems): wall finishing and covering systems"
+      - "Pr (Products): plasters, renders and coatings"
+
+  workforce:
+    name: Workforce
+    definition: >
+      The people who built it. Crew size and organization, gangs and phyles,
+      conscription or corvee labour, rations, bread and beer, housing and workers'
+      villages, medical care, and welfare.
+    keywords:
+      ancient: [workers, workmen, labourers, laborers, labour, labor, gang, gangs, crew, crews, phyle, phyles, corvee, corvée, conscript, conscripts, conscripted, convicts, soldiers, rations, ration, bread, beer, bakery, bakeries, barracks, village, workers' village, tombs of the workers, overseer, overseers, men]
+      modern: [workforce, labour force, crew size, site welfare, accommodation, manpower, headcount, labor camp]
+    masterformat:
+      - "01 52 00 Construction Facilities (site welfare and accommodation)"
+      - "01 35 00 Special Procedures (closest home for labour organization, MasterFormat has no workforce division)"
+    uniclass:
+      - "Ro (Roles): construction workforce roles"
+      - "PM (Project management): resourcing"
+
+  quality_control:
+    name: Quality control
+    definition: >
+      How they checked the work was right. Measured tolerances, precision of
+      alignment and leveling, standard sizes and ratios, checking marks,
+      standard weights and measures, and consistency across the build.
+    keywords:
+      ancient: [accuracy, accurate, precision, precise, error, errors, tolerance, measured, measurement, measurements, standard, standardized, standardised, uniform, uniformity, ratio, weights, cubit, cubits, check, checked, mason's marks, masons' marks, levelling marks, "true", square]
+      modern: [quality control, quality assurance, inspection, tolerance, tolerances, specification, as-built, snagging, testing]
+    masterformat:
+      - "01 40 00 Quality Requirements"
+      - "01 43 00 Quality Assurance"
+      - "01 45 00 Quality Control"
+    uniclass:
+      - "PM (Project management): quality management"
+      - "Ac (Activities): inspecting and testing"
+
+  project_controls:
+    name: Project controls
+    definition: >
+      How the job was managed on paper. Records, logbooks and papyri, accounting
+      tablets, ration lists, schedules, work quotas, standard units, and the
+      administration that tied labour and materials to progress.
+    keywords:
+      ancient: [papyrus, papyri, journal, logbook, record, records, account, accounts, accounting, tablet, tablets, cuneiform, proto-cuneiform, scribe, scribes, seal, seals, sealing, sealings, quota, quotas, tally, administration, administrative, official, officials, inspector, ledger, register, standard unit, standard units]
+      modern: [project controls, scheduling, schedule, programme, cost control, progress reporting, earned value, daily log, document control]
+    masterformat:
+      - "01 31 00 Project Management and Coordination"
+      - "01 32 00 Construction Progress Documentation"
+      - "01 29 00 Payment Procedures"
+    uniclass:
+      - "PM (Project management): planning, cost and progress management"
+      - "Ac (Activities): management activities"
