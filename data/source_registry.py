@@ -66,9 +66,15 @@ class SourceRegistry:
 
     def search_valid_sources(
         self,
-        sources: list[SourceRecord],
+        sources: Iterable[SourceRecord],
     ) -> list[SourceRecord]:
         # TODO: validate sources and return only consumable sources.
+        return list(sources)
+
+    def selectable_sources(
+        self,
+        sources: Iterable[SourceRecord],
+    ) -> list[SourceRecord]:
         return list(sources)
 
     def get_by_id(
