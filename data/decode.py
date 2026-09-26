@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Iterable
+from typing import Callable, Iterable
 
 
 @dataclass(frozen=True)
@@ -11,6 +11,16 @@ class TransformLink:
     site_id: str
     passage_id: str | None = None
     locator: str | None = None
+
+
+@dataclass(frozen=True)
+class TransformExtract:
+    transform_id: str
+    text: str
+    evidence: tuple[
+        TransformLink,
+        ...,
+    ] = ()
 
 
 @dataclass
@@ -142,23 +152,168 @@ class TransformGraph:
         ]
 
 
-def decode_core(
+CoreEvaluator = Callable[
+    [list[dict]],
+    Iterable[TransformExtract],
+]
+
+ChildEvaluator = Callable[
+    [
+        TransformRecord,
+        list[dict],
+    ],
+    Iterable[TransformExtract],
+]
+
+
+def extract_core_transforms(
     passages: Iterable[dict],
+    evaluator: CoreEvaluator,
+    graph: TransformGraph | None = None,
+) -> TransformGraph:
+    graph = graph or TransformGraph()
+    corpus = list(passages)
+
+    for extracted in evaluator(corpus):
+        transform = graph.add_core_transform(
+            extracted.transform_id,
+            extracted.text,
+        )
+
+        for link in extracted.evidence:
+            graph.add_link(
+                TransformLink(
+                    transform_id=(
+                        transform.transform_id
+                    ),
+                    source_id=link.source_id,
+                    site_id=link.site_id,
+                    passage_id=link.passage_id,
+                    locator=link.locator,
+                )
+            )
+
+    return graph
+
+
+def extract_child_transforms(
+    parent_transform_id: str,
+    passages: Iterable[dict],
+    evaluator: ChildEvaluator,
+    graph: TransformGraph,
 ) -> list[TransformRecord]:
-    # TODO:
-    # Extract the initial core transform set
-    # from the root corpus.
-    list(passages)
-    return []
+    parent = graph.transforms.get(
+        parent_transform_id
+    )
+
+    if parent is None:
+        raise ValueError(
+            "parent transform does not exist"
+        )
+
+    linked_passages = _linked_evidence(
+        parent,
+        passages,
+        graph,
+    )
+
+    children = []
+
+    for extracted in evaluator(
+        parent,
+        linked_passages,
+    ):
+        child = graph.add_derived_transform(
+            extracted.transform_id,
+            extracted.text,
+            parent_transform_id=(
+                parent.transform_id
+            ),
+        )
+
+        for link in extracted.evidence:
+            graph.add_link(
+                TransformLink(
+                    transform_id=(
+                        child.transform_id
+                    ),
+                    source_id=link.source_id,
+                    site_id=link.site_id,
+                    passage_id=link.passage_id,
+                    locator=link.locator,
+                )
+            )
+
+        children.append(child)
+
+    return children
 
 
-def decode_deeper(
+def recursively_extract_children(
+    parent_transform_id: str,
+    passages: Iterable[dict],
+    evaluator: ChildEvaluator,
+    graph: TransformGraph,
+) -> list[TransformRecord]:
+    corpus = list(passages)
+    descendants = []
+
+    children = extract_child_transforms(
+        parent_transform_id,
+        corpus,
+        evaluator,
+        graph,
+    )
+
+    descendants.extend(children)
+
+    for child in children:
+        descendants.extend(
+            recursively_extract_children(
+                child.transform_id,
+                corpus,
+                evaluator,
+                graph,
+            )
+        )
+
+    return descendants
+
+
+def _linked_evidence(
     parent: TransformRecord,
     passages: Iterable[dict],
-) -> list[TransformRecord]:
-    # TODO:
-    # Re-resolve the parent transform against
-    # newly loaded material and return any
-    # deeper transforms derived from it.
-    list(passages)
-    return []
+    graph: TransformGraph,
+) -> list[dict]:
+    links = graph.links_for(
+        parent.transform_id
+    )
+
+    passage_ids = {
+        link.passage_id
+        for link in links
+        if link.passage_id is not None
+    }
+
+    source_ids = {
+        link.source_id
+        for link in links
+    }
+
+    site_ids = {
+        link.site_id
+        for link in links
+    }
+
+    return [
+        passage
+        for passage in passages
+        if (
+            passage.get("passage_id")
+            in passage_ids
+            or passage.get("source_id")
+            in source_ids
+            or passage.get("site")
+            in site_ids
+        )
+    ]
