@@ -478,7 +478,13 @@ def test_recursive_children_preserve_ancestry_depth_and_links():
         )
     )
 
+    received = {}
+
     def evaluator(parent, passages):
+        received[parent.transform_id] = list(
+            passages
+        )
+
         if parent.transform_id == "t1":
             return [
                 TransformExtract(
@@ -519,6 +525,18 @@ def test_recursive_children_preserve_ancestry_depth_and_links():
         evaluator,
         graph,
     )
+
+    assert received["t1"] == [
+        CORPUS[0]
+    ]
+
+    assert received["t1_1"] == [
+        CORPUS[1]
+    ]
+
+    assert received["t1_1_1"] == [
+        CORPUS[2]
+    ]
 
     child = graph.transforms["t1_1"]
 
