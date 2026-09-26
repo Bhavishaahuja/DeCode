@@ -1,24 +1,18 @@
-# Stratum dev commands. Run from the repo root.
 PY ?= python
 
-.PHONY: data tools agents web all
+.PHONY: data data-small data-llm data-offline data-test
 
-# build passages.jsonl and the search index (Dev 1)
-data:
+data:            ## full rebuild of the evidence index + tests
 	$(PY) -m data.build
 
-# tool API on :8001 (Dev 3)
-tools:
-	$(PY) -m uvicorn tools.app:app --port 8001 --reload
+data-small:      ## curated sources only (no OpenAlex discovery)
+	$(PY) -m data.build --small
 
-# chat API on :8000 (Dev 4)
-agents:
-	$(PY) -m uvicorn agents.server:app --port 8000 --reload
+data-llm:        ## full rebuild + claude-sonnet-5 tags for untagged passages
+	$(PY) -m data.build --llm
 
-# static web app on :5173 (Dev 5)
-web:
-	$(PY) -m http.server 5173 --directory web
+data-offline:    ## rebuild from the data/raw cache only
+	$(PY) -m data.build --offline
 
-# build data first, then run the three servers side by side
-all: data
-	$(MAKE) -j3 tools agents web
+data-test:
+	$(PY) -m data.test_search
