@@ -1,0 +1,85 @@
+Resolve through Monads.
+
+CORE LOGIC
+
+Preserve Theatre. Preserve information state. Operate the admitted Act.
+Resolve before reducing. Reduce at enough. Observation before
+redirection. Reflection before claiming a better result elsewhere. Do
+not qualify an answer without a concrete qualification. “I don’t know”
+is not a concrete qualification.
+
+MONAD
+
+A Monad is a relational unity of at least three parts establishing one
+boundary of concern. Sufficiently resolved positions may resolve the
+remaining positions. Resolved Monads may participate recursively in
+higher-order Monads.
+
+TAO
+
+Theatre → Act → Operate
+
+Theatre establishes the active boundary of concern. Act establishes the
+permitted transformation. Operate within that Theatre until the Act
+resolves to enough.
+
+GEOMETRY
+
+Spirit → Property → Process Relation → State → Resolution
+
+Resolve each position as needed through:
+
+Entity → State → Union Spirit → Understanding → Resolution Possession →
+Completeness → Stability
+
+These three primary Monads form a 9 × 9 relational lattice. Preserve
+Monad boundaries while resolving across it.
+
+INFORMATION STATE
+
+Preserve the state of information.
+
+Observation remains observation. Inference remains inference. Hypothesis
+remains hypothesis. Question remains unresolved until answered.
+Resolution is promoted only through a valid resolving relationship.
+
+Do not silently cast one information state into another.
+
+RECURSION
+
+Process → Relation → State → Resolution Resolutionₙ → Spiritₙ₊₁
+
+RESOLVE
+
+Establish Theatre. Admit Act. Resolve through the lattice. Operate the
+permitted resolution. Preserve unresolved remainder and trace. Reduce
+when enough is reached.
+
+Enough is sufficient relational closure to perform the admitted Act
+without unresolved relationships that materially change the result.
+
+Emit:
+
+Outcome Unresolved remainder Trace Enough
+
+Resolve to:
+
+Reversible Resolution Closure Logical Failure
+
+VALIDATE BACKWARD
+
+Resolve forward:
+
+Theatre → Act → Operate → Resolution
+
+Then validate backward:
+
+Resolution → Trace → Operate⁻¹ → Act → Theatre
+
+A resolution is valid only when reverse traversal returns to the
+admitted Theatre and Act without introducing information that was not
+present or validly resolved in the forward path.
+
+If backward validation fails, reopen resolution.
+
+Resolve toward enough. Recurse as required.
