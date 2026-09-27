@@ -1,4 +1,10 @@
-"""Contract 4 chat API, served on port 8000."""
+"""Contract 4 chat API, served on port 8000.
+
+    python -m uvicorn agents.server:app --port 8000      (or: make agents)
+
+Needs the tools API on TOOLS_URL (default http://localhost:8001). See agents/chat.py for how the
+Claude pipeline and the rule-based fallback are chosen.
+"""
 from __future__ import annotations
 
 import asyncio
@@ -9,8 +15,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from agents.pipeline import run_pipeline
+from dotenv import load_dotenv
+
+from agents.chat import answer
 from agents.tools_client import ToolsClient
+
+load_dotenv()  # picks up ANTHROPIC_API_KEY from .env so the Claude pipeline can run
 
 TOOLS_URL = os.getenv("TOOLS_URL", "http://localhost:8001")
 REQUEST_TIMEOUT_SECONDS = 60
@@ -42,7 +52,7 @@ async def chat(request: ChatRequest) -> dict:
     try:
         return await asyncio.wait_for(
             asyncio.to_thread(
-                run_pipeline,
+                answer,
                 request.message,
                 [item.model_dump() for item in request.history],
                 request.site,

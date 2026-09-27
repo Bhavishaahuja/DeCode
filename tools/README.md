@@ -42,7 +42,7 @@ Extras for the web app: `GET /tools/presets` (the estimator presets) and `GET /h
 
 Giza reproduces the CLAUDE.md reference: 2,300,000 blocks (attested), 190 crews of 20 at 2 blocks per crew-day for about 20.2 years, against 20 crane crews of 6 at 80 blocks per crane-day for about 4.8 years.
 
-Uruk (city wall, about 9 km), Mohenjo-daro (fired bricks) and Qin (Straight Road, about 700 km) are marked `draft: true`. Their quantities and rates are round-number assumptions, all tagged `assumed`, so the estimator card works for every site. Swap in sourced numbers once a verified claim backs one up, and change the tag to `attested` only then.
+Uruk (city wall, about 9 km), Mohenjo-daro (fired bricks) and Qin (rammed earth wall, about 5,000 km) are marked `draft: true`. Their quantities and rates are round-number assumptions, all tagged `assumed`, so the estimator card works for every site. Swap in sourced numbers once a verified claim backs one up, and change the tag to `attested` only then.
 
 ## Carbon factors
 

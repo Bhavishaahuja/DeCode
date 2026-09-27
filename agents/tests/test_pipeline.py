@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
@@ -65,7 +66,9 @@ def test_router_uses_site_hint_and_recognizes_estimate():
 def test_router_clarifies_unknown_site_and_detects_fringe():
     result = route("Did aliens build the pyramids?")
     assert result["intent"] == "fringe"
-    assert result["clarifying_question"]
+    assert result["sites"] == ["giza"]  # "the pyramids" means Giza (demo question)
+    assert result["clarifying_question"] is None
+    assert route("How did they move the stones?")["clarifying_question"]
 
 
 def test_router_recognizes_site_comparisons_fringe_variants_and_global_carbon():
@@ -158,7 +161,8 @@ def test_chat_endpoint_returns_contract_response():
     from agents import server
 
     fake_tools = FakeTools(presets={"giza": giza_preset()})
-    with patch("agents.server.ToolsClient", return_value=fake_tools):
+    # rules mode, so the test never calls the real Claude API even when .env has a key
+    with patch("agents.server.ToolsClient", return_value=fake_tools), patch.dict(os.environ, {"STRATUM_MODE": "rules"}):
         response = TestClient(server.app).post(
             "/chat", json={"message": "How long would Giza take with modern cranes?", "site": "giza"}
         )

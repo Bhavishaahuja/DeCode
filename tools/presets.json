@@ -77,26 +77,26 @@
   },
   "qin": {
     "draft": true,
-    "unit": "km of Straight Road",
-    "quantity": 700,
+    "unit": "km of rammed earth wall",
+    "quantity": 5000,
     "quantity_tag": "assumed",
-    "quantity_note": "The Qin Straight Road is usually given as roughly 700 km long; treated as assumed until a verified claim cites it",
+    "quantity_note": "Qin-era walls are often given as roughly 5,000 km including earlier walls linked up under Meng Tian; treated as assumed until a verified claim cites it",
     "ancient": {
-      "crews": 500,
+      "crews": 6000,
       "crew_size": 50,
-      "rate_per_crew_day": 0.002,
+      "rate_per_crew_day": 0.0005,
       "days_per_year": 250,
       "crew_label": "Labour gangs",
-      "rate_label": "Km of road built per gang-day",
+      "rate_label": "Km of wall rammed per gang-day",
       "tag": "assumed"
     },
     "modern": {
-      "crews": 10,
-      "crew_size": 12,
-      "rate_per_crew_day": 0.15,
+      "crews": 150,
+      "crew_size": 10,
+      "rate_per_crew_day": 0.05,
       "days_per_year": 250,
-      "crew_label": "Road crews with plant",
-      "rate_label": "Km of road built per crew-day",
+      "crew_label": "Crews with mechanical rammers",
+      "rate_label": "Km of wall per crew-day",
       "tag": "assumed"
     }
   }

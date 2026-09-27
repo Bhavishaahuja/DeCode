@@ -25,8 +25,8 @@ _SYSTEM_TERMS = {
     "project_controls": ("schedule", "accounting", "record", "tablet", "project control", "management", "organized", "organised"),
 }
 _SITE_TERMS = {
-    "giza": ("giza", "great pyramid", "pyramid of khufu", "khufu"),
-    "uruk": ("uruk", "ziggurat of anu"),
+    "giza": ("giza", "great pyramid", "pyramid of khufu", "khufu", "pyramid", "pyramids"),
+    "uruk": ("uruk", "ziggurat of anu", "warka", "anunnaki", "nibiru"),
     "mohenjo": ("mohenjo", "mohenjo-daro", "mohenjo daro"),
     "qin": ("qin", "qin wall", "straight road", "great wall"),
 }
