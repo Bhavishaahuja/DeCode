@@ -8,6 +8,7 @@ Usage:
     python -m claims.review                         # everything undecided
     python -m claims.review --site giza --system workforce
     python -m claims.review --coverage              # just show the scoreboard
+    python -m claims.review --reviewer bhavisha     # stamp your own name into reviewed_by
 """
 
 import argparse
@@ -141,7 +142,7 @@ def next_claim_id(site, system, verified):
     return f"{site}-{system}-{highest + 1:03d}"
 
 
-def to_verified(claim, verified):
+def to_verified(claim, verified, reviewer=REVIEWER):
     final = {
         "claim_id": next_claim_id(claim["site"], claim["system"], verified),
         "site": claim["site"],
@@ -153,7 +154,7 @@ def to_verified(claim, verified):
         "modern_equivalent": claim["modern_equivalent"].strip(),
         "lesson": claim["lesson"].strip(),
         "status": "verified",
-        "reviewed_by": REVIEWER,
+        "reviewed_by": reviewer,
     }
     return final
 
@@ -164,7 +165,9 @@ def main():
     parser.add_argument("--system")
     parser.add_argument("--grade", choices=GRADES)
     parser.add_argument("--coverage", action="store_true", help="show coverage and exit")
+    parser.add_argument("--reviewer", default=REVIEWER, help="name stamped into reviewed_by (default dev2)")
     args = parser.parse_args()
+    reviewer = args.reviewer.strip() or REVIEWER
 
     systems = system_ids()
     passages = load_passages()
@@ -209,14 +212,14 @@ def main():
             if choice == "r":
                 reason = input("  reason (optional): ").strip()
                 append_jsonl(DECISIONS_PATH, {"draft_id": claim["claim_id"], "decision": "rejected",
-                                              "reason": reason, "reviewed_by": REVIEWER})
+                                              "reason": reason, "reviewed_by": reviewer})
                 print(f"  {RED}rejected{RESET}")
                 break
             if choice == "e":
                 current = edit_claim(current, systems)
                 continue
             if choice == "a":
-                final = to_verified(current, verified)
+                final = to_verified(current, verified, reviewer)
                 problems = validate_claim(final, passages, systems=systems, verified=True)
                 if problems:
                     print(f"  {RED}can't accept yet:{RESET}")
@@ -229,7 +232,7 @@ def main():
                 verified.append(final)
                 append_jsonl(DECISIONS_PATH, {"draft_id": claim["claim_id"], "decision": "accepted",
                                               "claim_id": final["claim_id"], "edited": current != claim,
-                                              "reviewed_by": REVIEWER})
+                                              "reviewed_by": reviewer})
                 print(f"  {GREEN}accepted as {final['claim_id']}{RESET}")
                 break
             print("  type a, e, r, s, or q")

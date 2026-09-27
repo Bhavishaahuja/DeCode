@@ -79,7 +79,16 @@ def write_jsonl(path, rows):
 def append_jsonl(path, row):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
+    # if someone hand-edited the file and dropped the last newline, add it back
+    # so the new row doesn't get glued onto the previous one
+    needs_newline = False
+    if path.exists() and path.stat().st_size > 0:
+        with open(path, "rb") as f:
+            f.seek(-1, 2)
+            needs_newline = f.read(1) != b"\n"
     with open(path, "a", encoding="utf-8") as f:
+        if needs_newline:
+            f.write("\n")
         f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 

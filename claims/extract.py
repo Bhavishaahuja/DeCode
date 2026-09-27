@@ -9,6 +9,7 @@ Usage:
     python -m claims.extract --site giza --limit 20     # quick test run
     python -m claims.extract                             # everything not done yet
     python -m claims.extract --redo                      # ignore the done list
+    python -m claims.extract --site qin --system workforce --per-source 2 --limit 10
 """
 
 import argparse
@@ -162,6 +163,7 @@ def main():
     parser.add_argument("--system", help="only passages rule-tagged with this system")
     parser.add_argument("--source", help="only this source_id")
     parser.add_argument("--limit", type=int, help="stop after this many passages")
+    parser.add_argument("--per-source", type=int, help="take at most this many passages from any one source")
     parser.add_argument("--only-tagged", action="store_true", help="skip passages with no system tags")
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--redo", action="store_true", help="re-run passages already extracted")
@@ -185,6 +187,7 @@ def main():
         done = set(DONE_PATH.read_text(encoding="utf-8").split())
 
     todo = []
+    taken_per_source = {}
     for passage in passages.values():
         if passage["passage_id"] in done:
             continue
@@ -196,6 +199,11 @@ def main():
             continue
         if args.only_tagged and not passage.get("system_tags"):
             continue
+        # spread the run across sources instead of draining the first one in the file
+        source_id = passage["source_id"]
+        if args.per_source and taken_per_source.get(source_id, 0) >= args.per_source:
+            continue
+        taken_per_source[source_id] = taken_per_source.get(source_id, 0) + 1
         todo.append(passage)
     if args.limit:
         todo = todo[:args.limit]
