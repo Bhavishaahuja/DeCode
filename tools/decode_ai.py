@@ -6,8 +6,11 @@ from pathlib import Path
 from data import config
 from data.decode import (
     TransformExtract,
+    TransformGraph,
     TransformLink,
     TransformRecord,
+    extract_core_transforms,
+    recursively_extract_children,
 )
 
 
@@ -316,3 +319,48 @@ def _to_transform_extract(
         text=text,
         evidence=tuple(links),
     )
+
+
+def run_decode(
+    passages: list[dict],
+    evaluator: AnthropicDecodeEvaluator,
+) -> str:
+    try:
+        graph = extract_core_transforms(
+            passages,
+            evaluator.core,
+        )
+
+        root_transform_ids = [
+            transform.transform_id
+            for transform in graph.transforms.values()
+            if transform.parent_transform_id is None
+        ]
+
+        for root_transform_id in root_transform_ids:
+            recursively_extract_children(
+                root_transform_id,
+                passages,
+                evaluator.child,
+                graph,
+            )
+
+    except Exception as err:
+        return f"Decode failed: {err}"
+
+    message = "Decode completed successfully"
+
+    _notify_app(
+        message=message,
+        graph=graph,
+    )
+
+    return message
+
+
+def _notify_app(
+    message: str,
+    graph: TransformGraph,
+) -> None:
+    # TODO: send decode completion notification to the app.
+    pass
