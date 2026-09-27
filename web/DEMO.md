@@ -53,7 +53,7 @@ No site selected. Replay: `web/replay/q3_fringe.json`
 
 **Point at:**
 - The first line: the idea is not supported by the evidence
-- What it points to instead (check these against the final q3 recording): the Diary of Merer, the workers' settlement, the gang marks
+- What it points to instead: the Diary of Merer, the workers' settlement, the gang marks
 - The critic result at the bottom, and the pipeline panel showing the critic layer ran
 
 **Say:**
