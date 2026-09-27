@@ -1,0 +1,200 @@
+{
+  "answer_md": "Mohenjo-daro comes out on top for standardized building units. Excavators recorded that its common bricks held a fixed 4:2:1 length to breadth to thickness ratio, well suited to bonding[^1], and a separate secondary source backs this up with a consistent 1:2:4 thickness:width:length ratio using local clay[^2]. On top of that, the site yielded a calibrated ruler divided into 34 mm units with subdivisions accurate to 0.13 mm, meaning builders had a fine, repeatable measuring standard to work from[^3].\n\nThe other three sites don't match this for actual building units. Giza shows extreme precision in fitting individual blocks, joints averaging 0.5 mm and a base squared to 12 seconds of arc[^4][^5], but that's tight-tolerance cutting and setting, not a repeatable modular unit like a brick. Uruk's beveled rim bowls are sometimes called uniform[^6], but recorded volumes swing from 385 to 2,580 milliliters at Chogha Mish[^7], and they're pottery, not construction material anyway. Qin evidence covers standardized weights, measures, and axle lengths[^8], which is administrative standardization, not documented wall-block or rammed-earth module sizes.\n\nKeep from the ancients: fix a simple, proportioned unit ratio for your primary building material and check it with a calibrated standard, it pays off in bonding and repeatability.",
+  "intent": "compare",
+  "sites": [
+    "giza",
+    "uruk",
+    "mohenjo",
+    "qin"
+  ],
+  "systems": [
+    "quality_control"
+  ],
+  "clarifying_question": null,
+  "citations": [
+    {
+      "n": 1,
+      "claim_id": "mohenjo-quality_control-001",
+      "source_id": "asi_ar_1923_24",
+      "title": "Annual Report of the Archaeological Survey of India 1923-24 (Mohenjo-daro sections)",
+      "url": "https://archive.org/details/in.ernet.dli.2015.35513",
+      "locator": null,
+      "grade": "attested"
+    },
+    {
+      "n": 2,
+      "claim_id": null,
+      "source_id": "oa_w7166823203",
+      "title": "Urban Planning of Mohenjo-Daro: A Way forward for Contemporary Sustainable Infrastructure (2026)",
+      "url": "https://doi.org/10.36902/rjsser-vol7-iss2-2026(36-45)",
+      "locator": "p. 4",
+      "grade": "attested"
+    },
+    {
+      "n": 3,
+      "claim_id": "mohenjo-quality_control-002",
+      "source_id": "wp_mohenjo_daro",
+      "title": "Mohenjo-daro (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Mohenjo-daro&oldid=1376729181",
+      "locator": "section: Pashupati seal",
+      "grade": "attested"
+    },
+    {
+      "n": 4,
+      "claim_id": "giza-quality_control-001",
+      "source_id": "wp_great_pyramid_of_giza",
+      "title": "Great Pyramid of Giza (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Great_Pyramid_of_Giza&oldid=1376020884",
+      "locator": "section: Workforce",
+      "grade": "attested"
+    },
+    {
+      "n": 5,
+      "claim_id": "giza-quality_control-002",
+      "source_id": "wp_great_pyramid_of_giza",
+      "title": "Great Pyramid of Giza (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Great_Pyramid_of_Giza&oldid=1376020884",
+      "locator": "section: Workforce",
+      "grade": "attested"
+    },
+    {
+      "n": 6,
+      "claim_id": "uruk-quality_control-001",
+      "source_id": "wp_beveled_rim_bowl",
+      "title": "Beveled rim bowl (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Beveled_rim_bowl&oldid=1365977919",
+      "locator": null,
+      "grade": "debated"
+    },
+    {
+      "n": 7,
+      "claim_id": "uruk-quality_control-002",
+      "source_id": "wp_beveled_rim_bowl",
+      "title": "Beveled rim bowl (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Beveled_rim_bowl&oldid=1365977919",
+      "locator": "section: Physical characteristics",
+      "grade": "attested"
+    },
+    {
+      "n": 8,
+      "claim_id": "qin-quality_control-002",
+      "source_id": "wp_standardization_in_the_qin_dynasty",
+      "title": "Qin dynasty (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Qin_dynasty&oldid=1373223962",
+      "locator": "section: Religion",
+      "grade": "debated"
+    }
+  ],
+  "cards": [
+    {
+      "type": "teardown",
+      "site": "giza",
+      "rows": [
+        {
+          "system": "quality_control",
+          "grade": "attested",
+          "ancient": "Many casing stones and inner chamber blocks of the Great Pyramid fit together with joints averaging only 0.5 millimetres wide.",
+          "evidence": "\"Many of the casing-stones and inner chamber blocks of the Great Pyramid fit together with high precision, with joints, on average, only 0.5 millimetres (0.020 in) wide.\" (Great Pyramid of Giza (Wikipedia), section: Workforce)",
+          "modern": "Fine masonry joint tolerances comparable to precision dimension-stone cladding work.",
+          "lesson": "Put the tightest tolerances on the faces and joints that matter most, like casing and chamber linings.",
+          "claim_ids": [
+            "giza-quality_control-001",
+            "giza-quality_control-002"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "teardown",
+      "site": "uruk",
+      "rows": [
+        {
+          "system": "quality_control",
+          "grade": "attested",
+          "ancient": "Beveled rim bowls do vary in size; at Chogha Mish they were found with volumes from 385 to 2,580 milliliters.",
+          "evidence": "\"There is in fact some variation in size. For example at the site of Chogha Mish beveled rim bowls were found with volumes from 385 to 2,580 milliliters\" (Beveled rim bowl (Wikipedia), section: Physical characteristics)",
+          "modern": "Recording dimensional variance data across a batch of prefabricated units.",
+          "lesson": "Expect and document real dimensional variance even in supposedly standardized mass produced items.",
+          "claim_ids": [
+            "uruk-quality_control-002",
+            "uruk-quality_control-001"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "teardown",
+      "site": "mohenjo",
+      "rows": [
+        {
+          "system": "quality_control",
+          "grade": "attested",
+          "ancient": "The excavators recorded that common bricks had a length, breadth and thickness ratio of 4 : 2 : 1, well suited to bonding.",
+          "evidence": "\"the ratio of the length, breadth and thickness thus being 4 : 2 : 1, which is admirably suited for the purpose of bonding\" (Annual Report of the Archaeological Survey of India 1923-24 (Mohenjo-daro sections))",
+          "modern": "Set unit-masonry dimensional tolerances and sample-check batches before installation.",
+          "lesson": "Proportioned units can make bonding and repeatable construction easier.",
+          "claim_ids": [
+            "mohenjo-quality_control-001",
+            "mohenjo-quality_control-002",
+            "mohenjo-quality_control-003"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "teardown",
+      "site": "qin",
+      "rows": [
+        {
+          "system": "quality_control",
+          "grade": "debated",
+          "ancient": "The Qin state standardized measurements and practical details such as chariot axle length across its territories.",
+          "evidence": "\"All aspects of life were standardised, from measurements and language to more practical details, such as the length of chariot axles.\" (Qin dynasty (Wikipedia), section: Religion)",
+          "modern": "Enforcing a single national standard for gauges, fasteners, and units across all contractors and suppliers.",
+          "lesson": "Standardizing dimensions and units early prevents costly incompatibilities when scaling a project across many regions.",
+          "claim_ids": [
+            "qin-quality_control-002",
+            "qin-quality_control-001"
+          ]
+        }
+      ]
+    }
+  ],
+  "critic": {
+    "passed": true,
+    "flags": [],
+    "retries": 0
+  },
+  "trace": [
+    {
+      "layer": "router",
+      "ms": 1639,
+      "summary": "intent=compare, sites=giza,uruk,mohenjo,qin"
+    },
+    {
+      "layer": "prefetch",
+      "ms": 2250,
+      "summary": "84 verified claims, 16 passages"
+    },
+    {
+      "layer": "archaeologist",
+      "ms": 15967,
+      "summary": "6 findings, 2 gaps"
+    },
+    {
+      "layer": "engineer",
+      "ms": 14018,
+      "summary": "4 systems mapped, 0 physics checks"
+    },
+    {
+      "layer": "presenter",
+      "ms": 7046,
+      "summary": "200 words"
+    },
+    {
+      "layer": "critic",
+      "ms": 1348,
+      "summary": "passed"
+    }
+  ]
+}

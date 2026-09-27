@@ -41,7 +41,8 @@ LOG_DIR = AGENTS_DIR / "logs"
 TOOL_DEFS_PATH = REPO_ROOT / "tools" / "openapi_tools.json"
 
 MODEL = os.getenv("DECODE_MODEL", "claude-sonnet-5")
-TOTAL_BUDGET_S = 46          # the server cuts off at 60; this leaves room for the rules fallback
+DEFAULT_BUDGET_S = 46        # the server cuts off at 60 by default; this leaves room for the rules fallback
+FALLBACK_RESERVE_S = 10      # the rules fallback answers in 2 to 3 seconds, so keep at least this much under the timeout
 AGENT_PHASE_S = 22           # L2 to L5 get this long, counted from when they start (not from the request)
 PRESENT_RESERVE_S = 16       # always leave the presenter and critic at least this much
 PREFETCH_PASSAGES_PER_SITE = 4
@@ -49,10 +50,11 @@ PREFETCH_PASSAGES_PER_SITE = 4
 # sonnet 5 thinks before it answers, and thinking counts against max_tokens, so these need headroom.
 # A reply cut off at max_tokens has no text left (the router once spent 299 of 300 tokens thinking).
 MAX_TOKENS = {"router": 2000, "agent": 6000, "presenter": 4000, "critic": 3000}
-# effort per layer: less thinking where the job is simple. The critic keeps the default (high),
-# it's the last check before an answer ships. None means don't send output_config at all.
-EFFORT = {"router": "low", "estimator": "low", "archaeologist": "medium", "engineer": "medium",
-          "builder": "medium", "presenter": "medium", "critic": None}
+# effort per layer: less thinking where the job is simple. The evidence is prefetched, so the
+# archaeologist and engineer mostly sort and grade, low is enough. The critic runs at medium so there's
+# time left for its one retry. None means don't send output_config at all.
+EFFORT = {"router": "low", "estimator": "low", "archaeologist": "low", "engineer": "low",
+          "builder": "medium", "presenter": "medium", "critic": "medium"}
 PREFETCH_CLAIMS_MAX = 24
 
 MAX_SOURCES = 12
@@ -230,6 +232,14 @@ def unsourced_numbers(answer: str, allowed: set[float]) -> list[str]:
     return missing
 
 
+def total_budget_s() -> float:
+    """Seconds the Claude pipeline gets per request. DECODE_BUDGET_S sets it, but it always stays at least
+    FALLBACK_RESERVE_S under the server timeout (DECODE_TIMEOUT_S), so the rules fallback still fits."""
+    budget = float(os.getenv("DECODE_BUDGET_S") or DEFAULT_BUDGET_S)
+    timeout = float(os.getenv("DECODE_TIMEOUT_S") or 60)
+    return min(budget, timeout - FALLBACK_RESERVE_S)
+
+
 class Deadline:
     def __init__(self, seconds: float):
         self.start = time.time()
@@ -267,7 +277,7 @@ class LLMPipeline:
     # ------------------------------------------------------------------------------------------
     def run(self, message: str, history: list[dict] | None = None, site: str | None = None) -> tuple[dict, dict]:
         """Returns (contract response, internal record with the tool log and raw layer outputs)."""
-        deadline = Deadline(TOTAL_BUDGET_S)
+        deadline = Deadline(total_budget_s())
         history = history or []
         site_hint = site if site in SITES else None
         trace: list[dict] = []
@@ -731,7 +741,67 @@ class LLMPipeline:
             if previous:
                 return previous
             raise RuntimeError("presenter returned an empty answer")
+        text = self._unfootnote_estimates(text)
+        text = self._state_haul_assumptions(text)
         return text
+
+    def _ok_calls(self, tool: str) -> list[dict]:
+        return [entry for entry in self.tools.calls() if entry["tool"] == tool and entry["ok"]]
+
+    def _unfootnote_estimates(self, text: str) -> str:
+        """Estimate results are our calculation, not evidence, so a sentence carrying one gets no source marker.
+        The model kept tagging them with whatever source came first, which pointed the reader at the wrong thing."""
+        results = set()
+        for entry in self._ok_calls("estimate"):
+            for key in ("years", "people", "person_days"):
+                value = (entry.get("output") or {}).get(key)
+                if isinstance(value, (int, float)):
+                    results.add(float(value))
+        if not results:
+            return text
+
+        def is_result(value: float, decimals: int) -> bool:
+            if value in results:
+                return True
+            # 20.18 written as 20.2 counts, but a bare 20 doesn't (too easy to hit "20 crews" or "20 years" from a source)
+            return decimals > 0 and any(abs(round(r, decimals) - value) < 1e-9 for r in results)
+
+        # move markers written after the full stop ("days.[^1]") in front of it, so they stay with their sentence
+        text = re.sub(r"([.!?])((?:\[\^\d+\])+)", r"\2\1", text)
+        pieces = re.split(r"((?<=[.!?])\s+)", text)
+        for i, piece in enumerate(pieces):
+            if any(is_result(value, decimals) for value, decimals, _ in numbers_in(piece)):
+                pieces[i] = re.sub(r"\s*\[\^\d+\]", "", piece)
+        return "".join(pieces)
+
+    def _state_haul_assumptions(self, text: str) -> str:
+        """Contract 3: whenever haul_force ran, the answer says friction and pull per person are assumptions."""
+        calls = self._ok_calls("haul_force")
+        if not calls:
+            return text
+        # check clause by clause: "268 people pulling at 400 N each, assuming a friction of 0.3" only
+        # calls the friction an assumption, the pull reads like a given
+        clauses = re.split(r"[.!?;:,()]\s*|\s+and\s+|\s+with\s+", text.lower())
+        friction_said = any("friction" in c and "assum" in c for c in clauses)
+        pull_said = any(("pull" in c or "per person" in c) and "assum" in c for c in clauses)
+        if friction_said and pull_said:
+            return text
+        frictions, pulls = [], []
+        for entry in calls:
+            args = entry.get("input") or {}
+            if args.get("friction_coeff") is not None and f"{args['friction_coeff']:g}" not in frictions:
+                frictions.append(f"{args['friction_coeff']:g}")
+            if args.get("pull_per_person_n") is not None and f"{args['pull_per_person_n']:g} N" not in pulls:
+                pulls.append(f"{args['pull_per_person_n']:g} N")
+        friction = f"friction coefficient ({' and '.join(frictions)})" if frictions else "friction coefficient"
+        pull = f"pull per person ({' and '.join(pulls)})" if pulls else "pull per person"
+        note = f"The {friction} and the {pull} in that hauling calculation are assumptions, not measured values."
+        # keep the "Keep from the ancients" line last if the presenter wrote one
+        paragraphs = text.split("\n\n")
+        if len(paragraphs) > 1 and paragraphs[-1].lower().startswith("keep from the ancients"):
+            paragraphs.insert(-1, note)
+            return "\n\n".join(paragraphs)
+        return text + "\n\n" + note
 
     def _critique(self, message, answer, sources, extra_number_texts, deadline) -> list[str]:
         auto = []
@@ -746,6 +816,7 @@ class LLMPipeline:
         if deadline.left() < 5:
             return auto + [not_reviewed.format("out of time")]
         user = (f"Question: {message}\n\nDraft answer:\n{answer}\n\nSOURCES:\n{self._sources_block(sources)}\n\n"
+                f"Calculations (tool results, our own numbers, they need no source marker):\n{self._number_tools_block()}\n\n"
                 f"Automatic problems already found: {auto or 'none'}")
         try:
             text, stop = self._ask("critic", load_prompt("critic"), user, max_tokens=MAX_TOKENS["critic"])

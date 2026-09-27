@@ -23,7 +23,9 @@ from agents.tools_client import ToolsClient
 load_dotenv()  # picks up ANTHROPIC_API_KEY from .env so the Claude pipeline can run
 
 TOOLS_URL = os.getenv("TOOLS_URL", "http://localhost:8001")
-REQUEST_TIMEOUT_SECONDS = 60
+# Contract 4 says 60. Raise it only for recording replays; the Claude pipeline's budget (DECODE_BUDGET_S)
+# always stays at least 10 seconds under this, see total_budget_s in agents/llm_pipeline.py
+REQUEST_TIMEOUT_SECONDS = float(os.getenv("DECODE_TIMEOUT_S") or 60)
 
 
 class HistoryItem(BaseModel):
@@ -61,6 +63,7 @@ async def chat(request: ChatRequest) -> dict:
             timeout=REQUEST_TIMEOUT_SECONDS - 1,
         )
     except asyncio.TimeoutError as error:
-        raise HTTPException(status_code=504, detail="Chat request exceeded the 60 second limit") from error
+        raise HTTPException(status_code=504,
+                            detail=f"Chat request exceeded the {REQUEST_TIMEOUT_SECONDS:g} second limit") from error
     finally:
         tools.close()

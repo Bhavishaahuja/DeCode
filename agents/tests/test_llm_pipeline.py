@@ -213,3 +213,74 @@ def test_fringe_answer_always_says_not_supported():
     script["router"] = [text_reply('{"intent": "fringe", "sites": ["giza"], "systems": ["workforce"], "clarifying_question": null}')]
     response, _ = run(script, "Did aliens build the pyramids?")
     assert response["answer_md"].startswith("That idea is not supported by the evidence.")
+
+
+def estimate_script(presenter_text):
+    return {
+        "router": [text_reply('{"intent": "estimate", "sites": ["giza"], "systems": ["workforce"], "clarifying_question": null}')],
+        "archaeologist": [text_reply(json.dumps({"findings": [{"site": "giza", "system": "transport_lifting", "statement": "sledges",
+                                                               "grade": "attested", "claim_id": "giza-transport_lifting-001",
+                                                               "passage_id": None, "quote": "dragged on sledges", "grade_note": "x"}],
+                                                 "gaps": [], "fringe_check": None}))],
+        "estimator": [text_reply('{"estimator_card_site": "giza", "summary": "", "assumptions": [], "notes": []}')],
+        "presenter": [text_reply(presenter_text)],
+        "critic": [text_reply('{"passed": true, "flags": []}')],
+    }
+
+
+def test_estimate_numbers_carry_no_source_marker():
+    text = ("With assumed crane crews it comes to about 4.79 years[^1]. "
+            "Blocks were dragged on wooden sledges[^1]. Diodorus gave 20 years.[^1]")
+    response, _ = run(estimate_script(text), "How long would Giza take with modern cranes?", site="giza")
+    answer = response["answer_md"]
+    assert "4.79 years." in answer and "4.79 years[^" not in answer
+    assert "sledges[^1]." in answer
+    # a bare 20 is not treated as the 20.18 year result, so the source stays
+    assert "20 years[^1]." in answer
+    assert response["citations"][0]["claim_id"] == "giza-transport_lifting-001"
+    assert validate_chat_response(response) == []
+
+
+def haul_script(presenter_text):
+    script = explain_script([presenter_text])
+    script["router"] = [text_reply('{"intent": "fringe", "sites": ["giza"], "systems": ["transport_lifting"], "clarifying_question": null}')]
+    script["engineer"] = [
+        tool_reply("haul_force", {"mass_kg": 2500, "slope_deg": 0, "friction_coeff": 0.3, "pull_per_person_n": 400}),
+        text_reply('{"system_map": [], "physics_checks": [], "risks": [], "gaps": []}'),
+    ]
+    return script
+
+
+def test_haul_force_answer_states_assumptions_when_the_model_forgot():
+    text = ("That idea is not supported. Blocks were dragged on wooden sledges[^1]. A 2500 kg block needs about 19 people."
+            "\n\nKeep from the ancients: cheap friction fixes beat horsepower.")
+    response, _ = run(haul_script(text), "Did aliens build the pyramids?")
+    answer = response["answer_md"]
+    note = "The friction coefficient (0.3) and the pull per person (400 N) in that hauling calculation are assumptions"
+    assert note in answer
+    assert answer.rstrip().split("\n\n")[-1].startswith("Keep from the ancients")
+    assert response["critic"]["passed"] is True  # the added numbers come from the tool input
+
+
+def test_haul_force_assumptions_are_not_repeated():
+    text = ("That idea is not supported. A 2500 kg block needs about 19 people, assuming a friction coefficient of 0.3 "
+            "and an assumed pull of 400 N per person.")
+    response, _ = run(haul_script(text), "Did aliens build the pyramids?")
+    assert "in that hauling calculation are assumptions" not in response["answer_md"]
+
+
+def test_budget_stays_under_the_server_timeout():
+    from agents.llm_pipeline import total_budget_s
+    with patch.dict(os.environ, {"DECODE_BUDGET_S": "", "DECODE_TIMEOUT_S": ""}):
+        assert total_budget_s() == 46
+    with patch.dict(os.environ, {"DECODE_BUDGET_S": "120", "DECODE_TIMEOUT_S": "130"}):
+        assert total_budget_s() == 120
+    with patch.dict(os.environ, {"DECODE_BUDGET_S": "120", "DECODE_TIMEOUT_S": "60"}):
+        assert total_budget_s() == 50
+
+
+def test_haul_force_pull_that_reads_like_a_given_still_gets_the_note():
+    text = ("That idea is not supported. A 25 tonne block needs about 268 people pulling at 400 N each, "
+            "assuming a friction coefficient of 0.3.")
+    response, _ = run(haul_script(text), "Did aliens build the pyramids?")
+    assert "in that hauling calculation are assumptions" in response["answer_md"]

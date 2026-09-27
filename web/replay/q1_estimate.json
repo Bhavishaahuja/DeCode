@@ -1,0 +1,162 @@
+{
+  "answer_md": "Straight answer: with 20 modern crane crews (6 people each) placing blocks at a rate of 80 blocks per crew-day, 300 working days a year, moving 2.3 million blocks works out to about 4.79 years, using roughly 120 people working continuously.\n\nThat's a placement-only calculation. It assumes idealized parallel crews with no downtime, no ramp-up, no weather delays, and no sequencing conflicts. It doesn't include quarrying the stone, transporting it to site, or the logistics of getting granite blocks weighing 25 to 80 tonnes hauled over 900 km from Aswan, which the ancient builders actually had to solve[^1].\n\nWorth noting: nobody has actually tested cranes at true Giza scale. A 1978 experiment used two cranes and a forklift to build a scaled-down pyramid, which shows cranes can work on pyramid-shaped builds, but that's a small-scale proof of concept, not a full-size benchmark[^2]. And since the real ramps found at Giza were too small to have moved most of the stone[^3], we still don't have solid evidence for how the ancients handled heavy lifting at scale, so any modern comparison is really just a placement-rate exercise, not a full construction-time model.\n\nKeep from the ancients: long-lead heavy material logistics (quarrying and hauling) usually take longer than the actual placement work, plan for that first.",
+  "intent": "estimate",
+  "sites": [
+    "giza"
+  ],
+  "systems": [
+    "materials_supply",
+    "transport_lifting",
+    "project_controls"
+  ],
+  "clarifying_question": null,
+  "citations": [
+    {
+      "n": 1,
+      "claim_id": "giza-materials_supply-002",
+      "source_id": "wp_great_pyramid_of_giza",
+      "title": "Great Pyramid of Giza (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Great_Pyramid_of_Giza&oldid=1376020884",
+      "locator": "section: Materials",
+      "grade": "attested"
+    },
+    {
+      "n": 2,
+      "claim_id": null,
+      "source_id": "wp_egyptian_pyramid_construction_techniques",
+      "title": "Construction of the Egyptian pyramids (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Construction_of_the_Egyptian_pyramids&oldid=1375376909",
+      "locator": "section: Waterways",
+      "grade": "attested"
+    },
+    {
+      "n": 3,
+      "claim_id": "giza-transport_lifting-001",
+      "source_id": "wp_egyptian_pyramid_construction_techniques",
+      "title": "Construction of the Egyptian pyramids (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Construction_of_the_Egyptian_pyramids&oldid=1375376909",
+      "locator": "section: Transport of stone blocks",
+      "grade": "attested"
+    }
+  ],
+  "cards": [
+    {
+      "type": "teardown",
+      "site": "giza",
+      "rows": [
+        {
+          "system": "materials_supply",
+          "grade": "attested",
+          "ancient": "Granite blocks weighing 25 to 80 tonnes were transported over 900 km from Aswan to form the King's Chamber ceiling and relieving chambers above it.",
+          "evidence": "\"The granite stones in the pyramid were transported from Aswan, more than 900 km (560 mi) south. The largest, weighing 25 to 80 tonnes, form the ceilings of the \"King's chamber\" and the \"relieving chambers\" above it.\" (Great Pyramid of Giza (Wikipedia), section: Materials)",
+          "modern": "Sourcing heavy structural stone or precast elements from a distant quarry and barging them to site.",
+          "lesson": "Plan long-distance heavy material transport routes and capacity well before construction scheduling.",
+          "claim_ids": [
+            "giza-materials_supply-002",
+            "giza-materials_supply-001"
+          ]
+        },
+        {
+          "system": "transport_lifting",
+          "grade": "attested",
+          "ancient": "The archaeological record shows only small ramps and inclined causeways, not ramps that could have built even most of the monument.",
+          "evidence": "\"The archaeological record gives evidence of only small ramps and inclined causeways, not something that could have been used to construct even a majority of the monument.\" (Construction of the Egyptian pyramids (Wikipedia), section: Transport of stone blocks)",
+          "modern": "Using temporary access ramps or haul roads to move material up a rising structure.",
+          "lesson": "Physical remains of temporary construction aids should be preserved and documented as they reveal actual build sequencing.",
+          "claim_ids": [
+            "giza-transport_lifting-001",
+            "giza-transport_lifting-002"
+          ]
+        },
+        {
+          "system": "project_controls",
+          "grade": "attested",
+          "ancient": "Stones at the pyramid were accepted at designated receiving points called She Akhet-Khufu and Ro-She Khufu, under the supervision of the vizier Ankhhaf.",
+          "evidence": "\"the stones were accepted at She Akhet-Khufu (\"the pool of the pyramid Horizon of Khufu\") and Ro-She Khufu (\"the entrance to the pool of Khufu\"), which were under supervision of Ankhhaf, the half brother and vizier of Khufu\" (Great Pyramid of Giza (Wikipedia), section: Age)",
+          "modern": "A designated site receiving yard with a named materials manager who signs off deliveries.",
+          "lesson": "Assign a single accountable person to inspect and accept incoming materials at a fixed checkpoint.",
+          "claim_ids": [
+            "giza-project_controls-001",
+            "giza-project_controls-002"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "estimator",
+      "site": "giza",
+      "preset": {
+        "unit": "stone blocks",
+        "quantity": 2300000,
+        "quantity_tag": "attested",
+        "ancient": {
+          "crews": 190,
+          "crew_size": 20,
+          "rate_per_crew_day": 2,
+          "days_per_year": 300,
+          "crew_label": "Hauling crews",
+          "rate_label": "Blocks placed per crew-day",
+          "tag": "assumed"
+        },
+        "modern": {
+          "crews": 20,
+          "crew_size": 6,
+          "rate_per_crew_day": 80,
+          "days_per_year": 300,
+          "crew_label": "Crane crews",
+          "rate_label": "Blocks placed per crane-day",
+          "tag": "assumed"
+        }
+      },
+      "result": {
+        "ancient": {
+          "years": 20.18,
+          "people": 3800,
+          "person_days": 23000000
+        },
+        "modern": {
+          "years": 4.79,
+          "people": 120,
+          "person_days": 172500
+        }
+      }
+    }
+  ],
+  "critic": {
+    "passed": true,
+    "flags": [],
+    "retries": 0
+  },
+  "trace": [
+    {
+      "layer": "router",
+      "ms": 1895,
+      "summary": "intent=estimate, sites=giza"
+    },
+    {
+      "layer": "prefetch",
+      "ms": 2117,
+      "summary": "21 verified claims, 4 passages"
+    },
+    {
+      "layer": "archaeologist",
+      "ms": 9678,
+      "summary": "3 findings, 3 gaps"
+    },
+    {
+      "layer": "estimator",
+      "ms": 9277,
+      "summary": "card site=giza"
+    },
+    {
+      "layer": "presenter",
+      "ms": 6756,
+      "summary": "213 words"
+    },
+    {
+      "layer": "critic",
+      "ms": 1330,
+      "summary": "passed"
+    }
+  ]
+}
