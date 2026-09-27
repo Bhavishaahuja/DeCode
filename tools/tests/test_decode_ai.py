@@ -505,7 +505,7 @@ def test_ai_adapter_runs_through_decode_graph(
                         "transform_id": "t1_1",
                         "text": "Child transform",
                         "evidence_passage_ids": [
-                            "giza-source-b-0002",
+                            "giza-source-a-0001",
                         ],
                     }
                 ]
@@ -564,5 +564,5 @@ def test_ai_adapter_runs_through_decode_graph(
     assert graph.links_for(
         "t1_1"
     )[0].passage_id == (
-        "giza-source-b-0002"
+        "giza-source-a-0001"
     )
