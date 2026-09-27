@@ -32,7 +32,7 @@ Without an API key, DeCode can run using its rule-based pipeline.
 ## Clone the repository
 
 ```cmd
-git clone https://github.com/chadcoulter/Stratum.git
+git clone https://github.com/Bhavishaahuja/Stratum.git
 cd Stratum
 ```
 
