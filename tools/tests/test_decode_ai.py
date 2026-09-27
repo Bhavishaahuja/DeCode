@@ -239,3 +239,330 @@ def test_string_tool_output_is_accepted(
     )
 
     assert result[0].transform_id == "t1"
+
+
+def test_ai_call_uses_prompt_tool_and_forced_tool_choice(
+    tmp_path,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    client = FakeClient([])
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    evaluator.core(PASSAGES)
+
+    call = client.messages.calls[0]
+
+    assert call["system"] == "Resolve through Monads."
+    assert call["model"] == evaluator.model
+
+    assert call["tools"][0]["name"] == (
+        "record_transforms"
+    )
+
+    assert call["tool_choice"] == {
+        "type": "tool",
+        "name": "record_transforms",
+    }
+
+
+def test_multiple_transforms_and_evidence_are_returned(
+    tmp_path,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    client = FakeClient(
+        [
+            {
+                "transform_id": "t1",
+                "text": "First transform",
+                "evidence_passage_ids": [
+                    "giza-source-a-0001",
+                    "giza-source-b-0002",
+                ],
+            },
+            {
+                "transform_id": "t2",
+                "text": "Second transform",
+                "evidence_passage_ids": [
+                    "giza-source-b-0002",
+                ],
+            },
+        ]
+    )
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    result = evaluator.core(PASSAGES)
+
+    assert [
+        item.transform_id
+        for item in result
+    ] == [
+        "t1",
+        "t2",
+    ]
+
+    assert [
+        link.passage_id
+        for link in result[0].evidence
+    ] == [
+        "giza-source-a-0001",
+        "giza-source-b-0002",
+    ]
+
+    assert [
+        link.passage_id
+        for link in result[1].evidence
+    ] == [
+        "giza-source-b-0002",
+    ]
+
+
+def test_missing_tool_use_returns_no_transforms(
+    tmp_path,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    class NoToolMessages:
+        def create(self, **kwargs):
+            return SimpleNamespace(
+                content=[
+                    SimpleNamespace(
+                        type="text",
+                        name=None,
+                    )
+                ]
+            )
+
+    client = SimpleNamespace(
+        messages=NoToolMessages()
+    )
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    assert evaluator.core(PASSAGES) == []
+
+
+def test_invalid_json_tool_output_returns_no_transforms(
+    tmp_path,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    client = FakeClient(
+        "{invalid json"
+    )
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    assert evaluator.core(PASSAGES) == []
+
+
+def test_wrong_tool_output_type_returns_no_transforms(
+    tmp_path,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    client = FakeClient(42)
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    assert evaluator.core(PASSAGES) == []
+
+
+def test_blank_transform_id_is_rejected(
+    tmp_path,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    client = FakeClient(
+        [
+            {
+                "transform_id": " ",
+                "text": "Transform",
+                "evidence_passage_ids": [],
+            }
+        ]
+    )
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="transform_id must not be empty",
+    ):
+        evaluator.core(PASSAGES)
+
+
+def test_blank_transform_text_is_rejected(
+    tmp_path,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    client = FakeClient(
+        [
+            {
+                "transform_id": "t1",
+                "text": " ",
+                "evidence_passage_ids": [],
+            }
+        ]
+    )
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="transform text must not be empty",
+    ):
+        evaluator.core(PASSAGES)
+
+
+def test_ai_adapter_runs_through_decode_graph(
+    tmp_path,
+):
+    from data.decode import (
+        extract_core_transforms,
+        recursively_extract_children,
+    )
+
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    class SequencedMessages:
+        def __init__(self):
+            self.calls = []
+
+        def create(self, **kwargs):
+            self.calls.append(kwargs)
+
+            if len(self.calls) == 1:
+                transforms = [
+                    {
+                        "transform_id": "t1",
+                        "text": "Root transform",
+                        "evidence_passage_ids": [
+                            "giza-source-a-0001",
+                        ],
+                    }
+                ]
+            elif len(self.calls) == 2:
+                transforms = [
+                    {
+                        "transform_id": "t1_1",
+                        "text": "Child transform",
+                        "evidence_passage_ids": [
+                            "giza-source-b-0002",
+                        ],
+                    }
+                ]
+            else:
+                transforms = []
+
+            return SimpleNamespace(
+                content=[
+                    SimpleNamespace(
+                        type="tool_use",
+                        name="record_transforms",
+                        input={
+                            "transforms": transforms,
+                        },
+                    )
+                ]
+            )
+
+    client = SimpleNamespace(
+        messages=SequencedMessages()
+    )
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    graph = extract_core_transforms(
+        PASSAGES,
+        evaluator.core,
+    )
+
+    recursively_extract_children(
+        "t1",
+        PASSAGES,
+        evaluator.child,
+        graph,
+    )
+
+    assert graph.transforms[
+        "t1"
+    ].root_transform_id == "t1"
+
+    assert graph.transforms[
+        "t1_1"
+    ].parent_transform_id == "t1"
+
+    assert graph.transforms[
+        "t1_1"
+    ].root_transform_id == "t1"
+
+    assert graph.transforms[
+        "t1_1"
+    ].depth == 1
+
+    assert graph.links_for(
+        "t1_1"
+    )[0].passage_id == (
+        "giza-source-b-0002"
+    )
