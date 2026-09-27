@@ -37,7 +37,7 @@ class ChatRequest(BaseModel):
     site: str | None = None
 
 
-app = FastAPI(title="Stratum chat", version="1.0")
+app = FastAPI(title="DeCode chat", version="1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 

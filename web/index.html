@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DeCode</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5EFE3;--band:#EFE6D4;--card:#FFFBF3;--ink:#1F1A14;--muted:#6B5F4E;--line:#DDD2BD;
+  --giza:#A85B1B;--uruk:#2B4A93;--mohenjo:#A23B28;--qin:#2C6E52;
+  --giza-t:#EED9BE;--uruk-t:#D3DBEE;--mohenjo-t:#EFD3C9;--qin-t:#D5E4DA;
+  --soil:#D9CCB2;--shadow:0 1px 0 rgba(31,26,20,.06),0 8px 24px -12px rgba(31,26,20,.18);
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1A1612;--band:#221D17;--card:#2A241D;--ink:#F2EADB;--muted:#B3A58E;--line:#3E352A;
+    --giza:#D98E4F;--uruk:#8AA4E6;--mohenjo:#E07C66;--qin:#73B995;
+    --giza-t:#3A2A1B;--uruk-t:#1F2742;--mohenjo-t:#3B2320;--qin-t:#1E3329;--soil:#3A3226;
+    --shadow:0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1A1612;--band:#221D17;--card:#2A241D;--ink:#F2EADB;--muted:#B3A58E;--line:#3E352A;
+  --giza:#D98E4F;--uruk:#8AA4E6;--mohenjo:#E07C66;--qin:#73B995;
+  --giza-t:#3A2A1B;--uruk-t:#1F2742;--mohenjo-t:#3B2320;--qin-t:#1E3329;--soil:#3A3226;
+  --shadow:0 8px 24px -12px rgba(0,0,0,.6);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--c,var(--ink));outline-offset:3px;border-radius:8px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.1;margin:0;letter-spacing:-.01em}
+p{margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono);font-size:13px;letter-spacing:.01em}
+.muted{color:var(--muted)}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--serif);font-weight:700;font-size:22px}
+.logo{display:grid;gap:3px;width:26px}
+.logo i{display:block;height:5px;border-radius:3px}
+.logo i:nth-child(1){background:var(--qin);width:80%}
+.logo i:nth-child(2){background:var(--mohenjo);width:100%}
+.logo i:nth-child(3){background:var(--giza);width:90%}
+.logo i:nth-child(4){background:var(--uruk);width:100%}
+.top nav{margin-left:auto;display:flex;gap:6px;align-items:center}
+.navlink{text-decoration:none;padding:8px 14px;border-radius:999px;font-weight:500;font-size:15px}
+.navlink:hover{background:var(--band)}
+.navlink[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.theme-btn{border:1px solid var(--line);background:var(--card);border-radius:999px;width:38px;height:38px;cursor:pointer;display:grid;place-items:center}
+
+/* buttons, badges */
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:11px 20px;font-weight:600;font-size:15px;text-decoration:none;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
+.pill.ghost{background:transparent;color:var(--ink)}
+.pill.site{background:var(--c);border-color:var(--c);color:#fff}
+.pill:hover{filter:brightness(1.08)}
+.pill:disabled{opacity:.45;cursor:not-allowed}
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;padding:3px 10px;border-radius:999px;border:1.5px solid var(--ink);white-space:nowrap;vertical-align:middle}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.badge.attested{background:var(--ink);color:var(--bg)}
+.badge.debated{border-style:dashed}
+.badge.inferred{border-style:dotted;border-width:2px}
+.badge.inferred::before{background:transparent;border:1.5px dotted currentColor;width:5px;height:5px}
+.badge.debated::before{background:transparent;border:1.5px solid currentColor;width:5px;height:5px}
+.badge.assumed{border-style:dashed;border-color:var(--muted);color:var(--muted)}
+.badge.assumed::before{display:none}
+.badge.attested-tag{border-color:var(--ink)}
+.badge.attested-tag::before{display:none}
+
+/* home */
+.hero{padding:56px 0 40px}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(52px,8vw,92px);font-weight:700;letter-spacing:-.03em}
+.tagline{font-family:var(--serif);font-size:clamp(22px,2.6vw,30px);font-weight:400;line-height:1.25;margin-top:14px;max-width:18ch;padding-left:clamp(48px,9vw,140px)}
+.summary{margin-top:22px;color:var(--muted);max-width:52ch;font-size:18px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.dig{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:var(--shadow)}
+.dig-head{display:flex;justify-content:space-between;align-items:baseline;padding:2px 6px 10px}
+.dig svg{display:block;width:100%;height:auto}
+.dig a{cursor:pointer}
+.dig a .layer{transition:transform .25s ease}
+.dig a:hover .layer,.dig a:focus .layer{transform:translateX(6px)}
+.dig a:focus{outline:none}
+.dig a:focus-visible .layer-hit{stroke:var(--ink);stroke-width:2.5}
+@media (prefers-reduced-motion:no-preference){
+  .settle{animation:settle .7s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes settle{from{transform:translateY(-26px);opacity:0}to{transform:none;opacity:1}}
+}
+.band{background:var(--band);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.section{padding:64px 0}
+.section h2{font-size:clamp(30px,4vw,42px)}
+.section .lede{color:var(--muted);margin-top:8px;max-width:60ch}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:28px}
+.site-card{--c:var(--ink);text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .2s ease,border-color .2s}
+.site-card:hover{transform:translateY(-4px);border-color:var(--c)}
+.site-card .art{background:var(--t);height:180px;display:grid;place-items:center;border-bottom:1px solid var(--line)}
+.site-card .body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:6px;flex:1}
+.site-card h3{font-size:26px}
+.site-card .go{margin-top:auto;padding-top:10px;color:var(--c);font-weight:600;font-size:15px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px;counter-reset:s}
+.step{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px}
+.step .n{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.step h3{font-size:28px;margin:6px 0 8px}
+.legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:22px;align-items:center}
+.legend span.desc{color:var(--muted);font-size:15px;margin-left:4px}
+footer{padding:36px 0 48px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* inner chrome */
+.crumbs{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:18px;padding-bottom:18px}
+.back{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;text-decoration:none;flex:none}
+.back:hover{border-color:var(--c)}
+.crumbs ol{list-style:none;display:flex;gap:8px;margin:0;padding:0;font-size:15px;flex-wrap:wrap}
+.crumbs li+li::before{content:"/";margin-right:8px;color:var(--muted)}
+.crumbs li a{text-decoration:none;color:var(--muted)}
+.crumbs li a:hover{color:var(--ink);text-decoration:underline}
+.modes{margin-left:auto;display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;gap:2px}
+.modes a{text-decoration:none;padding:7px 14px;border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap}
+.modes a:hover{background:var(--band)}
+.modes a[aria-current="page"]{background:var(--c);color:#fff}
+
+/* site page */
+.site-hero{display:grid;grid-template-columns:1fr 1.05fr;gap:40px;align-items:start;padding-top:10px;padding-bottom:36px}
+.site-hero h1{font-size:clamp(56px,9vw,104px);font-weight:700;letter-spacing:-.03em;color:var(--c)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta span{font-family:var(--mono);font-size:13px;background:var(--card);border:1px solid var(--line);padding:5px 12px;border-radius:999px}
+.brief{font-family:var(--serif);font-size:21px;line-height:1.5;margin-top:22px;max-width:36ch}
+.dyk{margin-top:24px;background:var(--t);border-radius:20px;padding:18px 20px;display:grid;gap:8px;max-width:46ch}
+.dyk strong{font-family:var(--serif);font-size:18px;font-weight:600}
+.map{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:14px;box-shadow:var(--shadow)}
+.map svg{display:block;width:100%;height:auto;border-radius:18px}
+.map .cap{display:flex;justify-content:space-between;padding:10px 6px 2px}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:56px}
+.opt{text-decoration:none;background:var(--card);border:1.5px solid var(--line);border-radius:26px;padding:26px;display:flex;flex-direction:column;gap:10px;min-height:250px;transition:border-color .2s,transform .2s}
+.opt:hover{border-color:var(--c);transform:translateY(-3px)}
+.opt .ic{width:56px;height:56px;border-radius:18px;background:var(--t);display:grid;place-items:center;color:var(--c)}
+.opt h3{font-size:28px}
+.opt p{color:var(--muted)}
+.opt .go{margin-top:auto;color:var(--c);font-weight:600}
+.others{display:flex;gap:10px;flex-wrap:wrap;padding-bottom:56px}
+.others a{text-decoration:none;padding:9px 16px;border-radius:999px;border:1.5px solid var(--line);font-weight:500;display:flex;gap:8px;align-items:center}
+.others a:hover{border-color:currentColor}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+/* page titles */
+.ptitle{padding-top:6px;padding-bottom:22px}
+.ptitle h1{font-size:clamp(36px,5vw,54px)}
+.ptitle p{color:var(--muted);margin-top:8px;max-width:62ch}
+
+/* chat */
+.chat{display:grid;grid-template-columns:1fr 300px;gap:22px;padding-bottom:56px;align-items:start}
+.thread{background:var(--card);border:1px solid var(--line);border-radius:26px;display:flex;flex-direction:column;height:min(78vh,760px);min-height:520px;overflow:hidden;position:sticky;top:84px}
+.msgs{flex:1;min-height:0;padding:22px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+.empty{margin:auto;text-align:center;max-width:44ch;display:grid;gap:14px;justify-items:center;padding:20px 0}
+.empty h2{font-size:30px}
+.sugs{display:flex;flex-direction:column;gap:8px;width:100%}
+.sug{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:16px;padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.sug:hover{border-color:var(--c)}
+.sug .mono{color:var(--muted)}
+.msg.user{align-self:flex-end;background:var(--c);color:#fff;padding:11px 16px;border-radius:20px 20px 6px 20px;max-width:78%}
+.msg.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--line);padding:16px 18px;border-radius:20px 20px 20px 6px;max-width:92%;display:grid;gap:12px}
+.msg.bot .ans{font-size:17px}
+.nums{display:flex;flex-wrap:wrap;gap:8px}
+.num{background:var(--t);border-radius:12px;padding:8px 12px;display:grid;line-height:1.2}
+.num b{font-family:var(--serif);font-size:20px}
+.num span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.cites{display:grid;gap:6px;border-top:1px dashed var(--line);padding-top:10px}
+.cite{font-size:14px;display:flex;gap:8px;align-items:baseline}
+.cite .k{font-family:var(--mono);font-size:12px;color:var(--c);flex:none}
+.ans p+p,.ans ul{margin-top:8px}
+.ans ul{padding-left:20px;display:grid;gap:4px}
+.ans code{font-family:var(--mono);font-size:.9em}
+sup.fn{font-family:var(--mono);font-size:11px;color:var(--c);margin-left:1px}
+.cite a{color:inherit;text-decoration-color:var(--line)}
+.cite .tag{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.critic.flagged{border-left-color:#c0392b}
+.critic ul{margin:6px 0 0;padding-left:18px}
+.rows{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:10px}
+.row{display:grid;gap:3px;font-size:14px}
+.row .rh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row span.muted{font-size:13px}
+.critic{font-size:14px;background:var(--card);border-radius:12px;padding:8px 12px;border-left:3px solid var(--c)}
+.bot-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.composer{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line);background:var(--card)}
+.composer input{flex:1;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:12px 18px;font:inherit;min-width:0}
+.composer input:focus{outline:none;border-color:var(--c)}
+.side{display:grid;gap:18px;align-content:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px}
+.panel h3{font-size:20px;margin-bottom:10px}
+.agents{list-style:none;margin:0;padding:0;display:grid;gap:4px;counter-reset:a}
+.agents li{counter-increment:a;display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:center;padding:6px 8px;border-radius:10px;font-size:15px;transition:background .2s}
+.agents li::before{content:counter(a);font-family:var(--mono);font-size:12px;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;color:var(--muted)}
+.agents li small{display:block;color:var(--muted);font-size:13px;line-height:1.3}
+.agents li.on{background:var(--t)}
+.agents li.on::before{border-color:var(--c);background:var(--c);color:#fff}
+.agents li.done::before{border-color:var(--c);color:var(--c)}
+.status{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.status.live i{background:#3a9d5d}
+.thinking{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:15px}
+.thinking i{width:7px;height:7px;border-radius:50%;background:var(--c);animation:blink 1s infinite}
+.thinking i:nth-child(2){animation-delay:.15s}.thinking i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:.25}}
+
+/* build */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:24px}
+.tab{border:0;background:none;padding:12px 16px;cursor:pointer;font-weight:600;font-size:16px;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-color:var(--c)}
+.tab:hover{color:var(--ink)}
+.build-body{padding-bottom:60px}
+.sys-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sys{text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:18px;padding:16px;cursor:pointer;display:grid;gap:8px;min-height:108px}
+.sys:hover{border-color:var(--c)}
+.sys[aria-pressed="true"]{border-color:var(--c);background:var(--t)}
+.sys .top-row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.sys b{font-family:var(--serif);font-weight:600;font-size:18px;line-height:1.2}
+.sys.pending b{color:var(--muted)}
+.teardown{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;align-items:start}
+.detail{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;position:sticky;top:84px;display:grid;gap:16px}
+.detail h3{font-size:26px}
+.then-now{display:grid;gap:10px}
+.then-now div{border-radius:14px;padding:12px 14px;background:var(--bg);border:1px solid var(--line)}
+.then-now .lbl{font-family:var(--mono);font-size:12px;color:var(--muted);display:block;margin-bottom:2px}
+.then-now .lesson{background:var(--t);border-color:transparent}
+.then-now .lesson p{font-family:var(--serif);font-size:19px}
+.tl{list-style:none;margin:0;padding:0;position:relative;max-width:760px}
+.tl::before{content:"";position:absolute;left:111px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl li{display:grid;grid-template-columns:100px 1fr;gap:28px;padding:10px 0 22px;position:relative}
+.tl li::after{content:"";position:absolute;left:105px;top:16px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--c)}
+.tl .yr{font-family:var(--mono);font-size:14px;text-align:right;padding-top:8px}
+.tl .ev{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 18px;display:grid;gap:6px}
+.tl .ev b{font-family:var(--serif);font-weight:600;font-size:19px}
+.est{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.est-shared{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{display:grid;gap:6px}
+.field label{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:500;font-size:15px}
+.field input{border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:10px 12px;font:inherit;font-family:var(--mono);width:100%}
+.field input:focus{outline:none;border-color:var(--c)}
+.era{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;display:grid;gap:14px}
+.era h3{font-size:24px}
+.era .out{background:var(--t);border-radius:16px;padding:14px 16px;display:flex;gap:26px;flex-wrap:wrap}
+.era .out b{font-family:var(--serif);font-size:34px;display:block;line-height:1}
+.era .out span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.note{font-size:14px;color:var(--muted);border:1.5px dashed var(--line);border-radius:14px;padding:10px 14px}
+.race{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.stackbox{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;display:grid;gap:14px;justify-items:center}
+.stackbox h3{font-size:22px;justify-self:start}
+.stack{display:flex;flex-direction:column-reverse;align-items:center;gap:3px;width:100%;height:230px;justify-content:flex-start}
+.stack i{display:block;height:12px;border-radius:4px;background:var(--line);transition:background .15s}
+.stack i.f{background:var(--c)}
+.stackbox .clock{font-family:var(--serif);font-size:40px;font-weight:600;line-height:1}
+.stackbox .clock small{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:400;margin-left:6px}
+.race-ctrl{grid-column:1/-1;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.race-ctrl input[type=range]{flex:1;min-width:180px;accent-color:var(--c)}
+.changes{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+/* decode */
+.pipe{list-style:none;margin:0 0 28px;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pipe li{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:6px}
+.pipe .n{font-family:var(--mono);font-size:13px;color:var(--c)}
+.pipe b{font-family:var(--serif);font-size:21px;font-weight:600}
+.pipe p{color:var(--muted);font-size:15px}
+.decode{display:grid;grid-template-columns:1fr 1.3fr;gap:22px;padding-bottom:60px;align-items:start}
+.source{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;display:grid;gap:12px}
+.source .title{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.25}
+.passage{background:var(--bg);border-left:3px solid var(--c);border-radius:0 12px 12px 0;padding:12px 14px;font-family:var(--serif);font-size:17px}
+.queue{display:grid;gap:12px}
+.claim{background:var(--card);border:1.5px solid var(--line);border-radius:22px;padding:18px;display:grid;gap:12px}
+.claim.approved{border-color:var(--c)}
+.claim.sent{opacity:.7}
+.claim-h{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.claim-h b{font-family:var(--serif);font-weight:600;font-size:18px}
+.claim .acts{display:flex;gap:8px;flex-wrap:wrap}
+.claim .acts .pill{padding:8px 14px;font-size:14px}
+.progress{height:8px;background:var(--line);border-radius:999px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--c);transition:width .3s}
+
+@media (max-width:980px){
+  .hero-grid,.site-hero,.teardown,.decode,.chat{grid-template-columns:1fr}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .detail{position:static}
+  .pipe{grid-template-columns:repeat(2,1fr)}
+  .side{grid-template-columns:1fr 1fr}
+}
+@media (max-width:680px){
+  body{font-size:16px}
+  .wrap{padding:0 18px}
+  .cards,.steps,.options,.sys-grid,.est,.est-shared,.race,.changes,.pipe,.side{grid-template-columns:1fr}
+  .modes{margin-left:0;width:100%;overflow-x:auto}
+  .modes a{flex:1;text-align:center;padding:8px 10px}
+  .top nav .navlink.hide-sm{display:none}
+  .tl::before{left:71px}.tl li{grid-template-columns:60px 1fr;gap:26px}.tl li::after{left:65px}
+  .opt{min-height:0}
+  .thread{height:72vh;position:static}
+  .hero{padding-top:32px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.site-card .art{position:relative;overflow:hidden}
+.site-card .art canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.site-card .art.has3d svg{visibility:hidden}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#/" aria-label="DeCode home"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>DeCode</a>
+    <nav>
+      <a class="navlink" href="#/" id="nav-home">Home</a>
+      <a class="navlink hide-sm" href="#/#sites">Sites</a>
+      <button class="theme-btn" id="theme" aria-label="Switch light or dark">◐</button>
+    </nav>
+  </div>
+</header>
+<main id="app"></main>
+<footer><div class="wrap"><span>DeCode. Built for a hackathon. Every claim shows its evidence grade.</span><span class="mono" id="apiStatus"></span></div></footer>
+
+<script>
+/* ---------- config ---------- */
+const API_BASE = "http://localhost:8000"; // DeCode chat API (agents/server.py)
+const TOOLS_BASE = "http://localhost:8001"; // DeCode tools API (tools/app.py): presets and verified claims
+const API_TIMEOUT = 2500;   // health checks
+const CHAT_TIMEOUT = 65000; // a live answer takes about 30 seconds, the server cuts off at 60
+
+/* ---------- data ---------- */
+const SITES = {
+  giza:{name:"Giza",country:"Egypt",era:"c. 2560 BCE",period:"Old Kingdom",coords:"29.98° N, 31.13° E",
+    card:"Pyramids on a limestone plateau",
+    brief:"On a limestone plateau above the Nile valley, Old Kingdom crews raised the Great Pyramid for the pharaoh Khufu. It stayed the tallest human-made structure on Earth for nearly four thousand years.",
+    fact:{t:"Work gangs painted their team names on hidden blocks inside the pyramid, with names like Friends of Khufu.",g:"attested"},
+    qs:[["How long would Giza take with modern cranes?","estimate"],["How did moving blocks at Giza compare to today?","compare"],["Did aliens build the pyramids?","fringe"]],
+    unit:"blocks",est:{total:2300000,days:300,aC:190,aS:20,aR:2,mC:20,mS:6,mR:80},totalTag:"attested",shape:"pyramid",
+    systems:{
+      site:{a:"The base was levelled and lined up with the compass points to within a fraction of a degree, likely by sighting stars or the sun.",m:"GPS survey and robotic total stations.",l:"Careful reference points beat fancy tools.",g:"debated"},
+      materials:{a:"Core limestone was cut right on the plateau. Fine white casing stone came from Tura and granite from Aswan.",m:"Local aggregates plus scheduled deliveries of specialist stone.",l:"Source close, import only what you must.",g:"attested"},
+      transport:{a:"Blocks were moved on wooden sledges over sand that was wetted to cut friction.",m:"Engineered haul roads and low-friction skid systems.",l:"Cheap friction fixes can beat expensive horsepower.",g:"debated"},
+      water:{a:"A harbour and canals let boats bring stone close to the plateau during the flood season.",m:"Barge logistics and temporary site drainage.",l:"Use water as a road when you can.",g:"debated"},
+      structure:{a:"Mass masonry, with stacked relieving chambers above the King's Chamber to spread the load.",m:"Designed load paths checked with structural models.",l:"Design around where the weight wants to go.",g:"attested"},
+      finishes:{a:"Polished white limestone casing, mostly stripped away in later centuries.",m:"Precast cladding panels.",l:"The finish is the part people remember.",g:"attested"},
+      workforce:{a:"Rotating crews lived in a nearby workers' town with bakeries and breweries.",m:"Shift rosters and on-site camps.",l:"Feed and house the crew and the crew builds.",g:"attested"},
+      quality:{a:"The base is close to level and square, which points to repeated checking during work.",m:"Laser scanning and survey sign-offs.",l:"Check early, check often.",g:"inferred"},
+      controls:{a:"Labour was split into gangs and smaller groups, and papyrus logbooks tracked stone deliveries.",m:"Schedules, daily logs and progress dashboards.",l:"Write it down and the project stays on track.",g:"attested"}},
+    timeline:[["c. 2600 BCE","Sneferu's builders test pyramid shapes at Meidum and Dahshur","attested"],["c. 2560 BCE","The Great Pyramid of Khufu is finished","attested"],["c. 2520 BCE","Khafre's pyramid and, most likely, the Great Sphinx","debated"],["c. 2490 BCE","Menkaure's smaller pyramid completes the trio","attested"],["1883","Petrie publishes his precise survey of the plateau","attested"],["2013","Papyri from Wadi al-Jarf reveal a logbook of stone deliveries to Giza","attested"]],
+    source:{t:"The Pyramids and Temples of Gizeh",a:"W. M. Flinders Petrie",y:"1883",p:"p. 42",lic:"Public domain",pass:"Petrie's survey notes on how the blocks were set and moved, used as the starting point for the transport claim."}},
+  uruk:{name:"Uruk",country:"Iraq",era:"c. 3500 BCE",period:"Uruk period",coords:"31.32° N, 45.64° E",
+    card:"One of the first true cities",
+    brief:"In the marshy south of Mesopotamia, Uruk grew into one of the first true cities. Its temple precincts were built from mudbrick and covered in patterns made from thousands of painted clay cones.",
+    fact:{t:"Some of the earliest known writing comes from clay tablets found in Uruk's Eanna precinct, and much of it is bookkeeping.",g:"attested"},
+    qs:[["How long would a temple platform at Uruk take today?","estimate"],["How did Uruk builders compare to modern ones?","compare"],["Did the Anunnaki build Uruk?","fringe"]],
+    unit:"mudbricks",est:{total:3000000,days:250,aC:100,aS:12,aR:40,mC:10,mS:4,mR:2000},totalTag:"assumed",shape:"ziggurat",
+    systems:{
+      materials:{a:"Sun-dried mudbrick for the bulk, baked brick and bitumen where water was a risk.",m:"Stabilised earth blocks and damp-proof membranes.",l:"Spend the expensive material only where it matters.",g:"attested"},
+      structure:{a:"Temples stood on raised platforms with thick buttressed walls.",m:"Raised podiums and pilaster-stiffened walls.",l:"Height and thickness buy you stability.",g:"attested"},
+      finishes:{a:"Clay cones with coloured heads were pushed into wet plaster to make mosaics.",m:"Tile and mosaic cladding systems.",l:"A good finish also protects the wall.",g:"attested"},
+      workforce:{a:"Mass-produced bevelled-rim bowls may have held grain rations for workers.",m:"Canteens and standard meal allowances.",l:"Standard rations make large crews possible.",g:"debated"}},
+    timeline:[["c. 4000 BCE","Settlement grows fast in the marshy south","inferred"],["c. 3500 BCE","Eanna precinct built, with cone mosaic walls","attested"],["c. 3300 BCE","Proto-cuneiform tablets record goods and labour","attested"],["c. 2900 BCE","A great city wall rises, later linked to Gilgamesh","debated"],["1850s","William Loftus makes early excavations","attested"]],
+    source:null},
+  mohenjo:{name:"Mohenjo-daro",country:"Pakistan",era:"c. 2500 BCE",period:"Indus Civilisation",coords:"27.33° N, 68.14° E",
+    card:"A planned city of baked brick",
+    brief:"Beside the Indus river, Mohenjo-daro was laid out on a grid of streets with baked brick houses, private wells and covered drains. It is one of the best planned cities of the Bronze Age.",
+    fact:{t:"The Great Bath was made watertight with tightly fitted bricks and a layer of bitumen.",g:"attested"},
+    qs:[["How long would Mohenjo-daro's bricks take to make today?","estimate"],["How do its drains compare to modern sewers?","compare"],["Was Mohenjo-daro destroyed by an ancient nuclear blast?","fringe"]],
+    unit:"baked bricks",est:{total:4000000,days:250,aC:120,aS:10,aR:30,mC:12,mS:5,mR:1500},totalTag:"assumed",shape:"bath",
+    systems:{
+      site:{a:"Main streets ran on a rough grid with the citadel mound set apart to the west.",m:"Master-planned street grids and zoning.",l:"Plan the streets first and the city follows.",g:"attested"},
+      materials:{a:"Baked bricks were made in consistent proportions of about 1 to 2 to 4.",m:"Standard modular bricks and blocks.",l:"Standard parts make building faster.",g:"attested"},
+      water:{a:"Covered brick drains ran along the streets, fed by bathrooms in private houses.",m:"Separated sewer networks with access chambers.",l:"Sanitation is infrastructure, not an extra.",g:"attested"},
+      structure:{a:"The Great Bath used fitted brick, gypsum mortar and bitumen to hold water.",m:"Reinforced concrete tanks with waterproof liners.",l:"Layered defences stop leaks.",g:"attested"},
+      controls:{a:"Shared weights and brick sizes across cities hint at central standards.",m:"National building codes.",l:"Shared standards scale across sites.",g:"debated"}},
+    timeline:[["c. 2600 BCE","The city is founded on raised brick platforms","inferred"],["c. 2500 BCE","Great Bath and citadel buildings stand","attested"],["c. 1900 BCE","The city declines, possibly as rivers shift","debated"],["1922","R. D. Banerji identifies the site","attested"],["1980","Listed as a UNESCO World Heritage Site","attested"]],
+    source:null},
+  qin:{name:"Qin walls and roads",short:"Qin",country:"China",era:"221 BCE",period:"Qin dynasty",coords:"34.33° N, 108.71° E",
+    card:"Walls and roads for a new empire",
+    brief:"After unifying China in 221 BCE, the Qin state linked older frontier walls and cut roads out from its capital at Xianyang. Much of the wall was rammed earth, pounded hard layer by layer.",
+    fact:{t:"The Straight Road ran roughly 700 km north from near the capital toward the frontier.",g:"debated"},
+    qs:[["How long would a stretch of Qin wall take with modern machines?","estimate"],["How did Qin roads compare to modern highways?","compare"],["Can you see the Great Wall from space?","fringe"]],
+    unit:"cubic metres of rammed earth",est:{total:1000000,days:250,aC:1000,aS:30,aR:1.5,mC:40,mS:5,mR:400},totalTag:"assumed",shape:"wall",
+    systems:{
+      site:{a:"The Straight Road was cut through hills and across valleys to keep a direct line north.",m:"Highway alignment design with cuts and embankments.",l:"A straight route saves time for everyone after.",g:"debated"},
+      transport:{a:"Records say the Qin set a standard axle width for carts across the empire.",m:"Standard lane widths and vehicle rules.",l:"One standard lets every road serve every cart.",g:"attested"},
+      structure:{a:"Earth was pounded in thin layers inside wooden frames to make hard walls.",m:"Compacted earthworks with vibrating rollers.",l:"Thin, well-compacted layers make strong ground.",g:"attested"},
+      workforce:{a:"Soldiers and conscripted labourers worked the frontier in huge numbers.",m:"Contracted crews with mechanised plant.",l:"Labour was the machine.",g:"attested"}},
+    timeline:[["221 BCE","Qin unifies the warring states","attested"],["215 BCE","General Meng Tian leads an army north and extends the walls","attested"],["212 BCE","Work begins on the Straight Road","attested"],["210 BCE","The First Emperor dies","attested"],["206 BCE","The Qin dynasty falls","attested"]],
+    source:null}
+};
+const ORDER = ["giza","uruk","mohenjo","qin"];
+const SYSTEMS = [["site","Site and setting-out"],["materials","Materials and supply"],["transport","Transport and lifting"],["water","Water and sanitation"],["structure","Structure and form"],["finishes","Finishes"],["workforce","Workforce"],["quality","Quality control"],["controls","Project controls"]];
+const AGENTS = [["Router","Picks the question type, site and systems"],["Archaeologist","Finds and grades the evidence"],["Engineer","Maps it to building systems, checks the physics"],["Estimator","Runs every number through a tool"],["Builder","Turns it into a modern playbook"],["Presenter","Writes the cited answer"],["Critic","Checks for unsourced claims and numbers"]];
+const TRACE_TO_AGENT = {router:0,prefetch:1,archaeologist:1,engineer:2,estimator:3,builder:4,presenter:5,critic:6};
+const MODES = [["chat","Ask"],["build","Build"],["decode","Decode"]];
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function md(text){
+  // small, safe markdown: escape first, then bold, italics, code, bullets and [^n] footnotes
+  const inline = t => esc(t)
+    .replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")
+    .replace(/(^|[^*])\*([^*\s][^*]*?)\*/g,"$1<i>$2</i>")
+    .replace(/`([^`]+)`/g,"<code>$1</code>")
+    .replace(/\[\^(\d+)\]/g,'<sup class="fn">$1</sup>');
+  const out=[]; let list=null;
+  for(const raw of String(text||"").split("\n")){
+    const line=raw.trim();
+    const bullet=line.match(/^[-*]\s+(.*)$/);
+    if(bullet){ (list ||= []).push(`<li>${inline(bullet[1])}</li>`); continue; }
+    if(list){ out.push(`<ul>${list.join("")}</ul>`); list=null; }
+    if(line) out.push(`<p>${inline(line)}</p>`);
+  }
+  if(list) out.push(`<ul>${list.join("")}</ul>`);
+  return out.join("");
+}
+const fmt = n => Number(n).toLocaleString("en-US",{maximumFractionDigits:1});
+const badge = g => `<span class="badge ${g}" title="${gradeHelp[g]}">${g}</span>`;
+const gradeHelp = {attested:"Stated directly in a reliable source",debated:"Sources disagree or evidence is partial",inferred:"Reasoned from evidence, not stated outright"};
+const short = s => s.short || s.name;
+const siteStyle = k => `--c:var(--${k});--t:var(--${k}-t)`;
+function estimate(e){
+  const perA = e.aC*e.aR*e.days, perM = e.mC*e.mR*e.days;
+  return {aY: perA? e.total/perA : 0, aP:e.aC*e.aS, mY: perM? e.total/perM : 0, mP:e.mC*e.mS};
+}
+const estState = {}; ORDER.forEach(k=>estState[k]={...SITES[k].est});
+const reviewState = {}; const chats = {}; const buildTab = {}; const pickSys = {};
+
+/* ---------- illustrations ---------- */
+function glyph(k,s=64){
+  const c=`var(--${k})`;
+  const g={
+    giza:`<path d="M8 52 L32 12 L56 52 Z" fill="${c}"/><path d="M32 12 L40 52 H56 Z" fill="#000" opacity=".18"/>`,
+    uruk:`<rect x="10" y="40" width="44" height="12" rx="2" fill="${c}"/><rect x="18" y="28" width="28" height="12" rx="2" fill="${c}" opacity=".85"/><rect x="25" y="16" width="14" height="12" rx="2" fill="${c}" opacity=".7"/>`,
+    mohenjo:`<rect x="8" y="18" width="48" height="34" rx="3" fill="none" stroke="${c}" stroke-width="4"/><rect x="18" y="28" width="28" height="14" rx="2" fill="${c}" opacity=".5"/><path d="M8 30 H56 M8 40 H56 M22 18 V52 M42 18 V52" stroke="${c}" stroke-width="1.5" opacity=".35"/>`,
+    qin:`<path d="M4 50 H60 V32 H54 V26 H48 V32 H40 V26 H34 V32 H26 V26 H20 V32 H12 V26 H6 V32 H4 Z" fill="${c}"/><path d="M4 40 H60" stroke="#000" opacity=".15" stroke-width="2"/>`
+  };
+  return `<svg viewBox="0 0 64 64" width="${s}" height="${s}" aria-hidden="true">${g[k]}</svg>`;
+}
+function wave(y,amp,seed,w=600){
+  let d=`M0 ${y}`;
+  for(let x=0;x<=w;x+=30){d+=` L${x} ${(y+Math.sin((x+seed)/47)*amp+Math.cos((x+seed*2)/83)*amp*.6).toFixed(1)}`}
+  return d;
+}
+function digSVG(){
+  const layers=[
+    {k:null,label:"Today",era:"",h:52,fill:"var(--soil)"},
+    {k:"qin",label:"Qin walls and roads",era:"221 BCE"},
+    {k:"mohenjo",label:"Mohenjo-daro",era:"c. 2500 BCE"},
+    {k:"giza",label:"Giza",era:"c. 2560 BCE"},
+    {k:"uruk",label:"Uruk",era:"c. 3500 BCE"}];
+  let y=40, out="", i=0;
+  const W=600;
+  // sky strip
+  out+=`<rect x="0" y="0" width="${W}" height="60" fill="var(--card)"/>`;
+  out+=`<g class="settle" style="animation-delay:0s"><path d="${wave(46,3,5)} L${W} 110 L0 110 Z" fill="var(--soil)"/>
+    <path d="${wave(46,3,5)}" fill="none" stroke="var(--qin)" stroke-width="3" opacity=".6"/>
+    <text x="22" y="82" font-family="DM Mono,monospace" font-size="13" fill="var(--muted)">Today</text>
+    <g transform="translate(470,14)"><rect x="0" y="16" width="4" height="22" fill="var(--muted)"/><path d="M-6 38 h16 l-8 10 z" fill="var(--muted)"/><rect x="-10" y="12" width="24" height="5" rx="2" fill="var(--muted)"/></g></g>`;
+  y=100;
+  layers.slice(1).forEach((L,idx)=>{
+    const h=70, top=y, seed=idx*37+11;
+    const path=`${wave(top,4,seed)} L${W} ${top+h+10} L0 ${top+h+10} Z`;
+    out+=`<a href="#/site/${L.k}" aria-label="Open ${L.label}, ${L.era}"><g class="settle" style="animation-delay:${.12*(idx+1)}s"><g class="layer">
+      <path class="layer-hit" d="${path}" fill="var(--${L.k}-t)" stroke="var(--${L.k})" stroke-width="1.5"/>
+      <path d="${wave(top+h*.55,2,seed+9)}" fill="none" stroke="var(--${L.k})" stroke-width="1" stroke-dasharray="2 6" opacity=".6"/>
+      <text x="22" y="${top+30}" font-family="DM Mono,monospace" font-size="13" fill="var(--muted)">${L.era}</text>
+      <text x="22" y="${top+56}" font-family="Fraunces,Georgia,serif" font-size="24" font-weight="600" fill="var(--${L.k})">${L.label}</text>
+      <g transform="translate(${420+idx*22},${top+8}) scale(.85)">${glyph(L.k,64).replace(/<\/?svg[^>]*>/g,"")}</g>
+      <text x="${W-24}" y="${top+42}" text-anchor="end" font-family="Instrument Sans,sans-serif" font-size="14" font-weight="600" fill="var(--${L.k})">Dig in</text>
+    </g></g></a>`;
+    y+=h+6;
+  });
+  return `<svg viewBox="0 0 ${W} ${y+14}" role="img" aria-label="Soil layers, one per site, youngest on top">${out}</svg>`;
+}
+function mapSVG(k){
+  const c=`var(--${k})`, t=`var(--${k}-t)`;
+  const txt=(x,y,s,a="start",sz=12)=>`<text x="${x}" y="${y}" text-anchor="${a}" font-family="DM Mono,monospace" font-size="${sz}" fill="var(--ink)">${s}</text>`;
+  const grid=`<pattern id="g${k}" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="${c}" stroke-opacity=".12"/></pattern>`;
+  const north=`<g transform="translate(372,30)"><circle r="14" fill="var(--card)" stroke="${c}"/><path d="M0 -9 L5 5 L0 2 L-5 5 Z" fill="${c}"/>${txt(0,-19,"N","middle",11)}</g>`;
+  const river=(d,label,lx,ly)=>`<path d="${d}" fill="none" stroke="#6b8fb8" stroke-width="16" stroke-linecap="round" opacity=".45"/><path d="${d}" fill="none" stroke="#6b8fb8" stroke-width="2" opacity=".8"/>${txt(lx,ly,label)}`;
+  const m={
+    giza:`${river("M340 -10 C320 60 360 130 330 200 S350 260 340 280","Nile",300,70)}
+      <path d="M40 60 L290 40 L300 230 L60 240 Z" fill="${c}" opacity=".08"/>
+      <g transform="translate(150,90) rotate(-3)"><rect width="66" height="66" fill="${t}" stroke="${c}" stroke-width="2"/><path d="M0 0L66 66M66 0L0 66" stroke="${c}"/></g>
+      <g transform="translate(205,150) rotate(-3)"><rect width="54" height="54" fill="${t}" stroke="${c}" stroke-width="2"/><path d="M0 0L54 54M54 0L0 54" stroke="${c}"/></g>
+      <g transform="translate(232,204) rotate(-3)"><rect width="26" height="26" fill="${t}" stroke="${c}" stroke-width="2"/><path d="M0 0L26 26M26 0L0 26" stroke="${c}"/></g>
+      ${txt(150,82,"Khufu")}${txt(270,160,"Khafre")}${txt(264,244,"Menkaure","start",11)}
+      <ellipse cx="282" cy="130" rx="10" ry="5" fill="${c}"/>${txt(296,122,"Sphinx","start",11)}
+      <g opacity=".8">${[0,1,2,3].map(i=>`<rect x="${86+i*12}" y="200" width="9" height="9" fill="none" stroke="${c}"/>`).join("")}</g>${txt(74,226,"Workers' town","start",11)}
+      <path d="M70 120 q20 -10 40 0 t30 10" fill="none" stroke="${c}" stroke-dasharray="3 4"/>${txt(58,112,"Quarry","start",11)}`,
+    uruk:`${river("M-10 60 C80 90 60 170 140 200 S260 270 300 280","Old Euphrates",20,52)}
+      <path d="M110 40 C200 10 320 50 330 130 C340 210 260 250 180 240 C100 230 70 170 80 110 Z" fill="${c}" opacity=".08" stroke="${c}" stroke-width="3" stroke-dasharray="8 5"/>
+      ${txt(262,40,"City wall")}
+      <rect x="200" y="90" width="80" height="56" rx="4" fill="${t}" stroke="${c}" stroke-width="2"/>${txt(206,84,"Eanna precinct")}
+      ${[0,1,2,3,4,5].map(i=>`<circle cx="${212+(i%3)*24}" cy="${108+Math.floor(i/3)*22}" r="4" fill="${c}"/>`).join("")}
+      <rect x="126" y="112" width="44" height="34" rx="3" fill="${t}" stroke="${c}" stroke-width="2"/><rect x="136" y="120" width="24" height="18" fill="${c}" opacity=".5"/>${txt(104,166,"Anu ziggurat")}`,
+    mohenjo:`${river("M360 -10 C330 80 380 160 350 280","Indus",306,250)}
+      <rect x="44" y="60" width="96" height="140" rx="8" fill="${t}" stroke="${c}" stroke-width="2"/>${txt(44,52,"Citadel mound")}
+      <rect x="62" y="96" width="44" height="26" fill="none" stroke="${c}" stroke-width="2"/><rect x="72" y="103" width="24" height="12" fill="#6b8fb8" opacity=".6"/>${txt(58,140,"Great Bath","start",11)}
+      <rect x="170" y="50" width="130" height="180" rx="8" fill="${c}" opacity=".06"/>
+      ${[0,1,2,3,4].map(i=>`<path d="M${180+i*28} 56 V224" stroke="${c}" stroke-width="${i==2?3:1.2}"/>`).join("")}
+      ${[0,1,2,3,4,5].map(i=>`<path d="M174 ${70+i*30} H296" stroke="${c}" stroke-width="${i==2?3:1.2}"/>`).join("")}
+      ${txt(176,246,"Lower town grid")}`,
+    qin:`${river("M-10 210 C80 190 160 230 240 205 S360 190 410 200","Wei river",20,244)}
+      <path d="M20 44 L70 30 L120 50 L170 34 L220 48 L270 30 L320 46 L380 36" fill="none" stroke="${c}" stroke-width="5" stroke-linejoin="round"/>
+      ${txt(20,24,"Frontier walls")}
+      <path d="M170 196 L180 150 L176 110 L186 60 L184 44" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="7 5"/>${txt(192,120,"Straight Road")}
+      <path d="M170 196 L60 150 M170 196 L300 150 M170 196 L260 250" fill="none" stroke="${c}" stroke-width="1.5" stroke-dasharray="3 4" opacity=".7"/>
+      <circle cx="170" cy="196" r="9" fill="${c}"/><circle cx="170" cy="196" r="16" fill="none" stroke="${c}"/>${txt(126,178,"Xianyang")}`
+  };
+  return `<svg viewBox="0 0 400 260" role="img" aria-label="Illustrated map of ${SITES[k].name}"><defs>${grid}</defs><rect width="400" height="260" fill="${t}" opacity=".5"/><rect width="400" height="260" fill="url(#g${k})"/>${m[k]}${north}</svg>`;
+}
+const icons={
+  chat:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>`,
+  build:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18"/><path d="M5 20V10h5v10M10 20V6h5v14M15 20v-7h4v7"/></svg>`,
+  decode:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="M15 15l5 5M8 10h4M10 8v4"/></svg>`,
+  back:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>`
+};
+
+/* ---------- views ---------- */
+function homeView(){
+  return `
+  <section class="hero"><div class="wrap hero-grid">
+    <div>
+      <h1>DeCode</h1>
+      <p class="tagline">to Encode</p>
+      <p class="summary">DeCode uses AI to fight misinformation about how the ancient wonders were built, and gives answers backed by real evidence. Every claim is graded, sourced and checked by a person, so you can see exactly how sure we are.</p>
+      <div class="hero-actions"><a class="pill" href="#sites">Pick a site</a><a class="pill ghost" href="#how">How DeCode works</a></div>
+    </div>
+    <div class="dig"><div class="dig-head"><span class="mono muted">Dig through time</span><span class="mono muted">Tap a layer</span></div>${digSVG()}</div>
+  </div></section>
+
+  <section class="section band" id="sites"><div class="wrap">
+    <h2>Pick a site</h2>
+    <p class="lede" style="max-width:none">Four places and four ways of building, each with its own map, a quick brief and three ways to explore.</p>
+    <div class="cards">${ORDER.map(k=>{const s=SITES[k];return `
+      <a class="site-card" href="#/site/${k}" style="${siteStyle(k)}">
+        <div class="art" data-model="${k}">${glyph(k,76)}</div>
+        <div class="body"><span class="mono muted">${s.country}, ${s.era}</span><h3>${short(s)}</h3><p class="muted">${s.card}</p><span class="go">Open ${short(s)}</span></div>
+      </a>`}).join("")}</div>
+  </div></section>
+
+  <section class="section" id="how"><div class="wrap">
+    <h2>How DeCode works</h2>
+    <p class="lede">Three steps, from old books to answers you can trust.</p>
+    <div class="steps">
+      <div class="step"><span class="n">Step 1</span><h3>Dig</h3><p class="muted">We gather artifacts, tablets, scriptures and old surveys that are legal to use.</p></div>
+      <div class="step"><span class="n">Step 2</span><h3>Decode</h3><p class="muted">AI reads those sources back into short claims and grades each one. A person reviews every claim before it goes live.</p></div>
+      <div class="step"><span class="n">Step 3</span><h3>Ask</h3><p class="muted">Seven AI agents answer your question with citations, real numbers from tools and a critic check.</p></div>
+    </div>
+    <div class="legend">${["attested","debated","inferred"].map(g=>`<span>${badge(g)}<span class="desc">${gradeHelp[g]}</span></span>`).join("")}</div>
+  </div></section>`;
+}
+function chrome(k,mode){
+  const s=SITES[k], label=MODES.find(m=>m[0]===mode)?.[1];
+  return `<div class="wrap crumbs">
+    <a class="back" href="#/site/${k}" aria-label="Back to ${short(s)}">${icons.back}</a>
+    <ol aria-label="Breadcrumb"><li><a href="#/">Home</a></li><li><a href="#/site/${k}">${short(s)}</a></li><li aria-current="page">${label}</li></ol>
+    <nav class="modes" aria-label="Modes">${MODES.map(([m,l])=>`<a href="#/site/${k}/${m}" ${m===mode?'aria-current="page"':""}>${l}</a>`).join("")}</nav>
+  </div>`;
+}
+function siteView(k){
+  const s=SITES[k];
+  return `<div style="${siteStyle(k)}">
+  <div class="wrap crumbs"><a class="back" href="#/" aria-label="Back to home">${icons.back}</a><ol aria-label="Breadcrumb"><li><a href="#/">Home</a></li><li aria-current="page">${short(s)}</li></ol></div>
+  <div class="wrap site-hero">
+    <div>
+      <h1>${s.name}</h1>
+      <div class="meta"><span>${s.country}</span><span>${s.period}, ${s.era}</span><span>${s.coords}</span></div>
+      <p class="brief">${s.brief}</p>
+      <div class="dyk"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><strong>Did you know?</strong>${badge(s.fact.g)}</div><p>${s.fact.t}</p></div>
+    </div>
+    <figure class="map" style="margin:0">${mapSVG(k)}<figcaption class="cap"><span class="mono muted">Illustrated map, not to scale</span><span class="mono muted">${s.coords}</span></figcaption></figure>
+  </div>
+  <div class="wrap options">
+    <a class="opt" href="#/site/${k}/chat"><span class="ic">${icons.chat}</span><h3>Ask ${short(s)} anything</h3><p>Chat with seven AI agents that answer with sources, numbers and a critic check.</p><span class="go">Start asking</span></a>
+    <a class="opt" href="#/site/${k}/build"><span class="ic">${icons.build}</span><h3>Tear it down, build it now</h3><p>Break it into 9 building systems, walk the timeline, and rebuild it with a modern crew.</p><span class="go">Open the build lab</span></a>
+    <a class="opt" href="#/site/${k}/decode"><span class="ic">${icons.decode}</span><h3>Decode ${short(s)}</h3><p>Read the tablets, inscriptions and texts the way we do, and turn them back into graded claims about how it was built.</p><span class="go">Start decoding</span></a>
+  </div>
+  <div class="wrap"><p class="mono muted" style="margin-bottom:10px">Visit another site</p></div>
+  <div class="wrap others">${ORDER.filter(o=>o!==k).map(o=>`<a href="#/site/${o}" style="color:var(--${o})"><span class="dot" style="background:var(--${o})"></span><span style="color:var(--ink)">${short(SITES[o])}</span></a>`).join("")}</div>
+  </div>`;
+}
+
+/* chat */
+function chatView(k){
+  const s=SITES[k];
+  chats[k] ||= [];
+  return `<div style="${siteStyle(k)}">${chrome(k,"chat")}
+  <div class="wrap ptitle"><h1>Ask ${short(s)} anything</h1><p>Answers come from reviewed claims only. You will see the grade, the sources and any numbers the tools worked out.</p></div>
+  <div class="wrap chat">
+    <section class="thread" aria-label="Conversation">
+      <div class="msgs" id="msgs" aria-live="polite">${renderMsgs(k)}</div>
+      <form class="composer" id="composer" onsubmit="return false">
+        <input id="q" placeholder="Ask about how ${esc(short(s))} was built" autocomplete="off" aria-label="Your question">
+        <button class="pill site" id="send">Ask</button>
+      </form>
+    </section>
+    <aside class="side">
+      <div class="panel"><h3>The 7-agent pipeline</h3><ol class="agents" id="agents">${AGENTS.map(([n,d])=>`<li><span><b>${n}</b><small>${d}</small></span></li>`).join("")}</ol></div>
+      <div class="panel"><h3>Try these</h3><div class="sugs">${s.qs.map(([q,t])=>`<button class="sug" data-q="${esc(q)}"><span>${esc(q)}</span><span class="mono">${t}</span></button>`).join("")}</div>
+      <p class="status" id="chatStatus" style="margin-top:14px"><i></i>Checking chat API</p></div>
+    </aside>
+  </div></div>`;
+}
+function renderMsgs(k){
+  const s=SITES[k], list=chats[k];
+  if(!list.length) return `<div class="empty">${glyph(k,64)}<h2>What do you want to know?</h2><p class="muted">Pick a starter on the right or type your own question. Try a myth, we like those.</p></div>`;
+  return list.map(m=>{
+    if(m.role==="user") return `<div class="msg user">${esc(m.text)}</div>`;
+    if(m.pending) return `<div class="msg bot"><div class="thinking"><i></i><i></i><i></i><span>${esc(m.stage||"Thinking")}</span></div></div>`;
+    return `<div class="msg bot">
+      <div class="ans">${m.html||`<p>${esc(m.text)}</p>`}</div>
+      ${m.nums?.length?`<div class="nums">${m.nums.map(n=>`<div class="num"><b>${esc(n.v)}</b><span>${esc(n.l)}</span></div>`).join("")}</div>`:""}
+      ${m.apiError?`<p class="critic flagged"><b>Live answer failed:</b> ${esc(m.apiError)}. Showing the offline demo answer instead.</p>`:""}
+      ${m.critic?`<div class="critic${m.flagged?" flagged":""}"><b>${m.flagged?"Needs review:":"Critic check:"}</b> ${esc(m.critic)}${m.flags?.length?`<ul>${m.flags.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>`:""}</div>`:""}
+      ${m.rows?.length?`<div class="rows">${m.rows.map(r=>`<div class="row"><div class="rh"><b>${esc(r.system)}</b>${badge(r.grade)}</div><span>Then: ${esc(r.ancient)}</span><span>Now: ${esc(r.modern)}</span><span class="muted">Lesson: ${esc(r.lesson)}</span></div>`).join("")}</div>`:""}
+      ${m.cites?.length?`<div class="cites">${m.cites.map((c,i)=>{const o=typeof c==="string"?{text:c}:c;const label=o.url?`<a href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.text)}</a>`:esc(o.text);return `<div class="cite"><span class="k">[${i+1}]</span><span>${label} ${o.grade?badge(o.grade):""} ${o.reviewed===false?`<span class="tag">source passage, not yet reviewed</span>`:""}</span></div>`}).join("")}</div>`:""}
+      <div class="bot-foot">${m.grade?badge(m.grade):""}${m.demo?`<span class="mono muted">Demo answer</span>`:`<span class="mono muted">Live answer${m.secs?`, ${m.secs} s`:""}</span>`}</div>
+    </div>`;
+  }).join("");
+}
+function demoAnswer(k,q){
+  const s=SITES[k], ql=q.toLowerCase(), r=estimate(SITES[k].est);
+  const type = /alien|nuclear|blast|space|anunnaki|atlantis|giant/.test(ql)?"fringe": /how long|crane|machine|modern|today|take|estimate|year/.test(ql)&&!/compare/.test(ql)?"estimate": /compare|move|moving|drain|road|builder|versus| vs /.test(ql)?"compare":"other";
+  if(type==="estimate") return {text:`About ${fmt(r.mY)} years with ${fmt(r.mP)} people, using ${s.est.mC} modern crews of ${s.est.mS}. The ancient estimate is about ${fmt(r.aY)} years with ${fmt(r.aP)} people (${s.est.aC} crews of ${s.est.aS}). The crew rates are assumptions, so treat these as a what-if, not a record.`,
+    nums:[{v:`${fmt(r.aY)} yrs`,l:`ancient, ${fmt(r.aP)} people`},{v:`${fmt(r.mY)} yrs`,l:`modern, ${fmt(r.mP)} people`},{v:fmt(s.est.total),l:`${s.unit} (${s.totalTag})`}],
+    critic:"Crew output per day is assumed, not attested. Changing it changes the answer a lot.",
+    cites:[`Crew estimator tool, ${s.name} preset`, s.source?`${s.source.a}, ${s.source.t}, ${s.source.y}, ${s.source.p}`:`${s.name} claim set (sources pending review)`],grade:"inferred",demo:true};
+  if(type==="compare"){ const key=Object.keys(s.systems).find(x=>x==="transport")||Object.keys(s.systems)[0]; const c=s.systems[key];
+    return {text:`Then: ${c.a} Now: ${c.m} The lesson: ${c.l}`,critic:`Graded ${c.g}. ${c.g==="debated"?"Scholars agree on the basics but argue about the details.":"Supported by the reviewed sources."}`,
+    cites:[s.source?`${s.source.a}, ${s.source.t}, ${s.source.y}, ${s.source.p}`:`${s.name} claim set, ${SYSTEMS.find(x=>x[0]===key)[1]}`],grade:c.g,demo:true}; }
+  if(type==="fringe"){
+    const F={
+      giza:{text:"No. The evidence points to Egyptian crews. Archaeologists found the workers' town with bakeries, tombs of workers near the pyramids, quarries with tool marks, and gang names painted inside the monument.",critic:"No reviewed source supports non-human builders. The claim was checked and rejected.",cites:["Workers' town and cemetery excavations, Giza plateau","Gang graffiti in the relieving chambers","Wadi al-Jarf papyri, stone delivery logbook"],grade:"attested"},
+      uruk:{text:"No. The Anunnaki are gods in Mesopotamian myth. The building evidence shows people at work: mudbrick, clay cone mosaics, tablets tracking labour and goods, and piles of mass-produced ration bowls.",critic:"Mythic texts describe gods, not construction records. Rejected as a building claim.",cites:["Proto-cuneiform tablets, Eanna precinct","Clay cone mosaic walls, Eanna"],grade:"attested"},
+      mohenjo:{text:"No. There is no radiation signature or blast layer. The skeletons used for this story came from different times and places in the city, and the city faded out slowly.",critic:"Why the city declined is still debated, but the nuclear claim has no evidence.",cites:["Excavation reports on the skeletal remains","Studies of river shifts in the Indus valley"],grade:"debated"},
+      qin:{text:"Not with the naked eye from orbit. The walls are narrow and close in colour to the land around them. Also, most famous stone sections are from the Ming dynasty, much later than Qin.",critic:"Astronaut reports agree it is not visible unaided from low orbit. Rejected.",cites:["Astronaut accounts from low Earth orbit","Dating of Ming dynasty wall sections"],grade:"attested"}};
+    return {...F[k],demo:true};
+  }
+  return {text:`Demo mode is on, so this one has no live answer yet. Start the DeCode chat API on port 8000 and ask again for a cited answer, or try one of the starters.`,cites:[],grade:null,demo:true};
+}
+async function askAPI(k,q,history){
+  const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),CHAT_TIMEOUT);
+  try{
+    const r=await fetch(`${API_BASE}/chat`,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:q,site:k,history}),signal:ctl.signal});
+    clearTimeout(t);
+    let d=null; try{d=await r.json()}catch(e){}
+    if(!r.ok) return {error:d&&d.detail?String(d.detail):`the chat API returned HTTP ${r.status}`};
+    return fromContract(d);
+  }catch(e){clearTimeout(t);return {error:e.name==="AbortError"?"no answer within 65 seconds":"could not reach the chat API"}}
+}
+const SYS_LABEL = id => (SYSTEMS.find(x=>x[0]===SYS_MAP[id])||[id,id])[1];
+function fromContract(d){
+  // turns a Contract 4 response from agents/server.py into a chat message
+  if(d.clarifying_question) return {text:d.clarifying_question,html:md(d.clarifying_question),cites:[],grade:null,demo:false,trace:d.trace||[]};
+  const nums=[]; const est=(d.cards||[]).find(c=>c.type==="estimator");
+  if(est){
+    const a=est.result.ancient, m=est.result.modern, p=est.preset;
+    nums.push({v:`${fmt(a.years)} yrs`,l:`ancient, ${fmt(a.people)} people`},{v:`${fmt(m.years)} yrs`,l:`modern, ${fmt(m.people)} people`},{v:fmt(p.quantity),l:`${p.unit} (${p.quantity_tag})`});
+  }
+  const cites=(d.citations||[]).map(c=>({text:[c.title,c.locator].filter(Boolean).join(", ")||c.source_id,url:c.url,grade:c.grade,reviewed:!!c.claim_id}));
+  const rank={attested:0,debated:1,inferred:2}; let grade=null;
+  cites.forEach(c=>{ if(c.grade && (grade===null || rank[c.grade]>rank[grade])) grade=c.grade; }); // show the weakest grade the answer leans on
+  const rows=[];
+  (d.cards||[]).filter(c=>c.type==="teardown").forEach(card=>card.rows.slice(0,4).forEach(r=>rows.push({system:`${SITES[card.site]?short(SITES[card.site]):card.site}, ${SYS_LABEL(r.system)}`,grade:r.grade,ancient:r.ancient,modern:r.modern,lesson:r.lesson})));
+  const c=d.critic||{passed:true,flags:[],retries:0};
+  const critic=c.passed?(c.retries?"Passed after one rewrite. Every number and cited sentence was checked.":"Passed. Every number and cited sentence was checked against the tools and sources."):"The critic flagged this answer.";
+  return {text:d.answer_md,html:md(d.answer_md),nums,cites,critic,flagged:!c.passed,flags:c.passed?[]:(c.flags||[]),grade,rows:rows.slice(0,6),trace:d.trace||[],demo:false};
+}
+let apiLive=null;
+async function pingAPI(){
+  if(apiLive===true) return true;
+  const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),API_TIMEOUT);
+  try{const r=await fetch(`${API_BASE}/health`,{signal:ctl.signal});apiLive=r.ok}catch(e){apiLive=false}
+  clearTimeout(t); return apiLive;
+}
+function paintStatus(){
+  const el=$("#chatStatus"); const f=$("#apiStatus");
+  const txt=(apiLive?"Chat API connected":"Demo mode, chat API offline")+(liveData?". Live data from the tools API":"");
+  if(el){el.className="status"+(apiLive?" live":"");el.innerHTML=`<i></i>${txt}`}
+  if(f) f.textContent=apiLive===null?"":txt;
+}
+let busy=false;
+function historyFor(k){
+  // the last few finished turns, in the shape the chat API wants
+  const turns=[];
+  for(const m of chats[k]){
+    if(m.pending) continue;
+    if(m.role==="user") turns.push({role:"user",content:m.text});
+    else if(m.text && !m.demo) turns.push({role:"assistant",content:m.text});
+  }
+  return turns.slice(-6);
+}
+async function send(k,q){
+  q=q.trim(); if(!q||busy) return; busy=true;
+  const history=historyFor(k);
+  chats[k].push({role:"user",text:q}); const pend={role:"bot",pending:true,stage:"Routing"}; chats[k].push(pend);
+  const draw=()=>{const msgs=$("#msgs"); if(!msgs) return; msgs.innerHTML=renderMsgs(k);msgs.scrollTop=msgs.scrollHeight};
+  draw(); $("#q").value="";
+  const lights=cls=>document.querySelectorAll("#agents li").forEach((l,j)=>l.className=cls(j));
+  const started=performance.now();
+  let result=null;
+  const apiP=pingAPI().then(ok=>ok?askAPI(k,q,history):null).then(r=>{result=r||{offline:true};return r});
+  const pace=matchMedia("(prefers-reduced-motion: reduce)").matches?60:900;
+  let i=0;
+  while(result===null){ // keep the steps moving until the answer arrives
+    const step=i%AGENTS.length;
+    lights(j=>j<step?"done":j===step?"on":"");
+    pend.stage=`${AGENTS[step][0]}: ${AGENTS[step][1].toLowerCase()} (${Math.round((performance.now()-started)/1000)} s)`; draw();
+    await Promise.race([apiP,new Promise(r=>setTimeout(r,i<AGENTS.length?pace/2:pace))]);
+    i++;
+  }
+  const live=await apiP; const secs=Math.round((performance.now()-started)/100)/10;
+  if(live && !live.error && live.text){
+    // light up only the layers that really ran
+    const ran=new Set((live.trace||[]).map(step=>TRACE_TO_AGENT[step.layer]).filter(x=>x!==undefined));
+    lights(j=>ran.has(j)?"done":"");
+    Object.assign(pend,{pending:false,secs},live);
+  } else {
+    lights(()=>"done");
+    Object.assign(pend,{pending:false},demoAnswer(k,q),live&&live.error?{apiError:live.error}:{});
+  }
+  draw(); paintStatus(); busy=false;
+}
+
+/* live data from the tools API: presets and verified claims */
+const SYS_MAP = {site_setout:"site",materials_supply:"materials",transport_lifting:"transport",water_sanitation:"water",structure_form:"structure",finishes:"finishes",workforce:"workforce",quality_control:"quality",project_controls:"controls"};
+let liveData=false;
+async function getJSON(url,opts){
+  const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),4000);
+  try{const r=await fetch(url,{...opts,signal:ctl.signal}); clearTimeout(t); if(!r.ok) return null; return {body:await r.json(),headers:r.headers}}
+  catch(e){clearTimeout(t);return null}
+}
+async function loadLiveData(){
+  const presets=await getJSON(`${TOOLS_BASE}/tools/presets`);
+  if(!presets) return; // tools API offline, so keep the built-in demo data
+  for(const k of ORDER){
+    const p=presets.body[k]; if(!p) continue;
+    const s=SITES[k];
+    s.unit=p.unit; s.totalTag=p.quantity_tag; s.presetDraft=!!p.draft;
+    s.est={total:p.quantity,days:p.ancient.days_per_year,aC:p.ancient.crews,aS:p.ancient.crew_size,aR:p.ancient.rate_per_crew_day,mC:p.modern.crews,mS:p.modern.crew_size,mR:p.modern.rate_per_crew_day};
+    estState[k]={...s.est}; s.livePreset=true;
+  }
+  const rank={attested:0,debated:1,inferred:2};
+  for(const k of ORDER){
+    const got=await getJSON(`${TOOLS_BASE}/tools/claims`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({site:k})});
+    if(!got || got.headers.get("X-Stratum-Fallback")) continue; // no verified claims yet, keep the demo rows
+    const claims=got.body.claims||[]; const best={};
+    for(const c of claims){
+      const key=SYS_MAP[c.system]; if(!key) continue;
+      if(!best[key] || rank[c.grade]<rank[best[key].grade]) best[key]=c;
+    }
+    const systems={};
+    for(const [key,c] of Object.entries(best)){
+      const src=(c.sources||[])[0]||{};
+      systems[key]={a:esc(c.statement),m:esc(c.modern_equivalent),l:esc(c.lesson),g:c.grade,src:[src.title,src.locator].filter(Boolean).join(", "),id:c.claim_id,n:claims.filter(x=>x.system===c.system).length};
+    }
+    if(Object.keys(systems).length){ SITES[k].systems=systems; SITES[k].liveClaims=true; }
+  }
+  liveData=true;
+  const y=scrollY; route(); scrollTo(0,y);
+}
+
+/* build */
+function buildView(k){
+  const s=SITES[k]; buildTab[k] ||= "teardown";
+  const tabs=[["teardown","Teardown"],["timeline","Timeline"],["estimator","Crew estimator"],["now","Build it now"]];
+  return `<div style="${siteStyle(k)}">${chrome(k,"build")}
+  <div class="wrap ptitle"><h1>Tear it down, build it now</h1><p>See ${esc(short(s))} as a construction project. Split it into systems, follow the dates, then rebuild it with ancient and modern crews side by side.</p></div>
+  <div class="wrap build-body">
+    <div class="tabs" role="tablist">${tabs.map(([id,l])=>`<button class="tab" role="tab" data-tab="${id}" aria-selected="${buildTab[k]===id}">${l}</button>`).join("")}</div>
+    <div id="tabBody">${tabBody(k)}</div>
+  </div></div>`;
+}
+function tabBody(k){
+  const s=SITES[k], t=buildTab[k];
+  if(t==="teardown"){
+    const keys=SYSTEMS.map(x=>x[0]); pickSys[k] ||= keys.find(x=>s.systems[x]);
+    const sel=pickSys[k], c=s.systems[sel], name=SYSTEMS.find(x=>x[0]===sel)[1];
+    return `<div class="teardown"><div class="sys-grid">${SYSTEMS.map(([id,n],i)=>{const d=s.systems[id];return `<button class="sys ${d?"":"pending"}" data-sys="${id}" aria-pressed="${id===sel}"><span class="top-row"><span class="mono muted">System ${i+1}</span>${d?badge(d.g):`<span class="mono muted">not yet</span>`}</span><b>${n}</b></button>`}).join("")}</div>
+      <div class="detail">${c?`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>${name}</h3>${badge(c.g)}</div>
+        <div class="then-now"><div><span class="lbl">Then</span><p>${c.a}</p></div><div><span class="lbl">Now</span><p>${c.m}</p></div><div class="lesson"><span class="lbl">Lesson</span><p>${c.l}</p></div></div>
+        ${c.src?`<p class="mono muted" style="font-size:12px">Source: ${esc(c.src)}${c.n>1?`. ${c.n} reviewed claims for this system`:""}</p>`:""}
+        <a class="pill ghost" href="#/site/${k}/decode">Decode the source</a>`
+        :`<h3>${name}</h3><p class="muted">No reviewed claims for this system yet. Claims appear here once a person approves them.</p><a class="pill site" href="#/site/${k}/decode">Help review claims</a>`}</div></div>`;
+  }
+  if(t==="timeline") return `<ol class="tl">${s.timeline.map(([y,e,g])=>`<li><span class="yr">${y}</span><div class="ev"><b>${e}</b><span>${badge(g)}</span></div></li>`).join("")}</ol>`;
+  if(t==="estimator"){
+    const e=estState[k], r=estimate(e);
+    const f=(key,l,tag)=>`<div class="field"><label for="f-${key}">${l}<span class="badge ${tag==="attested"?"attested-tag":"assumed"}">${tag}</span></label><input id="f-${key}" type="number" min="0" step="any" data-est="${key}" value="${e[key]}"></div>`;
+    return `<div class="est">
+      <div class="est-shared">${f("total",`Total ${s.unit}`,s.totalTag)}${f("days","Working days per year","assumed")}</div>
+      <div class="era"><h3>Ancient crew</h3>${f("aC","Number of crews","assumed")}${f("aS","People per crew","assumed")}${f("aR",`${cap(s.unit)} per crew per day`,"assumed")}
+        <div class="out"><div><b id="o-aY">${fmt(r.aY)}</b><span>years</span></div><div><b id="o-aP">${fmt(r.aP)}</b><span>people</span></div></div></div>
+      <div class="era"><h3>Modern crew</h3>${f("mC","Number of crews","assumed")}${f("mS","People per crew","assumed")}${f("mR",`${cap(s.unit)} per crew per day`,"assumed")}
+        <div class="out"><div><b id="o-mY">${fmt(r.mY)}</b><span>years</span></div><div><b id="o-mP">${fmt(r.mP)}</b><span>people</span></div></div></div>
+      <p class="note" style="grid-column:1/-1">${s.livePreset?`Loaded from the DeCode tools preset${s.presetDraft?" (a draft preset, every value is an assumption)":""}, the same numbers the chat uses. Crew rates are assumptions, so change them and watch the answer move.`:(k==="giza"?"Block count comes from the project data. Crew rates are assumptions, so change them and watch the answer move.":"Demo inputs. Start the tools API on port 8001 to load the real presets.")}</p>
+    </div>`;
+  }
+  // build it now
+  const r=estimate(estState[k]);
+  const ch=Object.entries(s.systems).slice(0,3);
+  return `<div class="race">
+    <div class="stackbox"><h3>Ancient crew, ${fmt(r.aP)} people</h3><div class="stack" id="stA">${stackRows(k)}</div><div class="clock" id="cA">0<small>of ${fmt(r.aY)} years</small></div></div>
+    <div class="stackbox"><h3>Modern crew, ${fmt(r.mP)} people</h3><div class="stack" id="stM">${stackRows(k)}</div><div class="clock" id="cM">0<small>of ${fmt(r.mY)} years</small></div></div>
+    <div class="race-ctrl"><button class="pill site" id="play">Start the build</button><input type="range" id="yr" min="0" max="${Math.ceil(r.aY*10)/10}" step="0.1" value="0" aria-label="Year"><span class="mono" id="yrLbl">Year 0</span></div>
+    <div class="changes">${ch.map(([id,c])=>`<div class="era"><span class="mono muted">${SYSTEMS.find(x=>x[0]===id)[1]}</span><p>${c.m}</p><span>${badge(c.g)}</span></div>`).join("")}</div>
+    <p class="note" style="grid-column:1/-1">Times come from the crew estimator. Change the inputs there to rerun the race.</p>
+  </div>`;
+}
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+function stackRows(k){
+  const shape=SITES[k].shape, n=16; let o="";
+  for(let i=0;i<n;i++){
+    let w;
+    if(shape==="pyramid") w=100-(i/(n-1))*88;
+    else if(shape==="ziggurat") w=[100,76,52][Math.min(2,Math.floor(i/(n/3)))];
+    else if(shape==="bath") w=i<4?100:(i<12?[100,100][0]:100);
+    else w=100;
+    if(shape==="wall") w=100;
+    o+=`<i style="width:${w}%;${shape==="wall"&&i>9?"opacity:0":""}${shape==="bath"&&i>5?";opacity:0":""}"></i>`;
+  }
+  return o;
+}
+function paintRace(k,y){
+  const r=estimate(estState[k]);
+  const fill=(id,frac)=>{const rows=[...document.querySelectorAll(`#${id} i`)].filter(x=>x.style.opacity!=="0");const f=Math.round(Math.min(1,frac)*rows.length);rows.forEach((x,i)=>x.classList.toggle("f",i<f))};
+  fill("stA",r.aY?y/r.aY:0); fill("stM",r.mY?y/r.mY:0);
+  $("#cA").innerHTML=`${fmt(Math.min(y,r.aY))}<small>of ${fmt(r.aY)} years</small>`;
+  $("#cM").innerHTML=`${y>=r.mY?"Done":fmt(y)}<small>${y>=r.mY?`in ${fmt(r.mY)} years`:`of ${fmt(r.mY)} years`}</small>`;
+  $("#yrLbl").textContent=`Year ${fmt(y)}`;
+}
+
+/* decode */
+function decodeView(k){
+  const s=SITES[k];
+  const claims=Object.entries(s.systems).map(([id,c])=>({id,sys:SYSTEMS.find(x=>x[0]===id)[1],...c}));
+  reviewState[k] ||= {};
+  const done=claims.filter(c=>reviewState[k][c.id]).length;
+  const src=s.source;
+  return `<div style="${siteStyle(k)}">${chrome(k,"decode")}
+  <div class="wrap ptitle"><h1>Decode ${esc(short(s))}</h1><p>Every answer starts with something the builders or later scholars left behind: an artifact, a tablet, a scripture or an old survey. Here is how we decode it back into a claim you can trust.</p></div>
+  <div class="wrap"><ol class="pipe">
+    <li><span class="n">Step 1</span><b>Find sources</b><p>Artifacts, tablets, scriptures and surveys we are allowed to use.</p></li>
+    <li><span class="n">Step 2</span><b>Read them</b><p>AI picks out the lines and marks that say how something was built.</p></li>
+    <li><span class="n">Step 3</span><b>Grade claims</b><p>Each passage becomes a short claim marked attested, debated or inferred.</p></li>
+    <li><span class="n">Step 4</span><b>Human review</b><p>A person approves the claim or sends it back. Only approved claims reach the chat.</p></li>
+  </ol></div>
+  <div class="wrap decode">
+    <div class="source">
+      <span class="mono muted">Example source</span>
+      ${src?`<p class="title">${src.t}</p><p>${src.a}, ${src.y}, ${src.p}</p><p><span class="badge attested-tag">${src.lic}</span></p>
+        <div class="passage">${src.pass}</div>
+        <div class="then-now"><div><span class="lbl">Claim, then</span><p>${s.systems.transport.a}</p></div><div><span class="lbl">Claim, now</span><p>${s.systems.transport.m}</p></div><div class="lesson"><span class="lbl">Lesson</span><p>${s.systems.transport.l}</p></div></div>
+        <div>${badge("debated")} <span class="muted" style="font-size:15px">Sledges are well supported. How much the wet sand helped is still argued.</span></div>`
+        :`<p class="title">Sources for ${esc(short(s))} are being gathered</p><p class="muted">The team is checking which sources are legal to use. The claims on the right are drafts waiting for a source link and a reviewer.</p><div class="passage">${s.fact.t}</div><div>${badge(s.fact.g)}</div>`}
+    </div>
+    <div class="queue">
+      <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h3 style="margin:0">Review queue</h3><span class="mono" id="revCount">${done} of ${claims.length} reviewed</span></div><div class="progress"><i id="revBar" style="width:${claims.length?done/claims.length*100:0}%"></i></div></div>
+      ${claims.map(c=>{const st=reviewState[k][c.id];return `<div class="claim ${st||""}" data-claim="${c.id}">
+        <div class="claim-h"><b>${c.sys}</b>${badge(c.g)}</div><p>${c.a}</p>
+        <div class="acts">${st?`<span class="mono">${st==="approved"?"Approved. Now visible in chat.":"Sent back for a better source."}</span><button class="pill ghost" data-rev="undo">Undo</button>`
+          :`<button class="pill site" data-rev="approved">Approve</button><button class="pill ghost" data-rev="sent">Send back</button>`}</div></div>`}).join("")}
+    </div>
+  </div></div>`;
+}
+
+/* ---------- 3D site models for Pick a site ---------- */
+let MODELS=[];
+function disposeModels(){MODELS.forEach(m=>{cancelAnimationFrame(m.raf);m.io&&m.io.disconnect();m.ro&&m.ro.disconnect();m.scene.traverse(o=>{o.geometry&&o.geometry.dispose();o.material&&o.material.dispose()});m.renderer.dispose();m.renderer.domElement.remove();m.el.classList.remove("has3d")});MODELS=[]}
+function buildSite(k,T,accent){
+  const g=new T.Group();
+  const mat=c=>new T.MeshStandardMaterial({color:c,roughness:.95,metalness:0,flatShading:true});
+  const add=(geo,c,x=0,y=0,z=0,ry=0)=>{const m=new T.Mesh(geo,typeof c==="string"||typeof c==="number"?mat(c):c);m.position.set(x,y,z);m.rotation.y=ry;m.castShadow=m.receiveShadow=true;g.add(m);return m};
+  const box=(w,h,d,c,x,y,z,ry)=>add(new T.BoxGeometry(w,h,d),c,x,y+h/2,z,ry);
+  const ground={giza:"#E3C99A",uruk:"#D6C29B",mohenjo:"#D9B79B",qin:"#B7CBA2"}[k];
+  add(new T.CylinderGeometry(2.7,2.85,.3,56),ground,0,-.15,0);
+  if(k==="giza"){
+    const pyr=(r,h,x,z,c,cap)=>{add(new T.ConeGeometry(r,h,4,1),c,x,h/2,z,Math.PI/4);if(cap)add(new T.ConeGeometry(r*.22,h*.22,4,1),"#F6EBD6",x,h*.89,z,Math.PI/4)};
+    pyr(1.0,1.35,.85,-.75,"#D9B983");
+    pyr(.92,1.28,-.2,.2,"#CFAE78",true);
+    pyr(.5,.66,-1.05,1.05,"#C9A46E");
+    [[1.85,-.25],[1.85,.2],[1.85,.62]].forEach(([x,z])=>pyr(.17,.22,x,z,"#CDAE7C"));
+    box(.5,.14,.16,"#C49E68",.75,0,1.25);box(.14,.14,.14,"#C49E68",.52,.12,1.25);
+  }
+  if(k==="uruk"){
+    const brick="#C7A276";
+    box(2.3,.38,1.9,brick,0,0,0);
+    box(2.34,.07,1.94,accent,0,.14,0);
+    box(1.75,.3,1.42,"#BF9A6D",0,.38,0);
+    box(1.28,.26,1.02,brick,0,.68,0);
+    box(.95,.42,.58,"#F3EDE2",0,.94,0);
+    for(let i=0;i<5;i++) box(.07,.42,.06,"#E6DDCD",-.38+i*.19,.94,.31);
+    const ramp=add(new T.BoxGeometry(.34,.08,1.4),brick,0,.46,1.28);ramp.rotation.x=-.62;
+    [[-1.9,1.2],[-1.7,-1.4],[1.8,1.35],[1.95,-1.1],[-2.1,-.2]].forEach(([x,z],i)=>box(.32,.18+(i%2)*.08,.28,"#CDB089",x,0,z,i*.5));
+  }
+  if(k==="mohenjo"){
+    const b="#B7684C",b2="#A9593F";
+    const W=2.5,D=2.0,hx=.62,hz=.36,h=.26;
+    box(W,h,D/2-hz,b,0,0,-(hz+(D/2-hz)/2));
+    box(W,h,D/2-hz,b,0,0,(hz+(D/2-hz)/2));
+    box(W/2-hx,h,2*hz,b,-(hx+(W/2-hx)/2),0,0);
+    box(W/2-hx,h,2*hz,b,(hx+(W/2-hx)/2),0,0);
+    box(2*hx,.04,2*hz,"#8E4A36",0,0,0);
+    add(new T.BoxGeometry(2*hx-.02,.02,2*hz-.02),new T.MeshStandardMaterial({color:"#5E97C4",roughness:.3,metalness:.1,transparent:true,opacity:.85}),0,.17,0);
+    for(let i=0;i<3;i++){box(.4,h-.07*(i+1),.1,b2,0,0,-hz+.05+i*.1);box(.4,h-.07*(i+1),.1,b2,0,0,hz-.05-i*.1)}
+    for(let i=0;i<8;i++){const x=-1.05+i*.3;box(.09,.34,.09,"#C27A5C",x,h,-.85);box(.09,.34,.09,"#C27A5C",x,h,.85)}
+    for(let i=0;i<5;i++){const z=-.6+i*.3;box(.09,.34,.09,"#C27A5C",-1.15,h,z);box(.09,.34,.09,"#C27A5C",1.15,h,z)}
+    box(2.44,.05,.26,b2,0,h+.34,-.85);box(2.44,.05,.26,b2,0,h+.34,.85);
+  }
+  if(k==="qin"){
+    const earth="#C4A57A",hill=x=>.42*Math.exp(-((x-.2)**2)/.8);
+    const hm=add(new T.SphereGeometry(1.25,14,8),"#9DB98C",.2,0,-.1);hm.scale.set(1.1,.34,.9);
+    const f=x=>Math.sin(x*1.25)*.55;
+    for(let x=-2.3;x<2.3;x+=.2){
+      const z=f(x),ang=Math.atan2(f(x+.1)-f(x-.1),.2),H=.32+hill(x);
+      box(.26,H,.17,earth,x,0,z,-ang);
+      box(.09,.08,.17,"#B8986C",x,H,z,-ang);
+    }
+    [[-1.4],[1.35]].forEach(([x])=>box(.34,.62+hill(x),.34,"#B58F62",x,0,f(x)));
+    box(.28,.02,3,"#AE9470",.9,0,1.25);
+    box(.28,.02,1.5,"#AE9470",.9,0,-1.9);
+  }
+  return g;
+}
+function initModels(){
+  disposeModels();
+  const T=window.THREE; if(!T) return;
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const css=getComputedStyle(document.documentElement);
+  document.querySelectorAll("[data-model]").forEach((el,idx)=>{
+    const k=el.dataset.model;
+    let renderer; try{renderer=new T.WebGLRenderer({antialias:true,alpha:true})}catch(e){return}
+    renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));
+    renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap;
+    renderer.domElement.setAttribute("aria-hidden","true");
+    el.appendChild(renderer.domElement); el.classList.add("has3d");
+    const scene=new T.Scene();
+    const cam=new T.PerspectiveCamera(30,1,.1,50); cam.position.set(0,3.9,8.4); cam.lookAt(0,.15,0);
+    scene.add(new T.HemisphereLight(0xfff4e2,0x6b5a44,.62));
+    const sun=new T.DirectionalLight(0xfff8ee,.72); sun.position.set(4,6,3); sun.castShadow=true;
+    sun.shadow.mapSize.set(1024,1024); Object.assign(sun.shadow.camera,{left:-3.5,right:3.5,top:3.5,bottom:-3.5}); scene.add(sun);
+    const grp=buildSite(k,T,css.getPropertyValue(`--${k}`).trim()||"#888"); grp.rotation.y=-.5+idx*.7; scene.add(grp);
+    const m={el,renderer,scene,raf:0,on:true};
+    const size=()=>{const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();renderer.render(scene,cam)};
+    let last=performance.now(),boost=0;
+    const card=el.closest(".site-card");
+    card&&card.addEventListener("pointerenter",()=>boost=1); card&&card.addEventListener("pointerleave",()=>boost=0);
+    const loop=t=>{const dt=Math.min(.05,(t-last)/1000);last=t;grp.rotation.y+=dt*(.25+boost*.9);renderer.render(scene,cam);if(m.on)m.raf=requestAnimationFrame(loop)};
+    m.ro=new ResizeObserver(size); m.ro.observe(el); size();
+    if(!reduce){
+      m.io=new IntersectionObserver(([e])=>{m.on=e.isIntersecting;cancelAnimationFrame(m.raf);if(m.on){last=performance.now();m.raf=requestAnimationFrame(loop)}}); m.io.observe(el);
+    }
+    MODELS.push(m);
+  });
+}
+
+/* ---------- router ---------- */
+let playTimer=null;
+function route(){
+  clearInterval(playTimer);
+  const h=location.hash.replace(/^#/,"");
+  if(h && !h.startsWith("/")){ // in-page anchors on home
+    if(!$("#sites")) render("/",true);
+    document.getElementById(h)?.scrollIntoView({behavior:"smooth"}); return;
+  }
+  const [path,anchor]=(h||"/").split("#");
+  render(path||"/"); if(anchor) setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}),30);
+}
+function render(path,keepScroll){
+  const p=path.split("/").filter(Boolean); const app=$("#app");
+  disposeModels();
+  $("#nav-home").toggleAttribute("aria-current",!p.length); if(!p.length) $("#nav-home").setAttribute("aria-current","page");
+  if(p[0]==="site" && SITES[p[1]]){
+    const k=p[1], mode=p[2];
+    document.title=`${short(SITES[k])} | DeCode`;
+    app.innerHTML = mode==="chat"?chatView(k): mode==="build"?buildView(k): mode==="decode"?decodeView(k): siteView(k);
+    wire(k,mode);
+  } else { document.title="DeCode"; app.innerHTML=homeView(); }
+  if($("[data-model]")) requestAnimationFrame(initModels); else disposeModels();
+  if(!keepScroll) window.scrollTo(0,0);
+  paintStatus();
+}
+function wire(k,mode){
+  if(mode==="chat"){
+    $("#send").onclick=()=>send(k,$("#q").value);
+    $("#q").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();send(k,$("#q").value)}};
+    document.querySelectorAll(".sug").forEach(b=>b.onclick=()=>send(k,b.dataset.q));
+    pingAPI().then(paintStatus);
+    const m=$("#msgs"); m.scrollTop=m.scrollHeight;
+  }
+  if(mode==="build"){
+    document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{buildTab[k]=b.dataset.tab;document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===b));clearInterval(playTimer);$("#tabBody").innerHTML=tabBody(k);wireTab(k)});
+    wireTab(k);
+  }
+  if(mode==="decode"){
+    document.querySelectorAll("[data-rev]").forEach(b=>b.onclick=()=>{
+      const id=b.closest(".claim").dataset.claim; const v=b.dataset.rev;
+      if(v==="undo") delete reviewState[k][id]; else reviewState[k][id]=v;
+      const y=scrollY; render(`/site/${k}/decode`,true); scrollTo(0,y);
+    });
+  }
+}
+function wireTab(k){
+  const t=buildTab[k];
+  if(t==="teardown") document.querySelectorAll(".sys").forEach(b=>b.onclick=()=>{pickSys[k]=b.dataset.sys;$("#tabBody").innerHTML=tabBody(k);wireTab(k);document.querySelector(`.sys[data-sys="${b.dataset.sys}"]`)?.focus()});
+  if(t==="estimator") document.querySelectorAll("[data-est]").forEach(inp=>inp.oninput=()=>{
+    const v=parseFloat(inp.value); estState[k][inp.dataset.est]=isFinite(v)&&v>=0?v:0;
+    const r=estimate(estState[k]); $("#o-aY").textContent=fmt(r.aY);$("#o-aP").textContent=fmt(r.aP);$("#o-mY").textContent=fmt(r.mY);$("#o-mP").textContent=fmt(r.mP);
+  });
+  if(t==="now"){
+    const r=estimate(estState[k]), yr=$("#yr");
+    yr.oninput=()=>{clearInterval(playTimer);paintRace(k,parseFloat(yr.value));$("#play").textContent="Start the build"};
+    $("#play").onclick=()=>{
+      if(playTimer){clearInterval(playTimer);playTimer=null;$("#play").textContent="Keep building";return}
+      let y=parseFloat(yr.value); if(y>=r.aY) y=0;
+      const step=r.aY/90; $("#play").textContent="Pause";
+      playTimer=setInterval(()=>{y=Math.min(r.aY,y+step);yr.value=y;paintRace(k,y);if(y>=r.aY){clearInterval(playTimer);playTimer=null;$("#play").textContent="Build again"}},60);
+    };
+    paintRace(k,0);
+  }
+}
+
+/* theme */
+(function(){
+  let saved=null; try{saved=localStorage.getItem("decode-theme")}catch(e){}
+  if(saved) document.documentElement.dataset.theme=saved;
+  $("#theme").onclick=()=>{
+    const cur=document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+    const next=cur==="dark"?"light":"dark"; document.documentElement.dataset.theme=next; if($("[data-model]")) initModels();
+    try{localStorage.setItem("decode-theme",next)}catch(e){}
+  };
+})();
+addEventListener("hashchange",route);
+route();
+loadLiveData();
+</script>
+</body>
+</html>

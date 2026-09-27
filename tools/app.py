@@ -261,10 +261,11 @@ async def lifespan(app):
     yield
 
 
-app = FastAPI(title="Stratum tools", version="1.0", lifespan=lifespan)
+app = FastAPI(title="DeCode tools", version="1.0", lifespan=lifespan)
 
 # the web app and the agents run on other ports, so let them in
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],
+                   expose_headers=["X-Stratum-Fallback"])  # so the web app can tell example claims from real ones
 
 
 @app.exception_handler(RequestValidationError)
