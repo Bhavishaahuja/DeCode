@@ -285,35 +285,17 @@ def _linked_evidence(
     passages: Iterable[dict],
     graph: TransformGraph,
 ) -> list[dict]:
-    links = graph.links_for(
-        parent.transform_id
-    )
-
     passage_ids = {
         link.passage_id
-        for link in links
+        for link in graph.links_for(
+            parent.transform_id
+        )
         if link.passage_id is not None
-    }
-
-    source_ids = {
-        link.source_id
-        for link in links
-    }
-
-    site_ids = {
-        link.site_id
-        for link in links
     }
 
     return [
         passage
         for passage in passages
-        if (
-            passage.get("passage_id")
-            in passage_ids
-            or passage.get("source_id")
-            in source_ids
-            or passage.get("site")
-            in site_ids
-        )
+        if passage.get("passage_id")
+        in passage_ids
     ]

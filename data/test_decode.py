@@ -579,3 +579,59 @@ def test_recursive_children_preserve_ancestry_depth_and_links():
             passage_id="p3",
         )
     ]
+
+
+def test_child_pass_with_passage_link_receives_only_that_passage():
+    corpus = [
+        {
+            "passage_id": "p1",
+            "source_id": "source_a",
+            "site": "giza",
+            "text": "first giza passage",
+        },
+        {
+            "passage_id": "p2",
+            "source_id": "source_a",
+            "site": "giza",
+            "text": "second giza passage",
+        },
+        {
+            "passage_id": "p3",
+            "source_id": "source_b",
+            "site": "giza",
+            "text": "third giza passage",
+        },
+    ]
+
+    graph = TransformGraph()
+
+    graph.add_core_transform(
+        "t1",
+        "root transform",
+    )
+
+    graph.add_link(
+        TransformLink(
+            transform_id="t1",
+            source_id="source_a",
+            site_id="giza",
+            passage_id="p1",
+        )
+    )
+
+    received = []
+
+    def evaluator(parent, passages):
+        received.extend(passages)
+        return []
+
+    extract_child_transforms(
+        "t1",
+        corpus,
+        evaluator,
+        graph,
+    )
+
+    assert received == [
+        corpus[0]
+    ]
