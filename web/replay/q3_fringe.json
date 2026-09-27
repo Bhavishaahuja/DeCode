@@ -1,0 +1,186 @@
+{
+  "answer_md": "No, that idea is not supported by the evidence. The Great Pyramid was built by a large, organized human workforce, and the records back that up in detail.\n\nConstruction gangs marked their blocks with painted graffiti naming their crew and the pharaoh, a normal job-tracking practice[^1]. The Heit el-Ghurab settlement near the Sphinx housed that workforce with bakeries, worker and elite housing, and administrative buildings, the footprint of a real logistics operation[^2]. The Diary of Merer, a papyrus found in 2013, logs limestone deliveries from Tura to Giza dated to year 27 of Khufu's reign, an ordinary supervisor's shipping record[^3]. Separate papyri from Wadi al-Jarf, also from that same year, show the central administration sending food and supplies to sailors and wharf workers[^4].\n\nAs for how the stones moved, only small ramps and inclined causeways survive in the archaeological record[^5], and a paved causeway cut into bedrock still exists at Giza[^6]. A calculation using an assumed block mass, an assumed 8 degree ramp, an assumed friction coefficient of 0.3, and an assumed pull of 400 N per person shows a crew of about 27 people can haul such a block, well within ordinary human capability and needing no unexplained technology.\n\nThe evidence points to skilled organization and administration, not aliens.",
+  "intent": "fringe",
+  "sites": [
+    "giza"
+  ],
+  "systems": [
+    "materials_supply",
+    "transport_lifting",
+    "workforce",
+    "project_controls"
+  ],
+  "clarifying_question": null,
+  "citations": [
+    {
+      "n": 1,
+      "claim_id": "giza-workforce-001",
+      "source_id": "wp_great_pyramid_of_giza",
+      "title": "Great Pyramid of Giza (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Great_Pyramid_of_Giza&oldid=1376020884",
+      "locator": "section: Purpose",
+      "grade": "attested"
+    },
+    {
+      "n": 2,
+      "claim_id": "giza-workforce-003",
+      "source_id": "wp_fourth_dynasty_of_egypt",
+      "title": "Fourth Dynasty of Egypt (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Fourth_Dynasty_of_Egypt&oldid=1376337093",
+      "locator": "section: Age of the Pyramids",
+      "grade": "attested"
+    },
+    {
+      "n": 3,
+      "claim_id": "giza-materials_supply-001",
+      "source_id": "wp_great_pyramid_of_giza",
+      "title": "Great Pyramid of Giza (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Great_Pyramid_of_Giza&oldid=1376020884",
+      "locator": "section: Materials",
+      "grade": "attested"
+    },
+    {
+      "n": 4,
+      "claim_id": "giza-project_controls-002",
+      "source_id": "wp_khufu",
+      "title": "Khufu (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Khufu&oldid=1376683160",
+      "locator": "section: Wadi Maghareh",
+      "grade": "attested"
+    },
+    {
+      "n": 5,
+      "claim_id": "giza-transport_lifting-001",
+      "source_id": "wp_egyptian_pyramid_construction_techniques",
+      "title": "Construction of the Egyptian pyramids (Wikipedia)",
+      "url": "https://en.wikipedia.org/w/index.php?title=Construction_of_the_Egyptian_pyramids&oldid=1375376909",
+      "locator": "section: Transport of stone blocks",
+      "grade": "attested"
+    },
+    {
+      "n": 6,
+      "claim_id": "giza-transport_lifting-002",
+      "source_id": "petrie1883",
+      "title": "The Pyramids and Temples of Gizeh (Petrie, 1883)",
+      "url": "https://archive.org/details/cu31924012038927",
+      "locator": null,
+      "grade": "attested"
+    }
+  ],
+  "cards": [
+    {
+      "type": "teardown",
+      "site": "giza",
+      "rows": [
+        {
+          "system": "site_setout",
+          "grade": "attested",
+          "ancient": "The strip leveled around the pyramid base perimeter was measured to be horizontal and flat to within 21 millimetres.",
+          "evidence": "\"only a strip around the perimeter was leveled, which has been measured to be horizontal and flat to within 21 millimetres (0.8 in)\" (Great Pyramid of Giza (Wikipedia), section: Rediscovery)",
+          "modern": "Laser level survey confirming site grading tolerance before foundation pour.",
+          "lesson": "Precise leveling of only the load-bearing perimeter, not the whole footprint, can achieve tight tolerances efficiently.",
+          "claim_ids": [
+            "giza-site_setout-001",
+            "giza-site_setout-002"
+          ]
+        },
+        {
+          "system": "materials_supply",
+          "grade": "attested",
+          "ancient": "The Diary of Merer, a papyrus discovered in 2013, records deliveries of limestone from Tura to Giza in year 27 of Khufu's reign.",
+          "evidence": "\"In 2013, rolls of papyrus called the Diary of Merer were discovered, written by a supervisor of the deliveries of limestone from Tura to Giza in the 27th year of Khufu's reign.\" (Great Pyramid of Giza (Wikipedia), section: Materials)",
+          "modern": "A logistics manager's daily delivery log tracking material shipments to site.",
+          "lesson": "Keep detailed, dated delivery records to verify supply chain performance and enable later audits.",
+          "claim_ids": [
+            "giza-materials_supply-001",
+            "giza-materials_supply-002"
+          ]
+        },
+        {
+          "system": "transport_lifting",
+          "grade": "attested",
+          "ancient": "The archaeological record shows only small ramps and inclined causeways, not ramps that could have built even most of the monument.",
+          "evidence": "\"The archaeological record gives evidence of only small ramps and inclined causeways, not something that could have been used to construct even a majority of the monument.\" (Construction of the Egyptian pyramids (Wikipedia), section: Transport of stone blocks)",
+          "modern": "Using temporary access ramps or haul roads to move material up a rising structure.",
+          "lesson": "Physical remains of temporary construction aids should be preserved and documented as they reveal actual build sequencing.",
+          "claim_ids": [
+            "giza-transport_lifting-001",
+            "giza-transport_lifting-002"
+          ]
+        },
+        {
+          "system": "workforce",
+          "grade": "attested",
+          "ancient": "Construction gangs building the Great Pyramid marked stone blocks with painted graffiti naming their gang and incorporating the pharaoh's name.",
+          "evidence": "\"The workers who were building the pyramid had marked the blocks with the names of their gangs, which included the pharaoh's name\" (Great Pyramid of Giza (Wikipedia), section: Purpose)",
+          "modern": "Marking precast or delivered structural elements with the crew or subcontractor identifier and job code.",
+          "lesson": "Tag materials with crew and project identifiers so provenance and accountability can be traced later.",
+          "claim_ids": [
+            "giza-workforce-001",
+            "giza-workforce-003",
+            "giza-workforce-002"
+          ]
+        },
+        {
+          "system": "quality_control",
+          "grade": "attested",
+          "ancient": "Many casing stones and inner chamber blocks of the Great Pyramid fit together with joints averaging only 0.5 millimetres wide.",
+          "evidence": "\"Many of the casing-stones and inner chamber blocks of the Great Pyramid fit together with high precision, with joints, on average, only 0.5 millimetres (0.020 in) wide.\" (Great Pyramid of Giza (Wikipedia), section: Workforce)",
+          "modern": "Fine masonry joint tolerances comparable to precision dimension-stone cladding work.",
+          "lesson": "Put the tightest tolerances on the faces and joints that matter most, like casing and chamber linings.",
+          "claim_ids": [
+            "giza-quality_control-001",
+            "giza-quality_control-002"
+          ]
+        }
+      ]
+    }
+  ],
+  "critic": {
+    "passed": true,
+    "flags": [],
+    "retries": 1
+  },
+  "trace": [
+    {
+      "layer": "router",
+      "ms": 1840,
+      "summary": "intent=fringe, sites=giza"
+    },
+    {
+      "layer": "prefetch",
+      "ms": 14067,
+      "summary": "21 verified claims, 0 passages"
+    },
+    {
+      "layer": "archaeologist",
+      "ms": 12487,
+      "summary": "6 findings, 1 gaps, fringe check"
+    },
+    {
+      "layer": "engineer",
+      "ms": 20147,
+      "summary": "4 systems mapped, 1 physics checks"
+    },
+    {
+      "layer": "presenter",
+      "ms": 6977,
+      "summary": "220 words"
+    },
+    {
+      "layer": "critic",
+      "ms": 1352,
+      "summary": "1 flags"
+    },
+    {
+      "layer": "presenter",
+      "ms": 5420,
+      "summary": "rewrite after critic"
+    },
+    {
+      "layer": "critic",
+      "ms": 1317,
+      "summary": "passed on retry"
+    }
+  ]
+}

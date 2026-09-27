@@ -193,6 +193,7 @@ sup.fn{font-family:var(--mono);font-size:11px;color:var(--c);margin-left:1px}
 .row span.muted{font-size:13px}
 .critic{font-size:14px;background:var(--card);border-radius:12px;padding:8px 12px;border-left:3px solid var(--c)}
 .bot-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bot-foot .rec{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
 .composer{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line);background:var(--card)}
 .composer input{flex:1;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:12px 18px;font:inherit;min-width:0}
 .composer input:focus{outline:none;border-color:var(--c)}
@@ -333,6 +334,13 @@ const API_BASE = "http://localhost:8000"; // DeCode chat API (agents/server.py)
 const TOOLS_BASE = "http://localhost:8001"; // DeCode tools API (tools/app.py): presets and verified claims
 const API_TIMEOUT = 2500;   // health checks
 const CHAT_TIMEOUT = 65000; // a live answer takes about 30 seconds, the server cuts off at 60
+// recorded /chat responses for the 3 stage questions (web/replay/). Asking one of these plays the recording.
+// ?replay=1 also plays them for close rewordings, ?replay=0 turns replay off so everything goes live.
+const REPLAYS = [
+  {file:"replay/q1_estimate.json",q:"How long would Giza take with modern cranes?",words:["giza","crane"]},
+  {file:"replay/q2_compare.json",q:"Which of the four sites used the most standardized building units?",words:["standard","unit"]},
+  {file:"replay/q3_fringe.json",q:"Did aliens build the pyramids?",words:["alien","pyramid"]}];
+const REPLAY_PARAM = new URLSearchParams(location.search).get("replay");
 
 /* ---------- data ---------- */
 const SITES = {
@@ -625,7 +633,7 @@ function renderMsgs(k){
       ${m.critic?`<div class="critic${m.flagged?" flagged":""}"><b>${m.flagged?"Needs review:":"Critic check:"}</b> ${esc(m.critic)}${m.flags?.length?`<ul>${m.flags.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>`:""}</div>`:""}
       ${m.rows?.length?`<div class="rows">${m.rows.map(r=>`<div class="row"><div class="rh"><b>${esc(r.system)}</b>${badge(r.grade)}</div><span>Then: ${esc(r.ancient)}</span><span>Now: ${esc(r.modern)}</span><span class="muted">Lesson: ${esc(r.lesson)}</span></div>`).join("")}</div>`:""}
       ${m.cites?.length?`<div class="cites">${m.cites.map((c,i)=>{const o=typeof c==="string"?{text:c}:c;const label=o.url?`<a href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.text)}</a>`:esc(o.text);return `<div class="cite"><span class="k">[${i+1}]</span><span>${label} ${o.grade?badge(o.grade):""} ${o.reviewed===false?`<span class="tag">source passage, not yet reviewed</span>`:""}</span></div>`}).join("")}</div>`:""}
-      <div class="bot-foot">${m.grade?badge(m.grade):""}${m.demo?`<span class="mono muted">Demo answer</span>`:`<span class="mono muted">Live answer${m.secs?`, ${m.secs} s`:""}</span>`}</div>
+      <div class="bot-foot">${m.grade?badge(m.grade):""}${m.demo?`<span class="mono muted">Demo answer</span>`:m.replay?`<span class="rec" title="Played back from a real run of the agent pipeline, recorded earlier">Recorded run</span>`:`<span class="mono muted">Live answer${m.secs?`, ${m.secs} s`:""}</span>`}</div>
     </div>`;
   }).join("");
 }
@@ -659,6 +667,19 @@ async function askAPI(k,q,history){
     if(!r.ok) return {error:d&&d.detail?String(d.detail):`the chat API returned HTTP ${r.status}`};
     return fromContract(d);
   }catch(e){clearTimeout(t);return {error:e.name==="AbortError"?"no answer within 65 seconds":"could not reach the chat API"}}
+}
+const normQ = q => q.toLowerCase().replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
+function replayFor(q){
+  if(REPLAY_PARAM==="0") return null;
+  const n=normQ(q);
+  const exact=REPLAYS.find(r=>normQ(r.q)===n);
+  if(exact || REPLAY_PARAM!=="1") return exact||null;
+  return REPLAYS.find(r=>r.words.every(w=>n.includes(w)))||null;
+}
+async function askReplay(entry){
+  const got=await getJSON(entry.file);
+  if(!got) return {error:`could not load ${entry.file}`};
+  return {...fromContract(got.body),replay:true};
 }
 const SYS_LABEL = id => (SYSTEMS.find(x=>x[0]===SYS_MAP[id])||[id,id])[1];
 function fromContract(d){
@@ -709,10 +730,30 @@ async function send(k,q){
   const draw=()=>{const msgs=$("#msgs"); if(!msgs) return; msgs.innerHTML=renderMsgs(k);msgs.scrollTop=msgs.scrollHeight};
   draw(); $("#q").value="";
   const lights=cls=>document.querySelectorAll("#agents li").forEach((l,j)=>l.className=cls(j));
+  const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const replay=replayFor(q);
+  if(replay){
+    const rec=await askReplay(replay);
+    if(!rec.error){
+      // step through the recorded trace in order, so the panel shows what really ran
+      const done=new Set();
+      for(const step of rec.trace){
+        const j=TRACE_TO_AGENT[step.layer]; if(j===undefined) continue;
+        lights(x=>x===j?"on":done.has(x)?"done":"");
+        pend.stage=`${AGENTS[j][0]}: ${step.summary}`; draw();
+        await new Promise(r=>setTimeout(r,reduced?60:450));
+        done.add(j);
+      }
+      lights(j=>done.has(j)?"done":"");
+      Object.assign(pend,{pending:false},rec);
+      draw(); paintStatus(); busy=false; return;
+    }
+    // recording didn't load (opened from file:// for example), so ask the live API instead
+  }
   const started=performance.now();
   let result=null;
   const apiP=pingAPI().then(ok=>ok?askAPI(k,q,history):null).then(r=>{result=r||{offline:true};return r});
-  const pace=matchMedia("(prefers-reduced-motion: reduce)").matches?60:900;
+  const pace=reduced?60:900;
   let i=0;
   while(result===null){ // keep the steps moving until the answer arrives
     const step=i%AGENTS.length;
