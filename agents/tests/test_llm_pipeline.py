@@ -162,6 +162,52 @@ def test_agents_get_prefetched_evidence():
     assert "VERIFIED CLAIMS" in archaeologist_input
 
 
+def test_critic_cut_off_is_flagged_not_passed():
+    # a critic reply that runs out of max_tokens (thinking used it all) must never count as a pass
+    script = explain_script()
+    script["critic"] = [SimpleNamespace(stop_reason="max_tokens", content=[SimpleNamespace(type="thinking", thinking="")])]
+    response, _ = run(script)
+    assert response["critic"]["passed"] is False
+    assert any("could not complete its review" in flag for flag in response["critic"]["flags"])
+    assert response["critic"]["retries"] == 0  # nothing for the presenter to fix, so no rewrite
+    assert validate_chat_response(response) == []
+
+
+def test_router_retries_once_when_reply_is_not_json():
+    script = explain_script()
+    script["router"] = [text_reply(""), script["router"][0]]
+    response, _ = run(script)
+    assert response["intent"] == "explain"
+
+
+def test_estimate_without_a_calculation_falls_back_to_rules():
+    # the estimator gave nothing usable, so no tool produced a number: don't let the presenter improvise
+    script = {
+        "router": [text_reply('{"intent": "estimate", "sites": ["giza"], "systems": ["transport_lifting"], "clarifying_question": null}')],
+        "archaeologist": [text_reply('{"findings": [], "gaps": [], "fringe_check": null}')],
+        "estimator": [text_reply("not json")],
+        "presenter": [text_reply("About 24500 N, so 19 people.")],
+        "critic": [text_reply('{"passed": true, "flags": []}')],
+    }
+    with patch.dict(os.environ, {"STRATUM_MODE": "llm"}):
+        response = chat.answer("How many people to drag a 2.5 tonne block?", [], "giza",
+                               FakeTools(claims=[SLEDGE_CLAIM], presets={"giza": giza_preset()}), llm=FakeLLM(script))
+    assert response["trace"][0]["layer"] == "fallback"
+    assert "no calculation tool ran" in response["trace"][0]["summary"]
+    assert "24500" not in response["answer_md"]
+
+
+def test_fallback_sources_match_the_question_words():
+    bitumen = dict(SLEDGE_CLAIM, claim_id="giza-materials_supply-001", system="materials_supply",
+                   statement="A thick layer of bitumen lined the pool.", quote="a thick layer of bitumen")
+    drain = dict(SLEDGE_CLAIM, claim_id="giza-water_sanitation-001", system="water_sanitation",
+                 statement="A covered drain ran from the tank.", quote="a covered drain")
+    route = {"intent": "explain", "sites": ["giza"], "systems": ["water_sanitation"], "clarifying_question": None}
+    ids = LLMPipeline._fallback_claim_ids("How was the pool lined with bitumen?", route, [drain, bitumen])
+    assert ids[0] == "giza-materials_supply-001"
+    assert "giza-water_sanitation-001" in ids
+
+
 def test_fringe_answer_always_says_not_supported():
     script = explain_script(["The pyramids were built by organised crews of Egyptian workers[^1]."])
     script["router"] = [text_reply('{"intent": "fringe", "sites": ["giza"], "systems": ["workforce"], "clarifying_question": null}')]

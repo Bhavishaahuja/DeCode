@@ -63,6 +63,20 @@ def make_tools() -> RecordingToolsClient:
         return client
 
 
+def warm_up_search() -> None:
+    """The first search loads the vector index and embedding model (30 s or more). Do it once, untimed,
+    so it doesn't land on whichever questions happen to run first."""
+    started = time.time()
+    tools = make_tools()
+    try:
+        tools.search_evidence(query="warm up", k=1)
+    except Exception as err:  # a cold search failing here just means the first question pays for it
+        print(f"search warm-up failed ({type(err).__name__}), carrying on")
+    finally:
+        tools.close()
+    print(f"search index warm ({time.time() - started:.1f}s)")
+
+
 def check(question: dict, response: dict, tools_used: set[str]) -> list[str]:
     """Every problem with one answer. An empty list is a pass."""
     problems = []
@@ -152,6 +166,7 @@ def main(argv=None) -> int:
         return 1
 
     mode = "Claude pipeline" if chat.llm_enabled() else "rules pipeline"
+    warm_up_search()
     print(f"running {len(questions)} questions with the {mode}\n")
     with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
         results = list(pool.map(run_one, questions))

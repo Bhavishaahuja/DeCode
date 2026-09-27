@@ -42,8 +42,17 @@ TOOL_DEFS_PATH = REPO_ROOT / "tools" / "openapi_tools.json"
 
 MODEL = os.getenv("STRATUM_MODEL", "claude-sonnet-5")
 TOTAL_BUDGET_S = 46          # the server cuts off at 60; this leaves room for the rules fallback
-PARALLEL_PHASE_S = 24        # L2 to L5 must be done by this point
+AGENT_PHASE_S = 22           # L2 to L5 get this long, counted from when they start (not from the request)
+PRESENT_RESERVE_S = 16       # always leave the presenter and critic at least this much
 PREFETCH_PASSAGES_PER_SITE = 4
+
+# sonnet 5 thinks before it answers, and thinking counts against max_tokens, so these need headroom.
+# A reply cut off at max_tokens has no text left (the router once spent 299 of 300 tokens thinking).
+MAX_TOKENS = {"router": 2000, "agent": 6000, "presenter": 4000, "critic": 3000}
+# effort per layer: less thinking where the job is simple. The critic keeps the default (high),
+# it's the last check before an answer ships. None means don't send output_config at all.
+EFFORT = {"router": "low", "estimator": "low", "archaeologist": "medium", "engineer": "medium",
+          "builder": "medium", "presenter": "medium", "critic": None}
 PREFETCH_CLAIMS_MAX = 24
 
 MAX_SOURCES = 12
@@ -286,7 +295,9 @@ class LLMPipeline:
         plain_block = self._agent_input(message, history, route)
         evidence_block = plain_block + self._evidence_input(route, site_claims, passages)
         plan = LAYER_PLAN[route["intent"]]
-        stop_at = deadline.at(PARALLEL_PHASE_S)
+        # the agents' window starts now, so a slow prefetch doesn't leave them with no time at all,
+        # but it never eats into what the presenter and critic need
+        stop_at = min(time.time() + AGENT_PHASE_S, deadline.end - PRESENT_RESERVE_S)
         with ThreadPoolExecutor(max_workers=len(plan)) as pool:
             futures = {}
             for name in plan:
@@ -298,7 +309,7 @@ class LLMPipeline:
                 trace.append(step)
 
         # sources the presenter may cite ---------------------------------------------------------
-        sources = self._collect_sources(layers, route, site_claims)
+        sources = self._collect_sources(layers, route, site_claims, message)
 
         # estimator card, built from the preset through the estimate tool -----------------------
         cards = []
@@ -307,6 +318,12 @@ class LLMPipeline:
         cards.extend(teardown_cards)
         if estimator_card:
             cards.append(estimator_card)
+
+        # an estimate answer with no calculation behind it would tempt the presenter to do the maths
+        # itself. Every number has to come from a tool, so hand the question to the rules pipeline,
+        # which always runs the tools.
+        if route["intent"] == "estimate" and not self._calculation_ran():
+            raise RuntimeError("estimate question but no calculation tool ran")
 
         # L7 presenter draft, L6 critic, one retry ----------------------------------------------
         extra_number_texts = [message] + [turn.get("content", "") for turn in history if turn.get("role") == "user"]
@@ -318,10 +335,11 @@ class LLMPipeline:
         flags = self._critique(message, answer, sources, extra_number_texts, deadline)
         trace.append(self._step("critic", t0, "passed" if not flags else f"{len(flags)} flags"))
         retries = 0
-        if flags and deadline.left() > 14:
+        fixable = [f for f in flags if not f.startswith("The critic could not")]
+        if fixable and deadline.left() > 14:
             retries = 1
             t0 = time.time()
-            answer = self._present(message, history, route, layers, sources, deadline, previous=answer, fix=flags)
+            answer = self._present(message, history, route, layers, sources, deadline, previous=answer, fix=fixable)
             trace.append(self._step("presenter", t0, "rewrite after critic"))
             t0 = time.time()
             flags = self._critique(message, answer, sources, extra_number_texts, deadline)
@@ -346,10 +364,15 @@ class LLMPipeline:
         user = (f"Conversation so far:\n{chr(10).join(lines) or '(none)'}\n\n"
                 f"Site open in the UI (hint): {site_hint or 'none'}\n\nUser message: {message}")
         # no try here: if Claude can't even route, agents/chat.py falls back to the rules pipeline
-        text = self._ask(load_prompt("router"), user, max_tokens=300)
+        text, stop = self._ask("router", load_prompt("router"), user, max_tokens=MAX_TOKENS["router"])
         raw = parse_json(text)
         if not raw:
-            raise RuntimeError("router reply wasn't JSON")
+            # one retry, with a plain reminder of the format
+            text, stop = self._ask("router", load_prompt("router"),
+                                   user + "\n\nReply with only the JSON object.", max_tokens=MAX_TOKENS["router"])
+            raw = parse_json(text)
+        if not raw:
+            raise RuntimeError(f"router reply wasn't JSON (stop_reason={stop})")
 
         intent = raw.get("intent") if raw.get("intent") in INTENTS else "explain"
         sites = [s for s in (raw.get("sites") or []) if s in SITES]
@@ -422,15 +445,18 @@ class LLMPipeline:
             presets = self.tools.presets(caller="estimator")
             system = system.replace("{presets}", json.dumps(presets, separators=(",", ":")))
         try:
-            text = self._agent_loop(name, system, user_block, tool_names, budget, stop_at)
+            text, note = self._agent_loop(name, system, user_block, tool_names, budget, stop_at)
             output = parse_json(text)
             summary = self._agent_summary(name, output)
+            if not output:
+                summary = f"no usable output ({note or 'reply was not JSON'})"
         except Exception as err:
             output = {}
             summary = f"error: {type(err).__name__}: {str(err)[:120]}"
         return output, self._step(name, t0, summary)
 
-    def _agent_loop(self, layer, system, user, tool_names, max_tool_calls, stop_at) -> str:
+    def _agent_loop(self, layer, system, user, tool_names, max_tool_calls, stop_at) -> tuple[str, str | None]:
+        """(final text, why it ended early if it did)."""
         tools = [t for t in self.tool_defs if t["name"] in tool_names]
         messages = [{"role": "user", "content": user}]
         calls = 0
@@ -439,13 +465,14 @@ class LLMPipeline:
             if left < 3:
                 break
             last_turn = left < 10 or calls >= max_tool_calls
-            kwargs = {"model": self.model, "max_tokens": 1800, "system": system, "tools": tools, "messages": messages}
+            kwargs = {"max_tokens": MAX_TOKENS["agent"], "system": system, "tools": tools, "messages": messages}
             if last_turn:
                 kwargs["tool_choice"] = {"type": "none"}
-            reply = self.llm.messages.create(**kwargs)
+            reply = self._create(layer, **kwargs)
             tool_uses = [b for b in reply.content if getattr(b, "type", None) == "tool_use"]
             if reply.stop_reason != "tool_use" or not tool_uses:
-                return "".join(getattr(b, "text", "") for b in reply.content if getattr(b, "type", None) == "text")
+                note = "cut off at max_tokens" if reply.stop_reason == "max_tokens" else None
+                return self._text(reply), note
             messages.append({"role": "assistant", "content": reply.content})
             results = []
             for block in tool_uses:
@@ -466,10 +493,11 @@ class LLMPipeline:
                 last = messages[-1]
                 if isinstance(last["content"], list):
                     last["content"] = last["content"] + [{"type": "text", "text": nudge["content"]}]
-            reply = self.llm.messages.create(model=self.model, max_tokens=1800, system=system, tools=tools,
-                                             tool_choice={"type": "none"}, messages=messages)
-            return "".join(getattr(b, "text", "") for b in reply.content if getattr(b, "type", None) == "text")
-        return ""
+            reply = self._create(layer, max_tokens=MAX_TOKENS["agent"], system=system, tools=tools,
+                                 tool_choice={"type": "none"}, messages=messages)
+            note = "cut off at max_tokens" if reply.stop_reason == "max_tokens" else None
+            return self._text(reply), note
+        return "", "ran out of time"
 
     @staticmethod
     def _compact(tool_name: str, output: dict) -> str:
@@ -504,7 +532,26 @@ class LLMPipeline:
     # ------------------------------------------------------------------------------------------
     # Sources and cards
 
-    def _collect_sources(self, layers: dict, route: dict, site_claims: list[dict]) -> list[dict]:
+    _STOPWORDS = {"what", "which", "when", "where", "with", "from", "that", "this", "they", "them", "their", "there",
+                  "were", "have", "would", "could", "should", "about", "does", "into", "made", "make", "your", "used",
+                  "using", "today", "between", "compare", "versus"}
+
+    @classmethod
+    def _fallback_claim_ids(cls, message: str, route: dict, site_claims: list[dict]) -> list[str]:
+        """When no agent cited anything: the site's claims that share words with the question first,
+        then the rest of the router's systems. A bitumen question should find the bitumen claim even
+        if the router filed it under water_sanitation."""
+        words = {w for w in re.findall(r"[a-z]+", (message or "").lower()) if len(w) > 3} - cls._STOPWORDS
+        scored = []
+        for c in site_claims:
+            text = f"{c.get('statement', '')} {c.get('quote', '')}".lower()
+            overlap = sum(1 for w in words if w in text)
+            in_system = not route["systems"] or c.get("system") in route["systems"]
+            if overlap or in_system:
+                scored.append((-overlap, not in_system, c["claim_id"]))
+        return [cid for _, _, cid in sorted(scored)]
+
+    def _collect_sources(self, layers: dict, route: dict, site_claims: list[dict], message: str = "") -> list[dict]:
         claims_by_id = {c["claim_id"]: c for c in site_claims}
         passages_by_id = {}
         for entry in self.tools.calls():
@@ -538,11 +585,9 @@ class LLMPipeline:
         if keep.get("claim_id") in claims_by_id:
             wanted_claims.append(keep["claim_id"])
 
-        # if the agents cited nothing, fall back to the verified claims for the sites and systems in play
+        # if the agents cited nothing, fall back to the verified claims that best match the question
         if not wanted_claims and not passage_findings:
-            for c in site_claims:
-                if not route["systems"] or c.get("system") in route["systems"]:
-                    wanted_claims.append(c["claim_id"])
+            wanted_claims = self._fallback_claim_ids(message, route, site_claims)
 
         sources, seen = [], set()
         for cid in wanted_claims:
@@ -620,11 +665,17 @@ class LLMPipeline:
     # ------------------------------------------------------------------------------------------
     # L7 and L6
 
+    # how a sentence citing each grade has to read (the critic flags anything stated more strongly)
+    HEDGE = {"attested": "can be stated as fact",
+             "debated": "must be hedged, e.g. 'scholars disagree' or 'one view is'",
+             "inferred": "must be hedged, e.g. 'likely' or 'our reading is'"}
+
     def _sources_block(self, sources: list[dict]) -> str:
         lines = []
         for i, s in enumerate(sources, start=1):
             label = f"claim {s['claim_id']}" if s["kind"] == "claim" else f"passage {s.get('passage_id')} (not yet human-reviewed)"
-            line = f"[{i}] {label} | site {s.get('site')} | grade {s.get('grade')} | {s.get('title')}"
+            hedge = self.HEDGE.get(s.get("grade"), "must be hedged")
+            line = f"[{i}] {label} | site {s.get('site')} | grade {s.get('grade')} ({hedge}) | {s.get('title')}"
             line += f"\n    statement: {s.get('statement')}"
             if s.get("quote"):
                 line += f"\n    quote: \"{s['quote']}\""
@@ -632,6 +683,9 @@ class LLMPipeline:
                 line += f"\n    modern equivalent: {s['modern']} | lesson: {s.get('lesson')}"
             lines.append(line)
         return "\n".join(lines) or "(no sources found)"
+
+    def _calculation_ran(self) -> bool:
+        return any(entry["ok"] for entry in self.tools.calls() if entry["tool"] in ("estimate", "haul_force", "carbon"))
 
     def _number_tools_block(self) -> str:
         lines = []
@@ -664,7 +718,8 @@ class LLMPipeline:
             parts.append(f"Your previous draft:\n{previous}\n\nA reviewer found these problems. Rewrite the answer "
                          f"to fix every one:\n- " + "\n- ".join(fix))
         try:
-            text = self._ask(load_prompt("presenter"), "\n\n".join(p for p in parts if p), max_tokens=900)
+            text, _ = self._ask("presenter", load_prompt("presenter"), "\n\n".join(p for p in parts if p),
+                                max_tokens=MAX_TOKENS["presenter"])
         except Exception:
             if previous:
                 return previous
@@ -686,14 +741,20 @@ class LLMPipeline:
         bad_markers = sorted({int(n) for n in _MARKER.findall(answer) if not 1 <= int(n) <= len(sources)})
         if bad_markers:
             auto.append(f"citation markers that match no source: {bad_markers}")
+        # if the critic can't finish its review, the answer ships flagged, never silently passed
+        not_reviewed = "The critic could not complete its review ({}), so this answer needs a human check."
         if deadline.left() < 5:
-            return auto
+            return auto + [not_reviewed.format("out of time")]
         user = (f"Question: {message}\n\nDraft answer:\n{answer}\n\nSOURCES:\n{self._sources_block(sources)}\n\n"
                 f"Automatic problems already found: {auto or 'none'}")
         try:
-            verdict = parse_json(self._ask(load_prompt("critic"), user, max_tokens=500))
-        except Exception:
-            return auto
+            text, stop = self._ask("critic", load_prompt("critic"), user, max_tokens=MAX_TOKENS["critic"])
+        except Exception as err:
+            return auto + [not_reviewed.format(type(err).__name__)]
+        verdict = parse_json(text)
+        if not verdict or "passed" not in verdict:
+            why = "reply cut off at max_tokens" if stop == "max_tokens" else "reply was not JSON"
+            return auto + [not_reviewed.format(why)]
         flags = [strip_dashes(str(f)) for f in (verdict.get("flags") or []) if str(f).strip()]
         if verdict.get("passed") is True and not flags:
             return auto
@@ -754,10 +815,22 @@ class LLMPipeline:
     def _step(layer, started, summary) -> dict:
         return {"layer": layer, "ms": int((time.time() - started) * 1000), "summary": strip_dashes(summary)}
 
-    def _ask(self, system: str, user: str, max_tokens: int) -> str:
-        reply = self.llm.messages.create(model=self.model, max_tokens=max_tokens, system=system,
-                                         messages=[{"role": "user", "content": user}])
+    def _create(self, layer: str, **kwargs):
+        """One model call with the layer's effort setting."""
+        effort = EFFORT.get(layer)
+        if effort:
+            kwargs["output_config"] = {"effort": effort}
+        return self.llm.messages.create(model=self.model, **kwargs)
+
+    @staticmethod
+    def _text(reply) -> str:
         return "".join(getattr(b, "text", "") for b in reply.content if getattr(b, "type", None) == "text")
+
+    def _ask(self, layer: str, system: str, user: str, max_tokens: int) -> tuple[str, str | None]:
+        """(text, stop_reason) for a single-turn call with no tools."""
+        reply = self._create(layer, max_tokens=max_tokens, system=system,
+                             messages=[{"role": "user", "content": user}])
+        return self._text(reply), getattr(reply, "stop_reason", None)
 
     def _finish(self, message, history, site, response, layers) -> tuple[dict, dict]:
         record = {"time": datetime.now(timezone.utc).isoformat(timespec="seconds"),

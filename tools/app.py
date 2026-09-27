@@ -21,6 +21,8 @@ import csv
 import json
 import math
 import sys
+import threading
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Optional
 
@@ -245,7 +247,21 @@ def _tidy_number(value: float):
 # ---------------------------------------------------------------------------------------------
 # App
 
-app = FastAPI(title="Stratum tools", version="1.0")
+@asynccontextmanager
+async def lifespan(app):
+    # the first search loads the vector index and embedding model, which takes 30 s or more.
+    # Do it in the background at startup so the first /chat doesn't time out waiting for it.
+    def warm():
+        try:
+            run_search(SearchEvidenceIn(query="warm up", k=1))
+        except Exception as err:
+            print(f"[tools] search warm-up failed: {type(err).__name__}: {err}", file=sys.stderr)
+
+    threading.Thread(target=warm, daemon=True).start()
+    yield
+
+
+app = FastAPI(title="Stratum tools", version="1.0", lifespan=lifespan)
 
 # the web app and the agents run on other ports, so let them in
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])

@@ -10,6 +10,10 @@ giza, uruk, mohenjo, qin. Use only these. "The pyramids" means giza. "Warka" or 
 
 site_setout, materials_supply, transport_lifting, water_sanitation, structure_form, finishes, workforce, quality_control, project_controls. Pick 1 to 4 that the question actually needs.
 
+Standard sizes, standardized units or bricks, ratios, weights and measures, tolerances, accuracy, and keeping work consistent or "to standard" are quality_control. Records, accounting, tablets and scheduling are project_controls. Waterproofing a tank or bath is water_sanitation.
+
+Only list a site when the message names it, the UI hint gives it, or the conversation history makes it clear. A question about materials or numbers that names no site (for example the carbon of limestone) gets an empty sites list, not a guess, and no clarifying question.
+
 ## Intents
 
 - explain: how or why something was done at one site.
