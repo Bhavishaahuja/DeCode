@@ -402,3 +402,8 @@ mohenjo-oa_w2156883626-0007
 mohenjo-oa_w4401341210-0000
 mohenjo-oa_w2960514648-0000
 mohenjo-oa_w4401341210-0003
+mohenjo-oa_w3087229121-0000
+mohenjo-asi_ar_1925_26-0001
+mohenjo-asi_ar_1926_27-0001
+mohenjo-oa_w7161494188-0000
+mohenjo-asi_ar_1925_26-0000

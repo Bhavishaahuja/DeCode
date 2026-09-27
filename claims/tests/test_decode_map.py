@@ -92,3 +92,14 @@ def test_children_cannot_cite_outside_their_parent():
     graph = build_map(SafeEvaluator(evaluator), "mohenjo", corpus, depth=1, max_roots=5, max_children=3,
                       log=lambda *_: None)
     assert all(t.depth == 0 for t in graph.transforms.values())
+
+
+def test_forgives_id_slips_and_source_ids():
+    from claims.decode_map import resolve_passage_id
+    passages = {"m-a-1": {}, "m-a-2": {}}
+    by_source = {"a": ["m-a-1", "m-a-2"]}
+    assert resolve_passage_id(" [M-A-1] ", passages, by_source) == ["m-a-1"]
+    assert resolve_passage_id("Passage ID: m-a-2", passages, by_source) == ["m-a-2"]
+    assert resolve_passage_id("a", passages, by_source) == ["m-a-1", "m-a-2"]
+    assert resolve_passage_id({"passage_id": "m-a-1"}, passages, by_source) == ["m-a-1"]
+    assert resolve_passage_id("nope", passages, by_source) == []

@@ -1,0 +1,381 @@
+{
+  "site": "mohenjo",
+  "system": null,
+  "built_at": "2026-09-27T04:54:14+00:00",
+  "model": "claude-sonnet-5",
+  "params": {
+    "max_passages": 60,
+    "depth": 1,
+    "max_roots": 5,
+    "max_children": 3
+  },
+  "corpus_passage_ids": [
+    "mohenjo-asi_ar_1922_23-0001",
+    "mohenjo-asi_ar_1923_24-0000",
+    "mohenjo-asi_ar_1924_25-0000",
+    "mohenjo-asi_ar_1925_26-0000",
+    "mohenjo-asi_ar_1926_27-0000",
+    "mohenjo-oa_w1971467372-0000",
+    "mohenjo-oa_w2090915645-0000",
+    "mohenjo-oa_w2128425888-0000",
+    "mohenjo-oa_w2156883626-0000",
+    "mohenjo-oa_w2163903918-0000",
+    "mohenjo-oa_w2395497438-0000",
+    "mohenjo-oa_w2755918039-0000",
+    "mohenjo-oa_w2764237323-0002",
+    "mohenjo-oa_w2789308548-0000",
+    "mohenjo-oa_w2790469224-0002",
+    "mohenjo-oa_w2795939660-0001",
+    "mohenjo-oa_w2802809684-0000",
+    "mohenjo-oa_w2849956363-0001",
+    "mohenjo-oa_w2904157930-0000",
+    "mohenjo-oa_w2955584280-0000",
+    "mohenjo-oa_w2957779570-0000",
+    "mohenjo-oa_w2960514648-0000",
+    "mohenjo-oa_w3022308801-0001",
+    "mohenjo-oa_w3087229121-0000",
+    "mohenjo-oa_w3187209828-0000",
+    "mohenjo-oa_w3199325615-0000",
+    "mohenjo-oa_w4283770922-0000",
+    "mohenjo-oa_w4293187482-0000",
+    "mohenjo-oa_w4401341210-0000",
+    "mohenjo-oa_w4405553208-0000",
+    "mohenjo-oa_w4410504351-0000",
+    "mohenjo-oa_w4416758306-0000",
+    "mohenjo-oa_w4416782824-0001",
+    "mohenjo-oa_w7161494188-0000",
+    "mohenjo-oa_w7166823203-0000",
+    "mohenjo-place_mohenjo_daro-0000",
+    "mohenjo-wp_dancing_girl_sculpture-0000",
+    "mohenjo-wp_great_bath_mohenjo_daro-0000",
+    "mohenjo-wp_harappan_architecture-0000",
+    "mohenjo-wp_harappan_pottery-0000",
+    "mohenjo-wp_indus_mesopotamia_relations-0000",
+    "mohenjo-wp_indus_river-0000",
+    "mohenjo-wp_indus_script-0000",
+    "mohenjo-wp_indus_valley_civilisation-0000",
+    "mohenjo-wp_john_marshall_archaeologist-0000",
+    "mohenjo-wp_meluhha-0000",
+    "mohenjo-wp_mohenjo_daro-0000",
+    "mohenjo-wp_mortimer_wheeler-0001",
+    "mohenjo-wp_pashupati_seal-0000",
+    "mohenjo-wp_priest_king_sculpture-0000",
+    "mohenjo-wp_r_d_banerji-0001",
+    "mohenjo-wp_sanitation_of_the_indus_valley_civilisat-0000",
+    "mohenjo-asi_ar_1922_23-0002",
+    "mohenjo-asi_ar_1923_24-0001",
+    "mohenjo-asi_ar_1924_25-0001",
+    "mohenjo-asi_ar_1925_26-0001",
+    "mohenjo-asi_ar_1926_27-0001",
+    "mohenjo-oa_w1971467372-0001",
+    "mohenjo-oa_w2090915645-0002",
+    "mohenjo-oa_w2128425888-0002"
+  ],
+  "transforms": [
+    {
+      "id": "mohenjo-t01",
+      "text": "Houses were built from standardised baked and dried mud bricks, sometimes with two or more storeys.",
+      "parent": null,
+      "root": "mohenjo-t01",
+      "depth": 0,
+      "is_leaf": false,
+      "passage_ids": [
+        "mohenjo-wp_sanitation_of_the_indus_valley_civilisat-0000",
+        "mohenjo-wp_harappan_architecture-0000"
+      ],
+      "sources": [
+        "Sanitation of the Indus Valley Civilisation (Wikipedia)",
+        "Harappan architecture (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t01-01",
+      "text": "Houses were constructed using standardised size mud, dried mud, or baked clay bricks.",
+      "parent": "mohenjo-t01",
+      "root": "mohenjo-t01",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-wp_sanitation_of_the_indus_valley_civilisat-0000",
+        "mohenjo-wp_harappan_architecture-0000"
+      ],
+      "sources": [
+        "Sanitation of the Indus Valley Civilisation (Wikipedia)",
+        "Harappan architecture (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t01-02",
+      "text": "Many buildings were constructed with two or more stories using the standardised brick units.",
+      "parent": "mohenjo-t01",
+      "root": "mohenjo-t01",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-wp_sanitation_of_the_indus_valley_civilisat-0000"
+      ],
+      "sources": [
+        "Sanitation of the Indus Valley Civilisation (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t02",
+      "text": "Builders installed brick-lined drains, soak pits and toilets, linking house drains to covered public street drains with inspection holes.",
+      "parent": null,
+      "root": "mohenjo-t02",
+      "depth": 0,
+      "is_leaf": false,
+      "passage_ids": [
+        "mohenjo-wp_sanitation_of_the_indus_valley_civilisat-0000",
+        "mohenjo-asi_ar_1926_27-0001",
+        "mohenjo-asi_ar_1925_26-0001"
+      ],
+      "sources": [
+        "Sanitation of the Indus Valley Civilisation (Wikipedia)",
+        "Annual Report of the Archaeological Survey of India 1926-27 (Mohenjo-daro sections)",
+        "Annual Report of the Archaeological Survey of India 1925-26 (Mohenjo-daro sections)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t02-01",
+      "text": "Toilet waste holes were flushed with water drawn from the house well through a clay brick pipe into a shared drain.",
+      "parent": "mohenjo-t02",
+      "root": "mohenjo-t02",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-wp_sanitation_of_the_indus_valley_civilisat-0000"
+      ],
+      "sources": [
+        "Sanitation of the Indus Valley Civilisation (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t02-02",
+      "text": "House drains fed into adjacent soak pits that were periodically emptied of solid matter, possibly for use as fertilizer.",
+      "parent": "mohenjo-t02",
+      "root": "mohenjo-t02",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-wp_sanitation_of_the_indus_valley_civilisat-0000"
+      ],
+      "sources": [
+        "Sanitation of the Indus Valley Civilisation (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t02-03",
+      "text": "Vaulted drains and chutes were built into houses to carry off water from privies and baths to street drains.",
+      "parent": "mohenjo-t02",
+      "root": "mohenjo-t02",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-asi_ar_1926_27-0001"
+      ],
+      "sources": [
+        "Annual Report of the Archaeological Survey of India 1926-27 (Mohenjo-daro sections)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t03",
+      "text": "Large water tanks were made watertight by laying finely fitted bricks on edge with gypsum plaster, then sealing with bitumen coating.",
+      "parent": null,
+      "root": "mohenjo-t03",
+      "depth": 0,
+      "is_leaf": false,
+      "passage_ids": [
+        "mohenjo-wp_great_bath_mohenjo_daro-0000",
+        "mohenjo-asi_ar_1925_26-0000"
+      ],
+      "sources": [
+        "Great Bath (Wikipedia)",
+        "Annual Report of the Archaeological Survey of India 1925-26 (Mohenjo-daro sections)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t03-01",
+      "text": "Tank floors and walls were paved with finely fitted bricks laid on edge set in gypsum mortar for a watertight surface.",
+      "parent": "mohenjo-t03",
+      "root": "mohenjo-t03",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-wp_great_bath_mohenjo_daro-0000"
+      ],
+      "sources": [
+        "Great Bath (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t03-02",
+      "text": "A thick bitumen layer was applied along the tank sides, and likely the floor, as an extra waterproof seal.",
+      "parent": "mohenjo-t03",
+      "root": "mohenjo-t03",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-wp_great_bath_mohenjo_daro-0000",
+        "mohenjo-asi_ar_1925_26-0000"
+      ],
+      "sources": [
+        "Great Bath (Wikipedia)",
+        "Annual Report of the Archaeological Survey of India 1925-26 (Mohenjo-daro sections)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t03-03",
+      "text": "A sloping floor drained to a small outlet feeding a corbelled arch drain to remove used water from the tank.",
+      "parent": "mohenjo-t03",
+      "root": "mohenjo-t03",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-wp_great_bath_mohenjo_daro-0000"
+      ],
+      "sources": [
+        "Great Bath (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t04",
+      "text": "Streets, house blocks and courtyards were laid out in an organised plan with solid plinth foundations for adjacent structures.",
+      "parent": null,
+      "root": "mohenjo-t04",
+      "depth": 0,
+      "is_leaf": false,
+      "passage_ids": [
+        "mohenjo-asi_ar_1925_26-0000",
+        "mohenjo-asi_ar_1926_27-0001",
+        "mohenjo-wp_indus_valley_civilisation-0000"
+      ],
+      "sources": [
+        "Annual Report of the Archaeological Survey of India 1925-26 (Mohenjo-daro sections)",
+        "Annual Report of the Archaeological Survey of India 1926-27 (Mohenjo-daro sections)",
+        "Indus Valley Civilisation (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t04-01",
+      "text": "Solid plinth foundations were built for a group of buildings arranged together in the Sd area.",
+      "parent": "mohenjo-t04",
+      "root": "mohenjo-t04",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-asi_ar_1925_26-0000"
+      ],
+      "sources": [
+        "Annual Report of the Archaeological Survey of India 1925-26 (Mohenjo-daro sections)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t04-02",
+      "text": "Streets were built solid alongside adjacent structures with underground drains running beneath them.",
+      "parent": "mohenjo-t04",
+      "root": "mohenjo-t04",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-asi_ar_1925_26-0000"
+      ],
+      "sources": [
+        "Annual Report of the Archaeological Survey of India 1925-26 (Mohenjo-daro sections)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t04-03",
+      "text": "Houses were built of baked brick as part of the organised urban layout.",
+      "parent": "mohenjo-t04",
+      "root": "mohenjo-t04",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-wp_indus_valley_civilisation-0000"
+      ],
+      "sources": [
+        "Indus Valley Civilisation (Wikipedia)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t05",
+      "text": "Labor was mobilised collectively without a ruling elite to build shared public infrastructure, large buildings and urban planning works.",
+      "parent": null,
+      "root": "mohenjo-t05",
+      "depth": 0,
+      "is_leaf": false,
+      "passage_ids": [
+        "mohenjo-oa_w4293187482-0000",
+        "mohenjo-oa_w3087229121-0000",
+        "mohenjo-oa_w7161494188-0000"
+      ],
+      "sources": [
+        "Of Revenue Without Rulers: Public Goods in the Egalitarian Cities of the Indus Civilization (2022), p. 1",
+        "Killing the Priest-King: Addressing Egalitarianism in the Indus Civilization (2020)",
+        "Inequality declined in the Bronze Age city of Mohenjo-daro (2026), p. 1"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t05-01",
+      "text": "Communities coordinated labor to build water infrastructure without relying on a distinct managerial or ruling class.",
+      "parent": "mohenjo-t05",
+      "root": "mohenjo-t05",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-oa_w4293187482-0000"
+      ],
+      "sources": [
+        "Of Revenue Without Rulers: Public Goods in the Egalitarian Cities of the Indus Civilization (2022), p. 1"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t05-02",
+      "text": "Builders avoided constructing individual-aggrandizing monuments, tombs, temples or palaces, focusing resources on shared civic structures instead.",
+      "parent": "mohenjo-t05",
+      "root": "mohenjo-t05",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-oa_w3087229121-0000"
+      ],
+      "sources": [
+        "Killing the Priest-King: Addressing Egalitarianism in the Indus Civilization (2020)"
+      ],
+      "status": "unreviewed"
+    },
+    {
+      "id": "mohenjo-t05-03",
+      "text": "The city's street plan and governance developed together over time, coinciding with reduced inequality between residences.",
+      "parent": "mohenjo-t05",
+      "root": "mohenjo-t05",
+      "depth": 1,
+      "is_leaf": true,
+      "passage_ids": [
+        "mohenjo-oa_w7161494188-0000"
+      ],
+      "sources": [
+        "Inequality declined in the Bronze Age city of Mohenjo-daro (2026), p. 1"
+      ],
+      "status": "unreviewed"
+    }
+  ]
+}

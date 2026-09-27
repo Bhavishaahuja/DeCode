@@ -28,7 +28,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from claims.common import load_passages
+from claims.common import load_passages, load_taxonomy
 from data.decode import TransformExtract, TransformGraph, TransformLink, TransformRecord
 
 CLAIMS_DIR = Path(__file__).resolve().parent
@@ -36,7 +36,26 @@ MAP_DIR = CLAIMS_DIR / "decode"
 SITES = ["giza", "uruk", "mohenjo", "qin"]
 SITE_NAMES = {"giza": "Giza", "uruk": "Uruk", "mohenjo": "Mohenjo-daro", "qin": "the Qin walls and roads"}
 
-# Added after Chad's system prompt so the decode stays inside Stratum's rules.
+# The default system prompt for the map. Chad's "Resolve Through Monads" prompt is still available with
+# --chad-prompt, but on real runs it tends to return one abstract transform with no text, so the demo uses this.
+STRATUM_DECODE_PROMPT = """You decode the evidence for {site_name}, an ancient megaproject, into a small tree of transforms.
+
+A transform is an ancient building practice that a modern builder could learn from: how they set out the site,
+sourced materials, moved loads, built the structure, finished surfaces, organised the workforce, checked quality,
+or managed the work. Write each one as a concrete practice, like "Walls were left as bare fired brick rather than
+plastered", never as an abstract theme.
+
+Always answer by calling record_transforms. Every transform needs:
+- transform_id: any short id
+- text: one plain sentence, 25 words or fewer, saying what they did
+- evidence_passage_ids: the exact Passage ID values (copied from the input) that directly support it
+
+Core mode: return 3 to {max_roots} root transforms covering the main practices in the evidence.
+Child mode: return up to {max_children} more specific transforms that sit under the parent, or an empty list if
+the evidence doesn't go deeper.
+"""
+
+# Added after the prompt either way, so the decode stays inside Stratum's rules.
 STRATUM_RULES = """
 
 STRATUM RULES (these apply to everything above)
@@ -54,7 +73,19 @@ moved, built, finished, organised, checked or managed the work.
 5. Core mode: at most {max_roots} root transforms, the broadest useful themes. Child mode: at most
    {max_children} children, each narrower than its parent, or none if the evidence doesn't go deeper.
 6. Never use em dashes or en dashes. Use commas, periods or parentheses.
+7. Never describe the excavation or the excavators (trenches, seasons, recording finds). Only practices of the
+   ancient builders.
+8. Skip crafts, jewellery, seals and ornaments unless they show how the build itself was done.
 """
+
+
+def system_focus(system: str | None) -> str:
+    # one extra line when --system is given, using the plain-language definition from taxonomy.yaml
+    if not system:
+        return ""
+    entry = load_taxonomy()["systems"][system]
+    definition = " ".join(str(entry["definition"]).split())
+    return f"\nFocus only on {system} practices: {definition}\n"
 
 
 # ---------------------------------------------------------------------------------------------
@@ -116,20 +147,42 @@ class SafeEvaluator:
                     model=self.inner.model, max_tokens=4000, system=self.inner.system_prompt,
                     tools=[decode_ai._transform_tool()], tool_choice={"type": "tool", "name": "record_transforms"},
                     messages=[{"role": "user", "content": decode_ai._build_user_message(mode, passages, parent)}])
-                raw_rows = decode_ai._tool_output(response)
+                raw_rows = unwrap_rows(decode_ai._tool_output(response))
                 break
             except Exception as err:
                 last_error = err
         else:
             raise last_error
 
+        self.last_raw = {"mode": mode, "rows": raw_rows, "stop_reason": getattr(response, "stop_reason", None),
+                         "block_types": [getattr(b, "type", None) for b in response.content]}
+        by_source = {}
+        for p in passages:
+            by_source.setdefault(p["source_id"], []).append(p["passage_id"])
+
         out = []
+        self.dropped = []
         for raw in raw_rows:
             if not isinstance(raw, dict):
+                self.dropped.append(("not an object", str(raw)[:80]))
                 continue
-            text = str(raw.get("text") or "").strip()
-            ids = [pid for pid in (raw.get("evidence_passage_ids") or []) if pid in passage_map]
+            text = str(raw.get("text") or raw.get("transform") or raw.get("description") or "").strip()
+            if not text:
+                for key, value in raw.items():
+                    if key not in ("transform_id", "evidence_passage_ids") and isinstance(value, str) and len(value) > 15:
+                        text = value.strip()
+                        break
+            cited = raw.get("evidence_passage_ids") or raw.get("passage_ids") or raw.get("evidence") or []
+            if isinstance(cited, str):
+                cited = [cited]
+            ids = []
+            for pid in cited:
+                for match in resolve_passage_id(pid, passage_map, by_source):
+                    if match not in ids:
+                        ids.append(match)
             if not text or not ids:
+                why = f"no usable text (keys: {sorted(raw)})" if not text else f"no matching passage ids {cited[:3]}"
+                self.dropped.append((why, text[:80]))
                 continue
             temp_id = str(raw.get("transform_id") or "x")
             links = tuple(TransformLink(transform_id=temp_id, source_id=passage_map[pid]["source_id"],
@@ -137,6 +190,44 @@ class SafeEvaluator:
                                         locator=passage_map[pid].get("locator")) for pid in ids)
             out.append(TransformExtract(transform_id=temp_id, text=text, evidence=links))
         return out
+
+
+def unwrap_rows(rows) -> list:
+    # sometimes the model nests its answer, {"transforms": {"transforms": [...]}}, and
+    # _tool_output hands that back as one row holding the real list. Peel those layers off.
+    out = []
+    for row in rows or []:
+        if isinstance(row, str):
+            try:
+                row = json.loads(row)
+            except json.JSONDecodeError:
+                out.append(row)
+                continue
+        if isinstance(row, dict) and "transforms" in row and "text" not in row:
+            inner = row["transforms"]
+            if isinstance(inner, (dict, str)):
+                inner = [inner]
+            out.extend(unwrap_rows(inner))
+        elif isinstance(row, list):
+            out.extend(unwrap_rows(row))
+        else:
+            out.append(row)
+    return out
+
+
+def resolve_passage_id(cited, passage_map: dict, by_source: dict) -> list[str]:
+    """Match what the model cited to real passage ids, forgiving small formatting slips."""
+    if isinstance(cited, dict):
+        cited = cited.get("passage_id") or cited.get("id") or ""
+    key = str(cited).strip().strip("[]\"'`").replace("Passage ID:", "").strip()
+    if key in passage_map:
+        return [key]
+    lowered = {pid.lower(): pid for pid in passage_map}
+    if key.lower() in lowered:
+        return [lowered[key.lower()]]
+    if key in by_source:  # cited a source id, so take that source's supplied passages
+        return by_source[key]
+    return []
 
 
 # ---------------------------------------------------------------------------------------------
@@ -163,7 +254,13 @@ def build_map(evaluator, site: str, corpus: list[dict], depth: int, max_roots: i
     graph = TransformGraph()
 
     log(f"core pass over {len(corpus)} passages ...")
-    for extract in renumber(evaluator.core(corpus), f"{site}-t", max_roots):
+    core_extracts = evaluator.core(corpus)
+    raw = getattr(evaluator, "last_raw", None)
+    if raw is not None:
+        log(f"  model returned {len(raw['rows'])} transforms (stop_reason={raw['stop_reason']}, blocks={raw['block_types']})")
+        for why, text in getattr(evaluator, "dropped", [])[:8]:
+            log(f"  dropped: {why}: {text}")
+    for extract in renumber(core_extracts, f"{site}-t", max_roots):
         graph.add_core_transform(extract.transform_id, extract.text)
         for link in extract.evidence:
             graph.add_link(link)
@@ -280,6 +377,8 @@ def main(argv=None) -> int:
     parser.add_argument("--max-roots", type=int, default=5)
     parser.add_argument("--max-children", type=int, default=3)
     parser.add_argument("--show", action="store_true", help="print the saved map and exit, no API calls")
+    parser.add_argument("--chad-prompt", action="store_true",
+                        help="use Chad's Resolve Through Monads prompt instead of the plain Stratum decode prompt")
     args = parser.parse_args(argv)
 
     path = map_path(args.site, args.system)
@@ -302,16 +401,26 @@ def main(argv=None) -> int:
 
     from tools.decode_ai import MODEL, create_anthropic_decode_evaluator
     evaluator = create_anthropic_decode_evaluator()
-    evaluator.system_prompt += STRATUM_RULES.format(site_name=SITE_NAMES[args.site], max_roots=args.max_roots,
-                                                    max_children=args.max_children)
+    fill = {"site_name": SITE_NAMES[args.site], "max_roots": args.max_roots, "max_children": args.max_children}
+    if not args.chad_prompt:
+        evaluator.system_prompt = STRATUM_DECODE_PROMPT.format(**fill)
+    evaluator.system_prompt += STRATUM_RULES.format(**fill)
+    evaluator.system_prompt += system_focus(args.system)
 
-    graph = build_map(SafeEvaluator(evaluator), args.site, corpus, depth=args.depth, max_roots=args.max_roots,
+    safe = SafeEvaluator(evaluator)
+    graph = build_map(safe, args.site, corpus, depth=args.depth, max_roots=args.max_roots,
                       max_children=args.max_children)
     params = {"max_passages": args.max_passages, "depth": args.depth, "max_roots": args.max_roots,
               "max_children": args.max_children}
     doc = graph_to_json(graph, args.site, args.system, corpus, params, MODEL)
 
     MAP_DIR.mkdir(parents=True, exist_ok=True)
+    debug_path = MAP_DIR / f"{path.stem}.last_run.json"
+    debug_path.write_text(json.dumps(getattr(safe, "last_raw", None), indent=2, ensure_ascii=False, default=str),
+                          encoding="utf-8")
+    if not doc["transforms"]:
+        print(f"\nno transforms came back, so nothing was saved. The raw reply is in {debug_path}")
+        return 1
     path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     path.with_suffix(".md").write_text(map_to_markdown(doc), encoding="utf-8")
     print()
