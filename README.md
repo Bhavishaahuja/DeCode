@@ -150,6 +150,24 @@ http://localhost:5173
 
 No frontend build step is currently required. The web application is served directly from `web/index.html`.
 
+### One-command startup
+
+After setup is complete, the same startup script can be launched from either shell.
+
+Command Prompt:
+
+```cmd
+start-stratum.cmd
+```
+
+PowerShell:
+
+```powershell
+.\start-stratum.cmd
+```
+
+The script detects whether it was launched from Command Prompt or PowerShell, verifies `.venv` and `.env`, rebuilds the data/index, starts all three Stratum services, and opens the web app.
+
 ## Pipeline modes
 
 Stratum supports three agent modes.
