@@ -125,3 +125,19 @@
 {"draft_id": "qin-site_setout-dd292c08b", "decision": "rejected", "reason": "Quote does not mention the Yellow River or Ordos route.", "reviewed_by": "bhavisha"}
 {"draft_id": "qin-site_setout-d5cfdee21", "decision": "accepted", "claim_id": "qin-site_setout-001", "edited": true, "reviewed_by": "bhavisha"}
 {"draft_id": "qin-site_setout-d5afe3381", "decision": "accepted", "claim_id": "qin-site_setout-002", "edited": false, "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-quality_control-df8e1ad70", "decision": "accepted", "claim_id": "mohenjo-project_controls-001", "edited": true, "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-quality_control-d216dfe48", "decision": "accepted", "claim_id": "mohenjo-project_controls-002", "edited": true, "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-quality_control-dd99b28da", "decision": "rejected", "reason": "About a Lothal scale, not Mohenjo-daro.", "reviewed_by": "bhavisha"}
+{"draft_id": "qin-structure_form-df17706e5", "decision": "rejected", "reason": "Geil's own footnote says the Qin walls disappeared; these ramparts are later.", "reviewed_by": "bhavisha"}
+{"draft_id": "giza-project_controls-d91187cc5", "decision": "accepted", "claim_id": "giza-project_controls-002", "edited": false, "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-structure_form-d5ea36d96", "decision": "rejected", "reason": "About Harappa, not Mohenjo-daro.", "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-structure_form-dfe118301", "decision": "accepted", "claim_id": "mohenjo-finishes-001", "edited": true, "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-materials_supply-d52a038a4", "decision": "rejected", "reason": "About Harappa's bead stones, not Mohenjo-daro.", "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-workforce-d2a99a084", "decision": "rejected", "reason": "About Harappa, not Mohenjo-daro.", "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-workforce-db856d7d9", "decision": "accepted", "claim_id": "mohenjo-workforce-001", "edited": true, "reviewed_by": "bhavisha"}
+{"draft_id": "qin-materials_supply-d373cf810", "decision": "rejected", "reason": "Vague later travel writing; says nothing specific about how Qin built.", "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-project_controls-dc23906a8", "decision": "rejected", "reason": "About Harappa, not Mohenjo-daro.", "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-water_sanitation-d651896f3", "decision": "accepted", "claim_id": "mohenjo-workforce-002", "edited": true, "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-water_sanitation-d3ce2b6f3", "decision": "rejected", "reason": "About soak pits at other Indus sites, not Mohenjo-daro.", "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-finishes-df849e81f", "decision": "accepted", "claim_id": "mohenjo-finishes-002", "edited": true, "reviewed_by": "bhavisha"}
+{"draft_id": "mohenjo-quality_control-d22673ec9", "decision": "accepted", "claim_id": "mohenjo-project_controls-003", "edited": true, "reviewed_by": "bhavisha"}
