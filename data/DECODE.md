@@ -1,6 +1,6 @@
-# How Stratum builds its knowledge (the Decode flow)
+# How DeCode builds its knowledge (the Decode flow)
 
-Stratum answers questions from two things: **passages** (cleaned chunks of legally usable sources) and **claims** (graded transforms decoded from those passages). This file walks through how a site goes from "we know its name" to "the chat can cite it."
+DeCode answers questions from two things: **passages** (cleaned chunks of legally usable sources) and **claims** (graded transforms decoded from those passages). This file walks through how a site goes from "we know its name" to "the chat can cite it."
 
 Two words to keep straight:
 

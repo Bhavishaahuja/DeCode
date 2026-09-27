@@ -1,4 +1,4 @@
-# Canonical system_tags for Stratum: the 9 shared systems from CLAUDE.md.
+# Canonical system_tags for DeCode: the 9 shared systems from CLAUDE.md.
 # These ids match claims/taxonomy.yaml exactly. Dev 2's taxonomy adds plain-language
 # definitions and MasterFormat / Uniclass headings on top; this file only holds the tagging rules.
 #

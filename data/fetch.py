@@ -20,8 +20,8 @@ import requests
 
 from . import config
 
-CONTACT = os.environ.get("STRATUM_CONTACT_EMAIL", "")
-UA = f"StratumDataBot/0.1 (archaeology research index{'; mailto:' + CONTACT if CONTACT else ''})"
+CONTACT = os.environ.get("DECODE_CONTACT_EMAIL", "")
+UA = f"DeCodeDataBot/0.1 (archaeology research index{'; mailto:' + CONTACT if CONTACT else ''})"
 TIMEOUT = 60
 
 

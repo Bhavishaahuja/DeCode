@@ -6,11 +6,11 @@ cd /d "%~dp0"
 set "HOST_SHELL=Command Prompt"
 for /f "usebackq delims=" %%S in (`powershell -NoProfile -Command "$child = Get-CimInstance Win32_Process -Filter ('ProcessId=' + $PID); $cmd = Get-CimInstance Win32_Process -Filter ('ProcessId=' + $child.ParentProcessId); $parent = Get-Process -Id $cmd.ParentProcessId -ErrorAction SilentlyContinue; if ($parent.ProcessName -match '^(powershell|pwsh)$') { 'PowerShell' } else { 'Command Prompt' }"`) do set "HOST_SHELL=%%S"
 
-echo Starting Stratum from %HOST_SHELL%...
+echo Starting DeCode from %HOST_SHELL%...
 echo.
 
 if not exist ".venv\Scripts\python.exe" (
-    echo ERROR: Stratum virtual environment was not found.
+    echo ERROR: DeCode virtual environment was not found.
     echo Run the setup instructions first.
     exit /b 1
 )
@@ -21,7 +21,7 @@ if not exist ".env" (
     exit /b 1
 )
 
-echo Building Stratum data...
+echo Building DeCode data...
 ".venv\Scripts\python.exe" -m data.build
 if errorlevel 1 (
     echo.
@@ -31,18 +31,18 @@ if errorlevel 1 (
 
 echo.
 echo Starting Tools API on port 8001...
-start "Stratum Tools" cmd /k ""%CD%\.venv\Scripts\python.exe" -m uvicorn tools.app:app --port 8001"
+start "DeCode Tools" cmd /k ""%CD%\.venv\Scripts\python.exe" -m uvicorn tools.app:app --port 8001"
 
 echo Starting Agents API on port 8000...
-start "Stratum Agents" cmd /k ""%CD%\.venv\Scripts\python.exe" -m uvicorn agents.server:app --port 8000"
+start "DeCode Agents" cmd /k ""%CD%\.venv\Scripts\python.exe" -m uvicorn agents.server:app --port 8000"
 
 echo Starting Web app on port 5173...
-start "Stratum Web" cmd /k ""%CD%\.venv\Scripts\python.exe" -m http.server 5173 --directory web"
+start "DeCode Web" cmd /k ""%CD%\.venv\Scripts\python.exe" -m http.server 5173 --directory web"
 
 echo.
-echo Opening Stratum...
+echo Opening DeCode...
 start "" "http://localhost:5173"
 
 echo.
-echo Stratum startup complete.
+echo DeCode startup complete.
 endlocal

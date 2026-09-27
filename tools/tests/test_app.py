@@ -119,7 +119,7 @@ def test_claims_fall_back_to_example_when_nothing_verified(tmp_path, monkeypatch
     monkeypatch.setattr(tools_app, "VERIFIED_CLAIMS", tmp_path / "missing.jsonl")
     r = post("/tools/claims", {"site": "giza", "system": "transport_lifting"})
     assert r.status_code == 200
-    assert r.headers.get("X-Stratum-Fallback")
+    assert r.headers.get("X-DeCode-Fallback")
     assert r.json()["claims"][0]["claim_id"] == "giza-transport_lifting-003"
 
 
@@ -134,7 +134,7 @@ def test_claims_only_verified_and_filtered(tmp_path, monkeypatch):
     monkeypatch.setattr(tools_app, "VERIFIED_CLAIMS", path)
     r = post("/tools/claims", {"site": "giza", "system": "workforce"})
     assert [c["claim_id"] for c in r.json()["claims"]] == ["giza-workforce-001"]
-    assert "X-Stratum-Fallback" not in r.headers
+    assert "X-DeCode-Fallback" not in r.headers
     everything = post("/tools/claims", {}).json()["claims"]
     assert len(everything) == 2
 

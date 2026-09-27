@@ -755,7 +755,7 @@ async function loadLiveData(){
   const rank={attested:0,debated:1,inferred:2};
   for(const k of ORDER){
     const got=await getJSON(`${TOOLS_BASE}/tools/claims`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({site:k})});
-    if(!got || got.headers.get("X-Stratum-Fallback")) continue; // no verified claims yet, keep the demo rows
+    if(!got || got.headers.get("X-DeCode-Fallback")) continue; // no verified claims yet, keep the demo rows
     const claims=got.body.claims||[]; const best={};
     for(const c of claims){
       const key=SYS_MAP[c.system]; if(!key) continue;

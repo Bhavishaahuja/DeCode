@@ -1,4 +1,4 @@
-# Stratum `/data`: sources, registry, passages, search
+# DeCode `/data`: sources, registry, passages, search
 
 Dev 1 (data engineer) with Chad (source registry and corpus models). This folder covers stages 1 to 3 of the Decode flow: find legally usable sources, import them as passages, and make them searchable. The full flow is in [`DECODE.md`](DECODE.md).
 
@@ -32,7 +32,7 @@ The build checks every source against the registry, downloads (cached in `data/r
 | `pytest data` | registry, source gate and corpus model tests (plus the acceptance checks) |
 | `python -m data.search "Mohenjo-daro drains" --site mohenjo -k 5` | quick manual query |
 
-Optional: `export STRATUM_CONTACT_EMAIL=you@team.org` puts a contact address in the User-Agent (polite pools for OpenAlex and Wikipedia).
+Optional: `export DECODE_CONTACT_EMAIL=you@team.org` puts a contact address in the User-Agent (polite pools for OpenAlex and Wikipedia).
 **Size guard:** any single download over 500 MB stops with `[ASK FIRST]`. Rerun with `--allow-large` only after the team agrees.
 
 ## The contract (Contract 1 in CLAUDE.md)
@@ -99,7 +99,7 @@ sources.yaml ──► registry ──► fetch.py ──► textproc.py ──�
 4. **Cleaning**: de-hyphenation, line re-wrapping, citation marks and reference lists removed. OCR chunks with fewer than 60% real words are dropped. General works are cut down to paragraphs about the site (`keep_regex`).
 5. **Chunking**: whole sentences packed to about 400 tokens (bge tokenizer), capped at 500, with about 60 tokens of overlap.
 6. **Tagging**: `site` comes from the source. `period` comes from regex rules per site (`config.PERIOD_RULES`), falling back to the source period, then the site default. `system_tags` need 1 strong or 2 weak keyword hits (`systems.yaml`). `--llm` sends only untagged passages to `claude-sonnet-5`, 20 per call, truncated to 1,200 characters, cached.
-7. **Index**: `BAAI/bge-small-en-v1.5`, normalised, in the Chroma collection `stratum_passages` (cosine) at `data/index/`. Metadata includes a `sys_<id>` boolean per system for filtering.
+7. **Index**: `BAAI/bge-small-en-v1.5`, normalised, in the Chroma collection `decode_passages` (cosine) at `data/index/`. Metadata includes a `sys_<id>` boolean per system for filtering.
 8. **Search**: filter by site and system, then take the top 50 vector hits and the top 50 BM25 hits. Score is `0.65 x cosine + 0.35 x BM25/max` over the union. Without chromadb, sentence-transformers or the index, search falls back to BM25 only and warns, so a fresh clone with just `passages.jsonl` still works.
 
 ## Sites

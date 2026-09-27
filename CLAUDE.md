@@ -1,10 +1,10 @@
-# Stratum: Shared Context (Project Instructions)
+# DeCode: Shared Context (Project Instructions)
 
 Every chat in this project starts from this file. Each teammate then pastes their own role prompt (Dev 1 to Dev 5) as the first message. When a role prompt says "the shared context," "the schema," or "the contract," it means this file. If this file and a role prompt disagree, this file wins; flag the conflict to the team instead of guessing.
 
-## What Stratum is
+## What DeCode is
 
-Stratum reverse-engineers ancient megaprojects the way a contractor would: read the evidence, break the build into systems a site team recognizes, put numbers on it, and turn it into a playbook for building it today. The existing web app covers 4 sites (Giza, Uruk, Mohenjo-daro, Qin walls and roads) with tabs for Teardown, Sequence, Crew estimator, and Build it now.
+DeCode reverse-engineers ancient megaprojects the way a contractor would: read the evidence, break the build into systems a site team recognizes, put numbers on it, and turn it into a playbook for building it today. The existing web app covers 4 sites (Giza, Uruk, Mohenjo-daro, Qin walls and roads) with tabs for Teardown, Sequence, Crew estimator, and Build it now.
 
 We're adding an agentic chat: ask a question in plain English, and a 7-layer agent pipeline retrieves real evidence, grades every claim, runs every number through a tool, gets checked by a critic, and answers with citations plus interactive cards that drive the existing app.
 

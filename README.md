@@ -1,6 +1,6 @@
-# Stratum
+# DeCode
 
-Stratum reverse-engineers ancient megaprojects the way a contractor would.
+DeCode reverse-engineers ancient megaprojects the way a contractor would.
 
 It combines source-backed archaeological evidence, verified claims, deterministic engineering tools, and an agent pipeline to answer questions such as:
 
@@ -19,7 +19,7 @@ The current project covers:
 
 ## Requirements
 
-Stratum requires:
+DeCode requires:
 
 - Python 3.11 or newer
 - `pip`
@@ -27,7 +27,7 @@ Stratum requires:
 
 An Anthropic API key is optional.
 
-Without an API key, Stratum can run using its rule-based pipeline.
+Without an API key, DeCode can run using its rule-based pipeline.
 
 ## Clone the repository
 
@@ -71,7 +71,7 @@ To use the Claude-powered agent pipeline, add an Anthropic API key:
 ANTHROPIC_API_KEY=your_key_here
 ```
 
-If no API key is supplied, Stratum uses the deterministic rule-based pipeline.
+If no API key is supplied, DeCode uses the deterministic rule-based pipeline.
 
 ## Build the evidence data
 
@@ -81,13 +81,13 @@ Run from the repository root:
 python -m data.build
 ```
 
-This builds the evidence passages and search index used by Stratum.
+This builds the evidence passages and search index used by DeCode.
 
 The resulting evidence layer is consumed by both the tools API and the agent pipeline.
 
-## Start Stratum
+## Start DeCode
 
-Stratum currently consists of three running services.
+DeCode currently consists of three running services.
 
 ### 1. Tools API
 
@@ -120,7 +120,7 @@ Open a second Command Prompt:
 python -m uvicorn agents.server:app --port 8000
 ```
 
-The agent API exposes the Stratum chat pipeline.
+The agent API exposes the DeCode chat pipeline.
 
 Health check:
 
@@ -157,35 +157,35 @@ After setup is complete, the same startup script can be launched from either she
 Command Prompt:
 
 ```cmd
-start-stratum.cmd
+start-decode.cmd
 ```
 
 PowerShell:
 
 ```powershell
-.\start-stratum.cmd
+.\start-decode.cmd
 ```
 
-The script detects whether it was launched from Command Prompt or PowerShell, verifies `.venv` and `.env`, rebuilds the data/index, starts all three Stratum services, and opens the web app.
+The script detects whether it was launched from Command Prompt or PowerShell, verifies `.venv` and `.env`, rebuilds the data/index, starts all three DeCode services, and opens the web app.
 
 ## Pipeline modes
 
-Stratum supports three agent modes.
+DeCode supports three agent modes.
 
 ### Automatic
 
 ```cmd
-set STRATUM_MODE=auto
+set DECODE_MODE=auto
 ```
 
 This is the default.
 
-If `ANTHROPIC_API_KEY` is available, Stratum uses the LLM pipeline. Otherwise it uses the rule-based pipeline.
+If `ANTHROPIC_API_KEY` is available, DeCode uses the LLM pipeline. Otherwise it uses the rule-based pipeline.
 
 ### Rule-based
 
 ```cmd
-set STRATUM_MODE=rules
+set DECODE_MODE=rules
 ```
 
 This runs without an LLM API.
@@ -193,7 +193,7 @@ This runs without an LLM API.
 ### LLM
 
 ```cmd
-set STRATUM_MODE=llm
+set DECODE_MODE=llm
 ```
 
 This explicitly enables the Claude-powered pipeline.
@@ -279,7 +279,7 @@ Evidence retrieval, verified claims, and calculations come from tools rather tha
 
 ## Decode pipeline
 
-Stratum also contains a recursive evidence-decoding system used to map source passages into increasingly specific construction practices.
+DeCode also contains a recursive evidence-decoding system used to map source passages into increasingly specific construction practices.
 
 The core transform graph lives in:
 

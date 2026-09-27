@@ -1,4 +1,4 @@
-"""Stratum's Claude-powered 7-layer chat pipeline (Contract 4 in CLAUDE.md).
+"""DeCode's Claude-powered 7-layer chat pipeline (Contract 4 in CLAUDE.md).
 
     from agents.llm_pipeline import LLMPipeline, ToolBridge
     response, record = LLMPipeline(tools=ToolBridge(tools_client)).run("How long would Giza take?", site="giza")
@@ -40,7 +40,7 @@ CLAIMS_PROMPTS_DIR = REPO_ROOT / "claims" / "prompts"   # L2 and L3 prompts live
 LOG_DIR = AGENTS_DIR / "logs"
 TOOL_DEFS_PATH = REPO_ROOT / "tools" / "openapi_tools.json"
 
-MODEL = os.getenv("STRATUM_MODEL", "claude-sonnet-5")
+MODEL = os.getenv("DECODE_MODEL", "claude-sonnet-5")
 TOTAL_BUDGET_S = 46          # the server cuts off at 60; this leaves room for the rules fallback
 AGENT_PHASE_S = 22           # L2 to L5 get this long, counted from when they start (not from the request)
 PRESENT_RESERVE_S = 16       # always leave the presenter and critic at least this much
@@ -178,7 +178,7 @@ def parse_json(text: str) -> dict:
 
 
 def strip_dashes(text: str) -> str:
-    """No em or en dashes anywhere in Stratum output (CLAUDE.md). Ranges become 'to', the rest become commas."""
+    """No em or en dashes anywhere in DeCode output (CLAUDE.md). Ranges become 'to', the rest become commas."""
     if not text:
         return text
     text = re.sub(r"(\d)\s*[\u2013\u2014]\s*(\d)", r"\1 to \2", text)

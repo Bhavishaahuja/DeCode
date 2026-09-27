@@ -1,6 +1,6 @@
 """Runs the eval questions (claims/eval/questions.jsonl) through the chat and scores them.
 
-    python -m agents.eval                      # all 30, whichever pipeline STRATUM_MODE picks
+    python -m agents.eval                      # all 30, whichever pipeline DECODE_MODE picks
     python -m agents.eval --mode rules         # rule-based pipeline only (free, fast)
     python -m agents.eval --mode llm           # Claude pipeline (needs ANTHROPIC_API_KEY)
     python -m agents.eval --ids q15,q26        # just these
@@ -145,7 +145,7 @@ def run_one(question: dict) -> dict:
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--mode", choices=["auto", "llm", "rules"], help="overrides STRATUM_MODE")
+    parser.add_argument("--mode", choices=["auto", "llm", "rules"], help="overrides DECODE_MODE")
     parser.add_argument("--ids", help="comma-separated question ids, e.g. q15,q26")
     parser.add_argument("--category", help="explain, compare, estimate, playbook or fringe")
     parser.add_argument("--workers", type=int, default=3, help="questions run at once (default 3)")
@@ -153,7 +153,7 @@ def main(argv=None) -> int:
 
     load_dotenv()
     if args.mode:
-        os.environ["STRATUM_MODE"] = args.mode
+        os.environ["DECODE_MODE"] = args.mode
 
     questions = [json.loads(line) for line in QUESTIONS.read_text(encoding="utf-8").splitlines() if line.strip()]
     if args.ids:

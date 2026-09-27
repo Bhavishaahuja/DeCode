@@ -38,7 +38,7 @@ SITE_NAMES = {"giza": "Giza", "uruk": "Uruk", "mohenjo": "Mohenjo-daro", "qin": 
 
 # The default system prompt for the map. Chad's "Resolve Through Monads" prompt is still available with
 # --chad-prompt, but on real runs it tends to return one abstract transform with no text, so the demo uses this.
-STRATUM_DECODE_PROMPT = """You decode the evidence for {site_name}, an ancient megaproject, into a small tree of transforms.
+DECODE_MAP_PROMPT = """You decode the evidence for {site_name}, an ancient megaproject, into a small tree of transforms.
 
 A transform is an ancient building practice that a modern builder could learn from: how they set out the site,
 sourced materials, moved loads, built the structure, finished surfaces, organised the workforce, checked quality,
@@ -55,10 +55,10 @@ Child mode: return up to {max_children} more specific transforms that sit under 
 the evidence doesn't go deeper.
 """
 
-# Added after the prompt either way, so the decode stays inside Stratum's rules.
-STRATUM_RULES = """
+# Added after the prompt either way, so the decode stays inside DeCode's rules.
+DECODE_RULES = """
 
-STRATUM RULES (these apply to everything above)
+DECODE RULES (these apply to everything above)
 
 You are decoding the evidence for {site_name}, an ancient megaproject, the way a building contractor would read it.
 A transform is an ancient building practice that a modern builder could learn from: how they set out, sourced,
@@ -378,7 +378,7 @@ def main(argv=None) -> int:
     parser.add_argument("--max-children", type=int, default=3)
     parser.add_argument("--show", action="store_true", help="print the saved map and exit, no API calls")
     parser.add_argument("--chad-prompt", action="store_true",
-                        help="use Chad's Resolve Through Monads prompt instead of the plain Stratum decode prompt")
+                        help="use Chad's Resolve Through Monads prompt instead of the plain DeCode decode prompt")
     args = parser.parse_args(argv)
 
     path = map_path(args.site, args.system)
@@ -403,8 +403,8 @@ def main(argv=None) -> int:
     evaluator = create_anthropic_decode_evaluator()
     fill = {"site_name": SITE_NAMES[args.site], "max_roots": args.max_roots, "max_children": args.max_children}
     if not args.chad_prompt:
-        evaluator.system_prompt = STRATUM_DECODE_PROMPT.format(**fill)
-    evaluator.system_prompt += STRATUM_RULES.format(**fill)
+        evaluator.system_prompt = DECODE_MAP_PROMPT.format(**fill)
+    evaluator.system_prompt += DECODE_RULES.format(**fill)
     evaluator.system_prompt += system_focus(args.system)
 
     safe = SafeEvaluator(evaluator)

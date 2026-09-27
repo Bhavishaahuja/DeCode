@@ -17,6 +17,6 @@ python -m claims.extract --from-map claims/decode/mohenjo-finishes.json --limit 
 python -m claims.extract --from-map claims/decode/mohenjo-finishes.json --node mohenjo-t02
 ```
 
-Guard rails on top of Chad's code: passages are picked round-robin across sources, ids are assigned by us (`mohenjo-t01`, `mohenjo-t01-02`), depth and counts are capped (default depth 1, 5 roots, 3 children), children of one level run in parallel, bad passage ids are dropped instead of crashing the run, and it uses a plain Stratum decode prompt (Chad's "Resolve Through Monads" prompt is still there with `--chad-prompt`, but on real runs it returned one transform with no text).
+Guard rails on top of Chad's code: passages are picked round-robin across sources, ids are assigned by us (`mohenjo-t01`, `mohenjo-t01-02`), depth and counts are capped (default depth 1, 5 roots, 3 children), children of one level run in parallel, bad passage ids are dropped instead of crashing the run, and it uses a plain DeCode decode prompt (Chad's "Resolve Through Monads" prompt is still there with `--chad-prompt`, but on real runs it returned one transform with no text).
 
 Every node is an unreviewed reading, not a claim. Drafts from `--from-map` go through `review.py` like any other.

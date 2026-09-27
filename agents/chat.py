@@ -1,8 +1,8 @@
 """Picks which pipeline answers a /chat request.
 
-    STRATUM_MODE=auto   (default) Claude pipeline when ANTHROPIC_API_KEY is set, otherwise the rules
-    STRATUM_MODE=llm    always try the Claude pipeline first
-    STRATUM_MODE=rules  always use the rule-based pipeline (fast, free, no API key needed)
+    DECODE_MODE=auto   (default) Claude pipeline when ANTHROPIC_API_KEY is set, otherwise the rules
+    DECODE_MODE=llm    always try the Claude pipeline first
+    DECODE_MODE=rules  always use the rule-based pipeline (fast, free, no API key needed)
 
 If the Claude pipeline throws, or produces something that breaks Contract 4, the request falls back
 to the rule-based pipeline, so the chat always answers. The trace says when that happened.
@@ -18,7 +18,7 @@ from agents.pipeline import run_pipeline
 
 
 def llm_enabled() -> bool:
-    mode = os.getenv("STRATUM_MODE", "auto").strip().lower()
+    mode = os.getenv("DECODE_MODE", "auto").strip().lower()
     if mode == "rules":
         return False
     if mode == "llm":

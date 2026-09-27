@@ -1,4 +1,4 @@
-"""Stratum tool API (Contract 3 in CLAUDE.md), served on :8001.
+"""DeCode tool API (Contract 3 in CLAUDE.md), served on :8001.
 
     uvicorn tools.app:app --port 8001 --reload      (or: make tools)
     python -m tools.app --export                    rewrite tools/openapi_tools.json from the models below
@@ -265,7 +265,7 @@ app = FastAPI(title="DeCode tools", version="1.0", lifespan=lifespan)
 
 # the web app and the agents run on other ports, so let them in
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],
-                   expose_headers=["X-Stratum-Fallback"])  # so the web app can tell example claims from real ones
+                   expose_headers=["X-DeCode-Fallback"])  # so the web app can tell example claims from real ones
 
 
 @app.exception_handler(RequestValidationError)
@@ -307,7 +307,7 @@ def claims_endpoint(req: ClaimsIn):
     response = JSONResponse(content={"claims": claims})
     if is_fallback:
         # no verified claims yet, so this is the contract example. The header says so without breaking the shape.
-        response.headers["X-Stratum-Fallback"] = "contracts/examples/claim.json"
+        response.headers["X-DeCode-Fallback"] = "contracts/examples/claim.json"
     return response
 
 

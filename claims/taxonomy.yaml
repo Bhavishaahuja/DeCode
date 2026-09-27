@@ -1,4 +1,4 @@
-# Stratum taxonomy: the 9 shared systems.
+# DeCode taxonomy: the 9 shared systems.
 # Every passage tag, claim, and teardown row uses exactly these ids (see CLAUDE.md).
 #
 # keywords: lowercase, matched as whole words or phrases against passage text.

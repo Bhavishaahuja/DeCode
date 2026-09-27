@@ -162,7 +162,7 @@ def test_chat_endpoint_returns_contract_response():
 
     fake_tools = FakeTools(presets={"giza": giza_preset()})
     # rules mode, so the test never calls the real Claude API even when .env has a key
-    with patch("agents.server.ToolsClient", return_value=fake_tools), patch.dict(os.environ, {"STRATUM_MODE": "rules"}):
+    with patch("agents.server.ToolsClient", return_value=fake_tools), patch.dict(os.environ, {"DECODE_MODE": "rules"}):
         response = TestClient(server.app).post(
             "/chat", json={"message": "How long would Giza take with modern cranes?", "site": "giza"}
         )

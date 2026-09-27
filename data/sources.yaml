@@ -1,4 +1,4 @@
-# Stratum evidence sources.
+# DeCode evidence sources.
 #
 # Every entry has: id, site, type, title, url, license, author (+ optional year, period, keep_regex, enabled, note).
 # site is a contract id: giza | uruk | mohenjo | qin

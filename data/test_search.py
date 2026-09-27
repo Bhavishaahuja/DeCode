@@ -1,4 +1,4 @@
-"""Acceptance checks for the Stratum data layer.
+"""Acceptance checks for the DeCode data layer.
 
     python -m data.test_search        # prints PASS/FAIL per check, exit code 1 on any failure
     pytest data/test_search.py        # same checks under pytest

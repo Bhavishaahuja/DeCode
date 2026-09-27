@@ -1,4 +1,4 @@
-# Stratum dev commands. Run from the repo root.
+# DeCode dev commands. Run from the repo root.
 PY ?= python
 
 .PHONY: data tools agents web all

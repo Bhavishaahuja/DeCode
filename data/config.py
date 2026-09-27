@@ -1,4 +1,4 @@
-"""Shared constants for the Stratum data layer: sites, periods, systems, paths, and the PASSAGE schema."""
+"""Shared constants for the DeCode data layer: sites, periods, systems, paths, and the PASSAGE schema."""
 from __future__ import annotations
 
 import re
@@ -20,7 +20,7 @@ HANDSPLIT_DIR = DATA_DIR.parent / "claims" / "handsplit"   # Dev 2's hand-split 
 HANDSPLIT_PASSAGES = HANDSPLIT_DIR / "passages.jsonl"
 HANDSPLIT_SOURCES = HANDSPLIT_DIR / "sources.yaml"
 
-COLLECTION = "stratum_passages"
+COLLECTION = "decode_passages"
 EMBED_MODEL = "BAAI/bge-small-en-v1.5"
 # bge v1.5 recommends this prefix on *queries only* (not on passages).
 QUERY_INSTRUCTION = "Represent this sentence for searching relevant passages: "

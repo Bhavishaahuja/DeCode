@@ -1,4 +1,4 @@
-"""Stratum data layer. Public API: `from data.search import search_evidence`."""
+"""DeCode data layer. Public API: `from data.search import search_evidence`."""
 
 
 def search_evidence(query, site=None, system=None, k=8):

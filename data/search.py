@@ -1,4 +1,4 @@
-"""Hybrid evidence search for Stratum.
+"""Hybrid evidence search for DeCode.
 
     from data.search import search_evidence
     hits = search_evidence("Giza ramp sledge wet sand", site="giza", system="transport_lifting", k=8)
@@ -100,7 +100,7 @@ class _Store:
             if not (config.INDEX_DIR / "manifest.json").exists():
                 raise FileNotFoundError("no index; run `python -m data.index`")
             manifest = json.loads((config.INDEX_DIR / "manifest.json").read_text())
-            self.col = chromadb.PersistentClient(path=str(config.INDEX_DIR)).get_collection(config.COLLECTION)
+            self.col = chromadb.PersistentClient(path=str(config.INDEX_DIR)).get_collection(manifest.get("collection", config.COLLECTION))  # older indexes were built as stratum_passages
             if manifest.get("n_passages") != len(self.passages):
                 print(f"[search] warning: index has {manifest.get('n_passages')} passages but passages.jsonl has "
                       f"{len(self.passages)}; rebuild with `python -m data.index`", file=sys.stderr)
@@ -213,7 +213,7 @@ def list_systems() -> list[str]:
 if __name__ == "__main__":
     import argparse
 
-    ap = argparse.ArgumentParser(description="search the Stratum evidence index")
+    ap = argparse.ArgumentParser(description="search the DeCode evidence index")
     ap.add_argument("query")
     ap.add_argument("--site")
     ap.add_argument("--system")

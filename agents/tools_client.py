@@ -1,4 +1,4 @@
-"""HTTP client for the Stratum tools service."""
+"""HTTP client for the DeCode tools service."""
 from __future__ import annotations
 
 import json
@@ -61,7 +61,7 @@ class ToolsClient:
             status_code = response.status_code
             response.raise_for_status()
             result = response.json()
-            fallback = response.headers.get("X-Stratum-Fallback") is not None
+            fallback = response.headers.get("X-DeCode-Fallback") is not None
             self._write_log({
                 "tool": name,
                 "method": method,

@@ -1,4 +1,4 @@
-# tools: the Stratum tool API (port 8001)
+# tools: the DeCode tool API (port 8001)
 
 Contract 3 in CLAUDE.md, examples in `contracts/examples/tool_responses.json`. Every number the chat shows comes from one of these endpoints, never from the model.
 
@@ -23,7 +23,7 @@ Extras for the web app: `GET /tools/presets` (the estimator presets) and `GET /h
 ## Rules the endpoints follow
 
 * All tools are POST, JSON in and out. Errors are 4xx with `{"detail": "..."}` as a string (validation errors are 422, unknown site or system 400, no passages built yet 503).
-* `get_claims` only returns claims with `status: verified`. Until `claims/verified/claims.jsonl` has any, it returns the contract example and sets the header `X-Stratum-Fallback`.
+* `get_claims` only returns claims with `status: verified`. Until `claims/verified/claims.jsonl` has any, it returns the contract example and sets the header `X-DeCode-Fallback`.
 * `estimate`: `years = quantity / (crews x rate_per_crew_day x days_per_year)`, `people = crews x crew_size`, `person_days = people x days_per_year x years`. All inputs must be > 0.
 * `haul_force`: `F = m x g x (sin(theta) + mu x cos(theta))`, g = 9.81, `people_needed = ceil(F / pull_per_person_n)`. Friction and pull per person are always listed as assumptions.
 * `carbon`: unknown materials get a 404 with `known_materials`. Friendly names work (`fired brick`, `hangtu`).

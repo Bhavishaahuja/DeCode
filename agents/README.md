@@ -24,7 +24,7 @@ Then open http://localhost:8000/docs, try `POST /chat` with `{"message": "How lo
 
 ## Which pipeline answers
 
-`STRATUM_MODE` (env or `.env`):
+`DECODE_MODE` (env or `.env`):
 
 * `auto` (default): Claude pipeline when `ANTHROPIC_API_KEY` is set, otherwise rules
 * `llm`: always try Claude first

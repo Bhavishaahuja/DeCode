@@ -137,7 +137,7 @@ def test_bridge_hides_the_contract_placeholder():
 def test_chat_falls_back_to_rules_when_claude_breaks():
     class BrokenLLM:
         messages = None
-    with patch.dict(os.environ, {"STRATUM_MODE": "llm"}):
+    with patch.dict(os.environ, {"DECODE_MODE": "llm"}):
         response = chat.answer("How long would Giza take with modern cranes?", [], "giza",
                                FakeTools(presets={"giza": giza_preset()}), llm=BrokenLLM())
     assert response["trace"][0]["layer"] == "fallback"
@@ -189,7 +189,7 @@ def test_estimate_without_a_calculation_falls_back_to_rules():
         "presenter": [text_reply("About 24500 N, so 19 people.")],
         "critic": [text_reply('{"passed": true, "flags": []}')],
     }
-    with patch.dict(os.environ, {"STRATUM_MODE": "llm"}):
+    with patch.dict(os.environ, {"DECODE_MODE": "llm"}):
         response = chat.answer("How many people to drag a 2.5 tonne block?", [], "giza",
                                FakeTools(claims=[SLEDGE_CLAIM], presets={"giza": giza_preset()}), llm=FakeLLM(script))
     assert response["trace"][0]["layer"] == "fallback"
