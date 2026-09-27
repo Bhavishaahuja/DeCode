@@ -167,7 +167,18 @@ def main():
     parser.add_argument("--only-tagged", action="store_true", help="skip passages with no system tags")
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--redo", action="store_true", help="re-run passages already extracted")
+    parser.add_argument("--from-map", help="only passages in this decode map, in tree order (claims/decode/<site>.json)")
+    parser.add_argument("--node", help="with --from-map: only passages under this transform id, e.g. mohenjo-t02")
     args = parser.parse_args()
+
+    map_order = None
+    if args.from_map:
+        from claims.decode_map import mapped_passage_ids
+        with open(args.from_map, encoding="utf-8") as f:
+            decode_doc = json.load(f)
+        map_order = {pid: i for i, pid in enumerate(mapped_passage_ids(decode_doc, args.node))}
+        if not map_order:
+            sys.exit(f"no passages in {args.from_map}" + (f" under {args.node}" if args.node else ""))
 
     load_dotenv()
     if not os.getenv("ANTHROPIC_API_KEY"):
@@ -191,6 +202,8 @@ def main():
     for passage in passages.values():
         if passage["passage_id"] in done:
             continue
+        if map_order is not None and passage["passage_id"] not in map_order:
+            continue
         if args.site and passage["site"] != args.site:
             continue
         if args.source and passage["source_id"] != args.source:
@@ -205,6 +218,8 @@ def main():
             continue
         taken_per_source[source_id] = taken_per_source.get(source_id, 0) + 1
         todo.append(passage)
+    if map_order is not None:
+        todo.sort(key=lambda p: map_order[p["passage_id"]])  # follow the tree, not the file
     if args.limit:
         todo = todo[:args.limit]
 
