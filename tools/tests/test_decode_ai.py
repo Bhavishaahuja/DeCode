@@ -7,6 +7,7 @@ import pytest
 from data.decode import TransformRecord
 from tools.decode_ai import (
     AnthropicDecodeEvaluator,
+    run_decode,
 )
 
 
@@ -565,4 +566,81 @@ def test_ai_adapter_runs_through_decode_graph(
         "t1_1"
     )[0].passage_id == (
         "giza-source-a-0001"
+    )
+
+
+def test_run_decode_returns_success_and_notifies_app(
+    tmp_path,
+    monkeypatch,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    client = FakeClient(
+        [
+            {
+                "transform_id": "t1",
+                "text": "Root transform",
+                "evidence_passage_ids": [
+                    "giza-source-a-0001",
+                ],
+            }
+        ]
+    )
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=client,
+        prompt_path=prompt,
+    )
+
+    notifications = []
+
+    monkeypatch.setattr(
+        "tools.decode_ai._notify_app",
+        lambda message, graph: notifications.append(
+            (message, graph)
+        ),
+    )
+
+    result = run_decode(
+        PASSAGES,
+        evaluator,
+    )
+
+    assert result == "Decode completed successfully"
+    assert notifications[0][0] == (
+        "Decode completed successfully"
+    )
+
+
+def test_run_decode_returns_failure_message(
+    tmp_path,
+):
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text(
+        "Resolve through Monads.",
+        encoding="utf-8",
+    )
+
+    class FailingMessages:
+        def create(self, **kwargs):
+            raise RuntimeError("model unavailable")
+
+    evaluator = AnthropicDecodeEvaluator(
+        client=SimpleNamespace(
+            messages=FailingMessages()
+        ),
+        prompt_path=prompt,
+    )
+
+    result = run_decode(
+        PASSAGES,
+        evaluator,
+    )
+
+    assert result == (
+        "Decode failed: model unavailable"
     )
