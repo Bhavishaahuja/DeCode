@@ -66,20 +66,43 @@ def test_core_evaluator_returns_transform_extracts(
         encoding="utf-8",
     )
 
-    client = FakeClient(
-        [
-            {
-                "transform_id": "t1",
-                "text": "Root transform",
-                "evidence_passage_ids": [
-                    "giza-source-a-0001",
-                ],
-            }
-        ]
-    )
+    class SequencedMessages:
+        def __init__(self):
+            self.calls = []
+
+        def create(self, **kwargs):
+            self.calls.append(kwargs)
+
+            transforms = (
+                [
+                    {
+                        "transform_id": "t1",
+                        "text": "Root transform",
+                        "evidence_passage_ids": [
+                            "giza-source-a-0001",
+                        ],
+                    }
+                ]
+                if len(self.calls) == 1
+                else []
+            )
+
+            return SimpleNamespace(
+                content=[
+                    SimpleNamespace(
+                        type="tool_use",
+                        name="record_transforms",
+                        input={
+                            "transforms": transforms,
+                        },
+                    )
+                ]
+            )
 
     evaluator = AnthropicDecodeEvaluator(
-        client=client,
+        client=SimpleNamespace(
+            messages=SequencedMessages()
+        ),
         prompt_path=prompt,
     )
 
